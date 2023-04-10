@@ -1,0 +1,9 @@
+
+TODO =============================
+
+- Implement filesystems, executable formats (ELF) and relocations for execute your
+  kernels.
+- Implement the a kind of multiboot so you can load multiple kernels 
+- Implement the extended mode (LBA mode) for more compatibility
+- Implement a way to configure the bootloader to be able to run kernels automatically
+- Implement compatibility with HDD and CDROM drives 
