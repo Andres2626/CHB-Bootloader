@@ -42,11 +42,6 @@ To build all CHB objects run this, in your shell:
 You can define compatibility with your cross-compiler as follows:
 
 	make all CROSS_PREFIX=<your cross prefix EJ. x86_64-elf, i386-elf...> 
-
-You can also disable console echo with the following command, this can be 
-used for debugging the makefile.
-
-	make all V=<random value>
 	
 When CHB finishes compiling generates the following objects
 
