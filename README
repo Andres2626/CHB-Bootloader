@@ -6,27 +6,18 @@ Version: 0.01 Pre-Alpha
 
 					0.	Introduction
 
-CHB (C)omputers (H)elp (B)ootloader is a two-stage bootloader
+(C)omputers (H)elp (B)ootloader is a two-stage bootloader
 implemented for x86 architecture (x86_64, ix86)
 
 This is the first version of CHB, which means that it is not the 
 final version of the bootloader.
 
-This code implements a program for x86 legacy/BIOS system (not UEFI)
-for run simple kernels. At the moment the CHB bootloader only works 
-for loading binary kernel files (not executables)
+This code implements a bootloader for x86 legacy/BIOS systems
+for run simple kernels. At the moment the CHB only works 
+for loading binary kernel files
 
 Anyone is FREE to contribute to the CHB project if they are interested. 
 I encourage anyone interested in this project to contribute to it.
-
-Anyone is free to copy or distribute this code freely as long as 
-they fully follow the following conditions
-
-	1 ) Keep the copyright notice at the top of the code file
-	2 ) You must be aware of the conditions, restrictions, 
-		and freedoms expressed in the file ./LICENSE
-		
-		
 		
 					1. Building Tutorial
 					
@@ -36,14 +27,7 @@ To build CHB bootloader you must have the following tools
 	   executables (I recommend that it be a version greater than 10.1.0)
 	2) GNU-LD The linker for your compiler, that generates ELF executables
 	   for x86_64 or ix86 (I recommend that it be a version greater than 2.35)
-	   
-	   This includes the AS compiler and other useful tools.
-	   
-	3) Computer with LINUX distribution installed, if you have a Windows computer
-	   you must have a LINUX environment EJ. cygwin, msys2, mingw...
-	  
-	4) Default tools EJ. cat, dd, make, grep...  
-	  
+
 The makefile doesn't do version checks for the linker and compiler because 
 I don't know what older versions are like, I choose the version I currently 
 have in my LINUX environment. If someone wants to make a port for previous 
@@ -66,10 +50,9 @@ used for debugging the makefile.
 	
 When CHB finishes compiling generates the following objects
 
-	1) The .o files 
-	2) boot.IMG: The CHB bootsector, this is the stage1
-	3) stage2.IMG: This image contains the stage2 of CHB
-	4) CHB.IMG: is the union between boot.IMG and stage2.IMG
+	1) boot.IMG: The CHB bootsector, this is the stage1
+	2) stage2.IMG: This image contains the stage2 of CHB
+	3) CHB.IMG: is the union between boot.IMG and stage2.IMG
 
 
 
