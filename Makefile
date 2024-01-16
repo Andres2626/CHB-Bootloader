@@ -50,7 +50,7 @@ finish: $(OUT)/CHB.IMG
 
 $(OUT)/CHB.IMG:
 	@echo "Creating finish program: $@"
-	$(Q)cat $(OUT)/boot.IMG $(OUT)/stage2.IMG > $(OUT)/CHB.IMG
+	$(Q)cat $(OUT)/boot.IMG $(OUT)/loader.IMG > $(OUT)/CHB.IMG
 
 clean:
 	rm -rf $(OUT)/*.o
