@@ -70,9 +70,9 @@ $(OUT)/boot.o: $(BOOTSRCDIR)/boot.S
 
 # make loader program or stage2===============================
 LSRCDIR	:= $(SRC)/loader
-loader: $(OUT)/stage2.IMG
+loader: $(OUT)/loader.IMG
 
-$(OUT)/stage2.IMG: $(OUT)/loader.o
+$(OUT)/loader.IMG: $(OUT)/loader.o
 	@echo "Generating $<"
 	$(Q)$(LD) $< -o $@ $(LDFLAGS) --oformat binary -Ttext=0x8000
 
