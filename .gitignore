@@ -1,52 +1,17 @@
-# Prerequisites
-*.d
-
-# Object files
+# exclude files
 *.o
-*.ko
-*.obj
-*.elf
+*.stackump
+build/%.h
+build/%.img
+build/%.o
+%.build
+%.ld
 
-# Linker output
-*.ilk
-*.map
-*.exp
+# directories
+build/
 
-# Precompiled Headers
-*.gch
-*.pch
+# emulator files
+*.bxrc
 
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
-
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
-
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
-
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
+# memory dumps (qemu)
+*.mem
