@@ -1,315 +1,208 @@
 
+#define ASM_FILE
+#define LOADER_FILE
+
+#include <CHB/stage1/stage1.h>
+#include <CHB/macros.h>
+
 /*
-*	 CHB - Computers Help Bootloader
-*    Copyright (C) 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023  Andres26, Computers Help
-*
-*    This program is free software: you can redistribute it and/or modify
-*    it under the terms of the GNU General Public License as published by
-*    the Free Software Foundation, either version 3 of the License, or
-*    (at your option) any later version.
-*
-*    This program is distributed in the hope that it will be useful,
-*    but WITHOUT ANY WARRANTY; without even the implied warranty of
-*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*    GNU General Public License for more details.
-*
-*    You should have received a copy of the GNU General Public License
-*    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ * TODO:
+ * - Add code for call C code (cmain function)
+ * - Add support for Hard disk and CDROMS
+ * - Implement full suport for extended disk read mode (INT13,42)
+ */
 
-#include <boot/boot.h>
 
-.text
+.file "loader.S"
 
 .code16
+
+SECTION(text)
 
 .global _start
 _start:
-	jmp codestart
-	nop 
+	jmp real_start
 	
-/*
-* At the moment CHB only reads determined number of sectors for boot your kernel
-* TODO: 
-*		- Implement filesystems, executable formats (ELF) and relocations for execute your
-* 		  kernels.
-*		- Implement the a kind of multiboot so you can load multiple kernels 
-*		- Implement the extended mode (LBA mode) for more compatibility
-*		- Implement a way to configure the bootloader to be able to run kernels automatically
-*		- Implement compatibility with HDD and CDROM drives 
-*/	
+.org 0x8
 
-/*This kernel parameters you can edit it at will*/
+drive_number:
+	.byte 0
+kernel_loc:
+	.long 0x100000
+kernel_sector_loc:
+	.word 5 /* TODO: Get this data dinamically */
 kernel_size:
-	.byte 4
-/*
-* when the a20 are enabled you can use the high memory area for access to your kernel
-* note that you have to enable unreal mode though don't worry CHB bootloader does this 
-* for you
-*/
-kernel_offset:		
-	.word 0x10	/*offset: 0x10*/
-kernel_segment:
-	.word 0xFFFF /*segment 0xFFFF*/
+	.word 5
 
-/*The CHB Bootloader for default charges your kernel in the physical address 0x100000, 0xFFFF:0x10, first
-jump to unreal mode, load the kernel, jump to protected mode and pass the control to your kernel */
+.org 0x24
 	
-/*your kernel has to be relocated after stage2*/
-kernel_sector:
-	.quad 5
+real_start:
+	/* print welcome message */
+	MSG(welcome_message)
 
-/*stage2 begin here*/	
-codestart:
-	/*setup stack*/
-	xor %ax,%ax
-	mov %ax,%ds
-	mov %ax,%ss
-	
-	/*move stack from espected location*/
-	mov $0x8000, %sp
+	/* save the drive number */
+	movb %dl, drive_number
 
-	/*save %si, in %di*/
-	mov %si, %di
-
-	/*stage2 loading message*/
-	MSG(loading)
-	MSG(newline)
-	
-	/*prepare to jump to unreal mode*/
-	call enableA20
-	
-	/*disable interrupts*/
+	/* disable interrupts */
 	cli
-	cld
-	
-	/*save the real mode from stack!*/
-	push %ds
-	
-	/*load the GDT*/
 	lgdt gdt
-	
-	/*enable CR0 again*/
-	mov	%cr0, %eax        
-	or	$0x1, %al          
+		
+	/* set cr0 protection bit */
+	mov	%cr0, %eax
+	or $0x1, %al 
 	mov	%eax, %cr0
 	
-	/*jump to the protected mode*/
+	/* long jump to 16-bit prot mode */
 	ljmp $0x8, $pmode
-
-/*This tell to the compile use the 32 bit mode*/
-.code32
-
 pmode:
-	/*set registers in correct value!*/
-	mov $0x10, %bx
-	mov %bx, %ds
+	/* setup protected stack */
+	mov	$0x10, %bx
+	mov	%bx, %ds
 	mov	%bx, %es
 	mov	%bx, %ss
+	mov	%bx, %ds
+	
+	and $0xfe, %al
+	mov %eax, %cr0
+	
+	ljmp $0, $umode
+	
+/* 
+ * in some kernels have located in 0x100000 (1MB) for load this, enable unreal mode,
+ * read the kernel at 1MB and change to protected mode.
+ */
+umode:
+	xor %ax, %ax
+	mov %ax, %es
+	mov %ax, %ds
+	mov %ax, %ss
+	
+	/* restore interrupts */
+	sti
 
-	/*enable CR0 again*/
-	and $0xFE, %al
-	mov	%eax, %cr0 /*set the CR0*/
-	ljmp $0x0, $unreal
+	/* read kernel at fifth sector */
+	xor %dx, %dx
+	mov kernel_sector_loc, %bx
+	mov kernel_size, %cx
+	mov kernel_loc, %edi
+	call load_floppy
 	
-/*This tell to the compile use the 16 bit mode*/
-.code16
-
-/*Well, you're on unreal mode!*/
-unreal:
-	/*delete the real mode from stack!*/
-	pop %ds
+	/* Congratulations!, your kernel has loaded in protected mode!!! */
+	call sucsess_load
 	
-	/*set correct registers!*/
-	xor	%ax, %ax            
-	mov	%ax, %es            
-	mov	%ax, %ds          
-	mov	%ax, %ss
-	
-	sti /*restore interrupts*/
-	
-	MSG(kern_load)
-	MSG(newline)
-	
-	/*read disk from 'norm_read' function*/
-	mov kernel_sector, %ax /*LBA Sector*/
-	mov kernel_size, %cl /*set sectors to read*/
-	
-	/*set the kernel segment*/
-	mov kernel_segment, %bx 
-	mov %bx, %es
-	
-	/*set the kernel offset*/
-	mov kernel_offset, %bx
-	
-	/*read disk*/
-	call norm_read
-	
-	/*stop the floppy motor*/
-	xor	%al, %al
-	mov	$0x3f2, %dx        
-	out	%al, %dx
-
-setup_kernel:
-	/*print the boot message*/
-	MSG(kern_boot)
-	MSG(newline)
-
-	/*disable interrupts*/
 	cli
-
-	/*edit the GDT to jump to protected*/
-	mov	$0xcf, %al
-	mov	%al, (gdt + 14)       
-	mov	%al, (gdt + 22)
-
-	/*load the GDT*/
-	lgdt gdt
-
-	/*enable CR0 again*/
-	mov	%cr0, %eax        
-	or	$0x1, %al          
-	mov	%eax, %cr0
 	
-	/*jump to the protected mode again*/
-	ljmp $0x8, $kernel_32
+	mov $0xcf, %al
+	mov %al, (gdt + 14)
+	mov %al, (gdt + 22)
+	lgdt gdt
+	
+	/* set cr0 protection bit */
+	mov	%cr0, %eax
+	or $0x1, %al 
+	mov	%eax, %cr0
 
-/*This tell to the compile use the 32 bit mode*/
+	ljmp $0x8, $exec_kernel
+
 .code32
 
-kernel_32:
-	/*set registers in correct value!*/
-	mov $0x10, %bx
-	mov %bx, %ds
+exec_kernel:
+	mov	$0x10, %bx
+	mov	%bx, %ds
 	mov	%bx, %es
 	mov	%bx, %ss
-
+	mov	%bx, %ds
+	
+	/* execute kernel */
 	mov $0x100000, %ebx
 	call *%ebx
 	
-	jmp kill_program
+	jmp stop
 
-/*This tell to the compile use the 16 bit mode*/
 .code16
 
-/*
-* This code enable the A20 gate needed for jump to protected/unreal mode
-* At the moment the enableA20 functions only works via BIOS INT15,2401
-*/
-enableA20:
-	mov $0x2401, %ax
-	int $0x15 /*probe a20 state with INT15, 2401*/
-	jb a20_error /*if call fails print error and die*/
-	cmp $0, %ah
-	jnz a20_error
-	ret
-	
-a20_error:
-	MSG(a20)
-	MSG(newline)
-	
-	/*kill program*/
-	jmp boot_error
-
-read_error:
-	MSG(read)
-	MSG(newline)
-	
-	/*kill program*/
-	jmp boot_error
-
-/*This function tell to the BIOS continue booting.*/
-boot_error:
-	int $0x18
-	
-/*
-* infinite loop. i no use the cli and hlt instruction because in some hardware the CPU
-* remains in dead point 
-*/
-kill_program:
-	jmp kill_program
-
-/*your messages*/
-a20:		.string "Error enabling A20 gate."
-loading:    .string "Loading CHB... Please Wait..."
-kern_load:	.string "Loading Kernel at 0x100000"
-kern_boot:	.string "Booting Kernel..."
-read:		.string "Error reading disk."
-newline: 	.string "\r\n"	
-
-/*convert LBA sector sector to CHS*/
-lba_to_chs:
-	push   %ax
-	push   %dx
-	xor    %dx,%dx
-	divw   8(%si)
-	inc    %dx
-	mov    %dx,%cx
-	xor    %dx,%dx
-	divw   (%si)
-	mov    %dl,%dh
-	mov    %al,%ch
-	shl    $0x6,%ah
-	or     %ah,%cl
-	pop    %ax
-	mov    %al,%dl
-	pop    %ax
-	ret
-
-/*read disk with CHS mode via INT13,2*/
-norm_read:
+load_retry:
+	.byte 3
+load_floppy:
+	push %bx # number of sector
+	push %cx # sectors to read
+load_floppy_loop:
+	mov	$0x13, %al # read only 18 sectors because floppy geometry
+				   # TODO: get floppy geometry.
+	sub	%bl, %al
+	xor	%ah, %ah
+	cmp	%cx, %ax
+	jl 1f
+	mov	%cx, %ax
+1:
+	mov %bx, %cx
+	mov $BOOT_DISK_BUFFER, %bx # buffer address
+	mov $0x2, %ah # function 2
 	push %ax
-	push %bx
-	push %cx
-	push %dx
-	push %di
-	push %cx
-	call lba_to_chs
+	int $0x13 # read sectors via INT13,2
 	pop %ax
-	mov $0x2,%ah
-	mov $0x3,%di
-	pusha
-	stc
-	int $0x13
-	jc read_error
-	popa
-	pop %di
-	pop %dx
+	jnc 2f # sucsess call
+	decb load_retry # substract 1 to read retry number
+	jz read_error # fail call
+	xor %ah, %ah # function 0
+	int $0x13 # reset floppy controller via INT13,0
+	jmp load_floppy_loop
+2:
+	movb $3, load_retry # reload retry number
+	mov $BOOT_DISK_BUFFER, %esi # set the buffer
+	xor %ecx, %ecx
+	mov %al, %cl
+	shl $0x7, %cx
+	rep addr32 movsd # mov %ds:%esi to %es:%edi
 	pop %cx
 	pop %bx
-	pop %ax
+	xor $0x1, %dh # read next head
+	jnz 3f
+	inc %bh # read next cylinder
+3:
+	mov $0x1, %bl # set sector in 1
+	xor %ah, %ah
+	sub %ax, %cx
+	jg load_floppy # read the left sectors
 	ret
 
-/*print string via INT10,0E*/
-bios_print:
-	lodsb
-	or	%al, %al
-	jz	1f
-	mov	$0x0E, %ah
-	mov	$0x00, %bh
-	int	$0x10
-	jmp	bios_print
+sucsess_load:
+	MSG(sucsess_load_msg);
+	MSG(newline_msg)
+	ret
+read_error:
+	MSG(read_error_msg)
+boot_error:
+	int $0x18
+stop:
+	jmp stop
+
+read_error_msg: .string "Error reading disk. "
+sucsess_load_msg: .string " YES!"
+welcome_message: .string "Loading Kernel..."
+newline_msg: .string "\r\n"
+
+_print:
+	pusha
 1:
-	ret	
+	lodsb
+	or %al, %al
+	jz 2f
+	mov	$0x0e, %ah
+	mov	$0x0, %bx
+	int	$0x10
+	jmp	1b
+2:
+	popa
+	ret
 
-/*
-* This is a GDT (global descriptor table), needed for mangle memory 
-* and jump to protected mode
-*/
-	
-.p2align	2	
-
+.p2align 2
 gdt:
-	.word 0xffff       
-	.word gdt         
+	.word 0xffff
+	.word gdt
 	.long 0
-	/*descriptor 1 16-bit code*/
-	.long 0x0000ffff  
-	.long 0x008f9a00  
-	/*descriptor 2 16-bit data*/
-	.long 0x0000ffff  
-	.long 0x008f9200  
-
-/*four sectors*/
-.org 512 * 4
-
+	.long 0x0000ffff
+	.long 0x008f9a00
+	.long 0x0000ffff
+	.long 0x008f9200
+	
