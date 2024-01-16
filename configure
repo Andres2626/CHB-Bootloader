@@ -1,0 +1,92 @@
+#!/bin/bash
+
+export prog_name=$0
+
+_help() {
+	echo "$prog_name -- config CHB script"
+	echo "usage: $prog_name (first) ..."
+	echo "first argument: target prefix e.j. x86_64-elf"
+	exit 0
+}
+
+configure_warning() {
+	echo "configure warning: $1"
+}
+
+configure_info() {
+	echo "configure info: $1"
+}
+
+if [ -z $1 ]; then
+	configure_warning "target is not specified, using default toolchain"
+elif [ $1 == "help" ]; then
+	_help;
+fi
+
+# in x86_64 machines force 32 bit mode, CHB doesn't support long mode
+export target=$1
+target_cpu=
+TARGET_CFLAGS=
+TARGET_LDFLAGS=
+case $target in
+  i386*)
+    export target_cpu=i386
+	export TARGET_CFLAGS='-O2'
+  ;;
+  i486*)
+    export target_cpu=i386
+	export TARGET_CFLAGS='-O2'
+  ;;
+  i586*)
+    export target_cpu=i386
+	export TARGET_CFLAGS='-O2'
+  ;;
+  i686*)
+	export target_cpu=i386
+	export TARGET_CFLAGS='-O2'
+  ;;
+  x86_64*)
+	export target_cpu=x86_64
+	export TARGET_CFLAGS='-m32 -O2'
+	export TARGET_LDFLAGS='-melf_i386'
+  ;;
+  *)
+	export target_cpu=
+	export TARGET_CFLAGS='-m32 -O2'
+	export TARGET_LDFLAGS='-melf_i386'
+  ;;
+esac
+
+configure_info "target cpu= $target_cpu; CFLAGS= $target_cflags; LDFLAGS= $target_ldflags"
+
+# test if target is empty 
+if [ -z $target ]; then
+	export TARGET_CC=gcc
+	export TARGET_LD=ld
+	export TARGET_AS=gcc
+	export TARGET_OBJCOPY=objcopy
+	export TARGET_OBJDUMP=objdump
+	export TARGET_AR=ar 
+	export TARGET_NM=nm
+else
+	export TARGET_CC=$target-gcc
+	export TARGET_LD=$target-ld
+	export TARGET_AS=$target-gcc
+	export TARGET_OBJCOPY=$target-objcopy
+	export TARGET_OBJDUMP=$target-objdump
+	export TARGET_AR=$target-ar 
+	export TARGET_NM=$target-nm 
+fi
+
+export MAKE=make
+
+configure_info "exported target: $target"
+configure_info "exported gcc: $TARGET_CC"
+configure_info "exported ld: $TARGET_LD"
+configure_info "exported as: $TARGET_AS"
+configure_info "exported objcopy: $TARGET_OBJCOPY"
+configure_info "exported objdump: $TARGET_OBJDUMP"
+configure_info "exported ar: $TARGET_AR"
+configure_info "exported mn: $TARGET_NM"
+configure_info "exported MAKE command: $MAKE"
+configure_info "configure finished!"
