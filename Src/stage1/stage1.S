@@ -1,0 +1,218 @@
+
+#define ASM_FILE
+#define STAGE1_FILE
+
+#include <sizes.h>
+#include <CHB/macros.h>
+#include <CHB/stage1/stage1.h>
+
+.file "bootsec.S"
+
+.code16
+
+SECTION(text)
+
+.globl _start
+_start:
+	/* Some filesystems use an special code for work, this code ensure the compatibility. */
+	jmp	afther_bpb
+	nop
+
+.org BOOT_BPB_START	
+
+	/* This is an space commonly used in some filesystems (FAT, NTFS or HPFS) */
+
+.org BOOT_BPB_END
+
+/* stage1 paramaters */
+drive_number:
+	.byte 0 /* the bootsector saves the drive number provided by BIOS */
+load_loc:
+	.word 0x8000
+loader_sector_loc:
+	.word 2
+load_size:
+	.word (LOADER_IMG_SIZE + 511) >> 9
+
+afther_bpb:
+	/* 
+	 * Some BIOS doesn't jump to the bootsector correcly.
+	 * load bootsector in 7c00:0 instead of 0:7c00 
+	*/
+	ljmp $0, $real_start
+	
+real_start:
+	/* disable interrupts */
+	cli
+
+	/* save drive number */
+	movb %dl, drive_number
+
+	/* setup stack */
+	xor	%ax, %ax
+	mov	%ax, %ss
+	mov %ax, %es
+	mov %ax, %ss
+	
+	/* set stack localization in memory */
+	mov	$BOOT_LOC, %sp
+	
+	/* restore interrupts */
+	sti
+	
+	MSG(welcome_msg)
+	
+	/* enable a20 with the BIOS */
+	call enable_a20
+	
+	MSG(loading_msg)
+	
+	/* load the loader program */
+	xor	%dx, %dx # set the number of head in 0
+	movw loader_sector_loc, %bx # read the second sector
+	movw load_size, %cx # read one sector
+	mov load_loc, %edi # set our buffer
+	call load_floppy
+	
+	/* Sucsess! the loader is correcly loaded!!! */
+	call sucsess_load
+	
+	/* setup loader program environment */
+	cli
+	
+	/* setup stack */
+	xor	%ax, %ax
+	mov	%ax, %ss
+	mov %ax, %es
+	mov %ax, %ss
+	
+	/* set stack localization in memory */
+	mov	$0x8000, %sp
+	
+	/* restore interrupts */
+	sti
+	
+	ljmp $0, $0x8000
+	
+	jmp stop
+	
+_print:
+	pusha
+1:
+	lodsb
+	or %al, %al
+	jz 2f
+	mov	$0x0e, %ah
+	mov	$0x0, %bx
+	int	$0x10
+	jmp	1b
+2:
+	popa
+	ret
+
+load_retry:
+	.byte 3
+load_floppy:
+	push %bx # number of sector
+	push %cx # sectors to read
+load_floppy_loop:
+	mov	$0x13, %al # read only 18 sectors because floppy geometry
+				   # TODO: get floppy geometry.
+	sub	%bl, %al
+	xor	%ah, %ah
+	cmp	%cx, %ax
+	jl 1f
+	mov	%cx, %ax
+1:
+	mov %bx, %cx
+	mov $BOOT_DISK_BUFFER, %bx # buffer address
+	mov $0x2, %ah # function 2
+	push %ax
+	int $0x13 # read sectors via INT13,2
+	pop %ax
+	jnc 2f # sucsess call
+	decb load_retry # substract 1 to read retry number
+	jz read_error # fail call
+	xor %ah, %ah # function 0
+	int $0x13 # reset floppy controller via INT13,0
+	jmp load_floppy_loop
+2:
+	movb $3, load_retry # reload retry number
+	mov $BOOT_DISK_BUFFER, %esi # set the buffer
+	xor %ecx, %ecx
+	mov %al, %cl
+	shl $0x7, %cx
+	rep movsd # mov %ds:%esi to %es:%edi
+	pop %cx
+	pop %bx
+	xor $0x1, %dh # read next head
+	jnz 3f
+	inc %bh # read next cylinder
+3:
+	mov $0x1, %bl # set sector in 1
+	xor %ah, %ah
+	sub %ax, %cx
+	jg load_floppy # read left sectors
+	ret
+
+/* ensure a20 is enabled */
+enable_a20:
+	pusha
+	
+	/* is A20 supported? */
+	mov $0x2403, %ax 
+	int $0x15
+	jb a20_error
+	cmp $0, %ah
+	jnz a20_error
+	
+	/* get A20 status */
+	mov $0x2402, %ax 
+	int $0x15
+	jb a20_error
+	cmp $0, %ah
+	jnz a20_error
+	
+	/* is A20 enabled? */
+	cmp $1, %al
+	jz 1f
+	
+	/* enable A20 from BIOS */
+	mov $0x2401, %ax 
+	int $0x15
+	jb a20_error
+	cmp $0, %ah
+	jnz a20_error
+1:
+	popa
+	ret
+sucsess_load:
+	MSG(sucsess_load_msg);
+	MSG(newline_msg)
+	ret
+a20_error:
+	MSG(a20_error_msg)
+	jmp general_error
+read_error:
+	MSG(read_error_msg)
+	jmp general_error
+general_error:
+	MSG(general_error_msg)
+	MSG(newline_msg)
+boot_error:
+	int $0x18
+stop:
+	jmp stop
+
+welcome_msg: .string "CHB "
+loading_msg: .string "Loading "
+read_error_msg: .string "READ "
+a20_error_msg: .string "A20"
+sucsess_load_msg: .string "YES!"
+general_error_msg: .string "Error."
+newline_msg: .string "\r\n"
+
+/* for make an bootable image the code must have following code. */
+end_of_bootsec:
+	.org BOOT_PART_SIZE
+	.word BOOT_MAGIC /* 0xaa55 */
