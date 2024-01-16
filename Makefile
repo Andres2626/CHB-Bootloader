@@ -11,7 +11,7 @@ export DEPS = include
 all: $(SUBDIRS)
 	@echo "Building All..."
 	for dir in $(SUBDIRS); do \
-		if [[ dir == docs/kernel-test ]]; then \
+		if [[ $$dir == docs/kernel-test ]]; then \
 			cat $(OUT)/stage1.img $(OUT)/loader.img > $(OUT)/CHB.img; \
 		fi; \
         $(MAKKEC) $$dir all_$$dir; \
