@@ -90,9 +90,9 @@ sector of your image.
 	CHB doesn't support long mode!
 
 *	NEVER run the makefile directly, because the makefile needs a configuration 
-	program beforehand, all of this is provided by the ./configure command, also note
-	Also note that the ./configure command should never be executed directly either 
-	because it will not work to build/clear CHB, this script is only used as a configuration 
+	program beforehand, all of this is provided by the ./configure command. Also note 
+	that the ./configure command should never be executed directly either because it 
+	will not work to build/clear CHB, this script is only used as a configuration 
 	for the makefile.
 
 *	Note that the configure script is not the same as the script provided by 
