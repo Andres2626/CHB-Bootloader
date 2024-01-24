@@ -25,3 +25,11 @@ clean: $(SUBDIRS)
     done
 	
 	rm -rf $(OUT)/*
+
+pack_release:
+	rm -rf release.zip
+	cp $(OUT)/stage1.IMG stage1.IMG
+	cp $(OUT)/loader.IMG loader.IMG
+	cp $(OUT)/CHB.IMG CHB.IMG
+	zip release.zip stage1.IMG loader.IMG CHB.IMG
+	rm -rf stage1.IMG loader.IMG CHB.IMG
