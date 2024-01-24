@@ -31,5 +31,5 @@ pack_release:
 	cp $(OUT)/stage1.IMG stage1.IMG
 	cp $(OUT)/loader.IMG loader.IMG
 	cp $(OUT)/CHB.IMG CHB.IMG
-	zip release.zip stage1.IMG loader.IMG CHB.IMG
+	zip release.zip stage1.IMG loader.IMG CHB.IMG README
 	rm -rf stage1.IMG loader.IMG CHB.IMG
