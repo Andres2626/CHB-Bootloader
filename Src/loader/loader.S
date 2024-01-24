@@ -27,8 +27,9 @@ _start:
 
 drive_number:
 	.byte 0
+kernel_params:
 kernel_loc:
-	.long 0x100000
+	.long 0x100000 /* localization of kernel in memory */
 kernel_sector_loc:
 	.word 5 /* TODO: Get this data dinamically */
 kernel_size:
@@ -121,6 +122,22 @@ exec_kernel:
 
 .code16
 
+/* print string with INT10,0x0E */
+_print:
+	pusha
+1:
+	lodsb
+	or %al, %al
+	jz 2f
+	mov	$0x0e, %ah
+	mov	$0x0, %bx
+	int	$0x10
+	jmp	1b
+2:
+	popa
+	ret
+
+/* simple floppy controller */
 load_retry:
 	.byte 3
 load_floppy:
@@ -182,21 +199,9 @@ sucsess_load_msg: .string " YES!"
 welcome_message: .string "Loading Kernel..."
 newline_msg: .string "\r\n"
 
-_print:
-	pusha
-1:
-	lodsb
-	or %al, %al
-	jz 2f
-	mov	$0x0e, %ah
-	mov	$0x0, %bx
-	int	$0x10
-	jmp	1b
-2:
-	popa
-	ret
 
-.p2align 2
+
+/* This is a global descriptor table (GDT) used for change to unreal/protected mode*/
 gdt:
 	.word 0xffff
 	.word gdt
