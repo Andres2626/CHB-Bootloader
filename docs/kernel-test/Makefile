@@ -18,7 +18,7 @@ all_docs/kernel-test: $(CHBIMG) kernel.IMG final.IMG
 	$(TARGET_CC) -c $< -o $@ $(CFLAGS)
 
 kernel.IMG: entry.o kernel.o
-	$(TARGET_LD) -Ttext=0x100000 $^ -o kernel.ld -melf_i386
+	$(TARGET_LD) -Ttext=0x100000 $^ -o kernel.elf -melf_i386
 	$(TARGET_OBJCOPY) -O binary kernel.ld $@
 
 final.IMG:
