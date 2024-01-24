@@ -1,5 +1,5 @@
 				
-				CHB Notes and manual
+					CHB Notes and manual
 
 Version: 0.01 Pre-Alpha
 
@@ -84,7 +84,7 @@ sector of your image.
 	dd if=<your kernel raw image> of=<your image name> seek=5 conv=notrunc
 
 
-						4. CHB NOTES
+							4. CHB NOTES
 	
 * 	Your kernel MUST have compiled for 32-bit platform (iX86 or using -m32 compiler flag)
 	CHB doesn't support long mode!
@@ -97,4 +97,19 @@ sector of your image.
 
 *	Note that the configure script is not the same as the script provided by 
 	autoconf command.
-			
+
+	
+						5. CHB PLAN (TODO list)
+							
+* Add support for filesystems (FAT, ext2)
+* Load PE and ELF kernel files in memory
+* Add C part in loader
+* Fully support for Virtual File System (VFS)
+* Load initrd file
+* Support for multiboot specification
+* Support for UEFI
+* Support for non-x86 architectures (mips, arm)
+* Support for x86 long mode
+* Add command line
+* Add support for Hard disk and CDROMS
+* Implement full suport for extended disk read mode (INT13,42)

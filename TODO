@@ -1,7 +1,14 @@
 
 TODO =============================
-	- Add code for call C code (cmain function)
-	- Add support for Hard disk and CDROMS
-	- Implement full suport for extended disk read mode (INT13,42)
-	- Get kernel parameters dinamically.
-	- Add support for filesystems and executable formats like (elf, pe, ...)
+	* Add support for filesystems (FAT, ext2)
+	* Load PE and ELF kernel files in memory
+	* Add C part in loader
+	* Fully support for Virtual File System (VFS)
+	* Load initrd file
+	* Support for multiboot specification
+	* Support for UEFI
+	* Support for non-x86 architectures (mips, arm)
+	* Support for x86 long mode
+	* Add command line
+	* Add support for Hard disk and CDROMS
+	* Implement full suport for extended disk read mode (INT13,42)
