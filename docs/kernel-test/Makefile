@@ -19,7 +19,7 @@ all_docs/kernel-test: $(CHBIMG) kernel.IMG final.IMG
 
 kernel.IMG: entry.o kernel.o
 	$(TARGET_LD) -Ttext=0x100000 $^ -o kernel.elf -melf_i386
-	$(TARGET_OBJCOPY) -O binary kernel.ld $@
+	$(TARGET_OBJCOPY) -O binary kernel.elf $@
 
 final.IMG:
 	dd count=10 if=/dev/zero of=$@ bs=512
