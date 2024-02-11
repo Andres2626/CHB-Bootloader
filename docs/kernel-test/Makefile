@@ -29,3 +29,4 @@ final.IMG:
 clean_docs/kernel-test:
 	rm -rf ./*.IMG
 	rm -rf ./*.o
+	rm -rf ./*.elf
