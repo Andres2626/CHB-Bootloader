@@ -2,6 +2,8 @@
 #define ASM_FILE
 #define LOADER_FILE
 
+#include "CPU.S" /* enter_protmode */
+
 #include <CHB/stage1/stage1.h>
 #include <CHB/macros.h>
 
@@ -25,9 +27,9 @@ _start:
 	
 .org 0x8
 
+params:
 drive_number:
 	.byte 0
-kernel_params:
 kernel_loc:
 	.long 0x100000 /* localization of kernel in memory */
 kernel_sector_loc:
@@ -35,89 +37,40 @@ kernel_sector_loc:
 kernel_size:
 	.word 5
 
-.org 0x24
-	
+.org 0x11
+
 real_start:
-	/* print welcome message */
-	MSG(welcome_message)
+	cli /* disable interrupts */
 
 	/* save the drive number */
 	movb %dl, drive_number
 
-	/* disable interrupts */
-	cli
-	lgdt gdt
-		
-	/* set cr0 protection bit */
-	mov	%cr0, %eax
-	or $0x1, %al 
-	mov	%eax, %cr0
+	/* load our GDT */
+	call load_gdt
 	
-	/* long jump to 16-bit prot mode */
-	ljmp $0x8, $pmode
-pmode:
-	/* setup protected stack */
-	mov	$0x10, %bx
-	mov	%bx, %ds
-	mov	%bx, %es
-	mov	%bx, %ss
-	mov	%bx, %ds
-	
-	and $0xfe, %al
-	mov %eax, %cr0
-	
-	ljmp $0, $umode
-	
-/* 
- * in some kernels have located in 0x100000 (1MB) for load this, enable unreal mode,
- * read the kernel at 1MB and change to protected mode.
- */
-umode:
-	xor %ax, %ax
-	mov %ax, %es
-	mov %ax, %ds
-	mov %ax, %ss
-	
-	/* restore interrupts */
-	sti
+	/* enter to protected mode */
+	enter_protmode
+	.code32
 
-	/* read kernel at fifth sector */
-	xor %dx, %dx
-	mov kernel_sector_loc, %bx
-	mov kernel_size, %cx
-	mov kernel_loc, %edi
-	call load_floppy
+	/* prepare C enviroment -- clean bss section */
+	mov $__bss_start, %edi
+	mov $_end, %ecx
+	sub %edi, %ecx
+	xor %al, %al
+	cld
+	rep stosb
 	
-	/* Congratulations!, your kernel has loaded in protected mode!!! */
-	call sucsess_load
+	/* save drive number */
+	xor %edx, %edx
+	mov (params), %edx
+	push %edx
 	
-	cli
+	/* save kernel parameters */
+	xor %edx, %edx
+	mov $0x10 - params, %edx
+	push %edx
 	
-	mov $0xcf, %al
-	mov %al, (gdt + 14)
-	mov %al, (gdt + 22)
-	lgdt gdt
-	
-	/* set cr0 protection bit */
-	mov	%cr0, %eax
-	or $0x1, %al 
-	mov	%eax, %cr0
-
-	ljmp $0x8, $exec_kernel
-
-.code32
-
-exec_kernel:
-	mov	$0x10, %bx
-	mov	%bx, %ds
-	mov	%bx, %es
-	mov	%bx, %ss
-	mov	%bx, %ds
-	
-	/* execute kernel */
-	mov $0x100000, %ebx
-	call *%ebx
-	
+	call entry
 	jmp stop
 
 .code16
@@ -130,84 +83,60 @@ _print:
 	or %al, %al
 	jz 2f
 	mov	$0x0e, %ah
-	mov	$0x0, %bx
+	xor	%bx, %bx
 	int	$0x10
 	jmp	1b
 2:
 	popa
 	ret
-
-/* simple floppy controller */
-load_retry:
-	.byte 3
-load_floppy:
-	push %bx # number of sector
-	push %cx # sectors to read
-load_floppy_loop:
-	mov	$0x13, %al # read only 18 sectors because floppy geometry
-				   # TODO: get floppy geometry.
-	sub	%bl, %al
-	xor	%ah, %ah
-	cmp	%cx, %ax
-	jl 1f
-	mov	%cx, %ax
-1:
-	mov %bx, %cx
-	mov $BOOT_DISK_BUFFER, %bx # buffer address
-	mov $0x2, %ah # function 2
-	push %ax
-	int $0x13 # read sectors via INT13,2
-	pop %ax
-	jnc 2f # sucsess call
-	decb load_retry # substract 1 to read retry number
-	jz read_error # fail call
-	xor %ah, %ah # function 0
-	int $0x13 # reset floppy controller via INT13,0
-	jmp load_floppy_loop
-2:
-	movb $3, load_retry # reload retry number
-	mov $BOOT_DISK_BUFFER, %esi # set the buffer
-	xor %ecx, %ecx
-	mov %al, %cl
-	shl $0x7, %cx
-	rep addr32 movsd # mov %ds:%esi to %es:%edi
-	pop %cx
-	pop %bx
-	xor $0x1, %dh # read next head
-	jnz 3f
-	inc %bh # read next cylinder
-3:
-	mov $0x1, %bl # set sector in 1
-	xor %ah, %ah
-	sub %ax, %cx
-	jg load_floppy # read the left sectors
-	ret
-
-sucsess_load:
-	MSG(sucsess_load_msg);
-	MSG(newline_msg)
-	ret
-read_error:
-	MSG(read_error_msg)
+	
 boot_error:
 	int $0x18
 stop:
 	jmp stop
 
-read_error_msg: .string "Error reading disk. "
-sucsess_load_msg: .string " YES!"
-welcome_message: .string "Loading Kernel..."
-newline_msg: .string "\r\n"
-
-
-
-/* This is a global descriptor table (GDT) used for change to unreal/protected mode*/
-gdt:
-	.word 0xffff
-	.word gdt
-	.long 0
-	.long 0x0000ffff
-	.long 0x008f9a00
-	.long 0x0000ffff
-	.long 0x008f9200
+FUNCTION(load_gdt)
+	lgdt gdt
+	ret
 	
+/* This is a global descriptor table (GDT) used for change to unreal/protected mode*/
+.p2align 2 /* force alignement */
+_gdt:
+	/* null descriptor */
+	.word 0, 0, 0, 0
+	
+	/* code32 desc */
+	.word 0xFFFF
+	.word 0
+	.byte 0
+	.byte 0x9a
+	.byte 0xcf
+	.byte 0
+
+	/* data32 desc */
+	.word 0xFFFF
+	.word 0
+	.byte 0
+	.byte 0x92
+	.byte 0xcf
+	.byte 0	
+	
+	/* code16 desc */
+	.word 0xFFFF
+	.word 0
+	.byte 0
+	.byte 0x9a
+	.byte 0x0c
+	.byte 0
+	
+	/* data16 desc */
+	.word 0xFFFF
+	.word 0
+	.byte 0
+	.byte 0x92
+	.byte 0x0c
+	.byte 0
+	
+GLOBAL(gdt)
+	.word gdt - _gdt
+	.long _gdt
