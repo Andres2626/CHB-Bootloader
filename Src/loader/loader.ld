@@ -3,12 +3,12 @@ OUTPUT_ARCH(i386)
 
 ENTRY(entry)
 
-/* set the location of bootloader */
+/* set the location of loader */
 loc = 0x8000;
 
 SECTIONS
 {
-	/* set localization of our stage1 in memory */
+	/* set localization of our loader in memory */
 	. = loc;
 	
 	.text : { __text_start = .;       *(.text)    }
