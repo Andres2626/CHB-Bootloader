@@ -1,5 +1,5 @@
 
-SUBDIRS := loader stage1
+SUBDIRS := lib/libc loader stage1
 
 all_src: $(SUBDIRS)
 	@echo "Building Src..."

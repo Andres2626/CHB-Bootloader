@@ -3,15 +3,15 @@ TOPDIR = ../..
 
 .PHONY: all_src_loader clean_src_loader
 
-LDFLAGS += $(TARGET_LDFLAGS) -T"loader.LD"
-CFLAGS += $(TARGET_CFLAGS) -ffreestanding -fno-exceptions -mno-red-zone -nodefaultlibs -nostdlib -I$(TOPDIR) -I./ -I$(TOPDIR)/include
-
 OUT			:= $(TOPDIR)/$(OUT)
 OUTDIRS  	:= $(OUT)/loader
 PROG 		:= loader.IMG
 PROGRAMS    := $(addprefix $(OUT)/, $(PROG))
 
-LOD_SRCS := loader.S video.S port.S keyboard.S RTC.S
+LDFLAGS += $(TARGET_LDFLAGS) -T"loader.LD" -L"$(OUT)" -lchbc
+CFLAGS += $(TARGET_CFLAGS) -ffreestanding -fno-exceptions -mno-red-zone -nodefaultlibs -nostdlib -I$(TOPDIR) -I./ -I$(TOPDIR)/include
+
+LOD_SRCS := loader.S video.S port.S keyboard.S
 LOD_SRCSC:= entry.c command/help.c
 LOD_OBJS := $(patsubst %.S, $(OUTDIRS)/%.o, $(LOD_SRCS)) \
 			$(patsubst %.c, $(OUTDIRS)/%.o, $(LOD_SRCSC))
