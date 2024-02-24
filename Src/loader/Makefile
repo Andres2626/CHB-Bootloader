@@ -11,8 +11,8 @@ OUTDIRS  	:= $(OUT)/loader
 PROG 		:= loader.IMG
 PROGRAMS    := $(addprefix $(OUT)/, $(PROG))
 
-LOD_SRCS := loader.S video.S port.S
-LOD_SRCSC:= entry.c
+LOD_SRCS := loader.S video.S port.S keyboard.S RTC.S
+LOD_SRCSC:= entry.c command/help.c
 LOD_OBJS := $(patsubst %.S, $(OUTDIRS)/%.o, $(LOD_SRCS)) \
 			$(patsubst %.c, $(OUTDIRS)/%.o, $(LOD_SRCSC))
 
