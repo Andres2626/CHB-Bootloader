@@ -1,0 +1,50 @@
+#!/bin/bash
+
+# install12 -- Install stage2 into FAT12 image
+#
+# Copyright (C) 2021 - 2025 andres26
+#
+# This file is distributed under the terms of the MIT license.
+#
+
+# arg $1 -- prefix dir
+# arg $2 -- output file
+
+# for install CHB stage 2 on the FAT12 image you must have previously formatted the 
+# image with mkfs.fat and reserved at least 35 sectors (-R option). In addition, 
+# the image must have a size according to what is reported by INT13,8 (see mkfloppy to know the supported formats).
+
+PREFIX=$1
+OUTPUT=$2
+
+if [[ -z $PREFIX ]]; then
+	echo "CHB prefix is not specified. try with 1 argument."
+	exit 1;
+fi
+
+if [[ -z $OUTPUT ]]; then
+	echo "Output image is not specified. try with 2 argument."
+	exit 1;
+fi
+
+SIZE=$(stat -c%s $OUTPUT)
+SEC=$(((SIZE + 511) >> 9))
+
+# check if the image have correct number of sectors
+case $SEC in
+720)
+;;
+1440)
+;;
+2880)
+;;
+5760)
+;;
+*)
+	echo Unsupported floppy size. $SEC.
+	exit 0;
+;;
+esac
+
+dd if=$PREFIX/loader.IMG of=$OUTPUT bs=512 count=1024 seek=1 conv=notrunc
+echo "Copied stage2 in image."

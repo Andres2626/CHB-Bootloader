@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# mkfloppy -- create empty floppy image
+#
+# Copyright (C) 2021 - 2025 andres26
+#
+# This file is distributed under the terms of the MIT license.
+#
+# arg $1 -- total sectors of floppy (as reported by INT13,8)
+# arg $2 -- output file
+# if $0 = 0 view supported floppy formats
+
+supported_floppy_formats() {
+	echo "Supported floppy formats (reported by INT13,8)"
+	echo "* 360K 720 sectors"
+	echo "* 720K 1440 sectors"
+	echo "* 1.44M 2880 sectors"
+	echo "* 2.88M 5760 sectoors"
+	echo "Diskette formats are in accordance with IBM/PC compatibility"
+}
+
+number_of_sectors=$1
+sector_size=512;
+output=$2
+
+case $number_of_sectors in
+720)
+	echo "formatting floppy with 720 sectors"
+;;
+1440)
+	echo "formatting floppy with 1440 sectors"
+;;
+2880)
+	echo "formatting floppy with 2880 sectors"
+;;
+5760)
+	echo "formatting floppy with 5760 sectors"
+;;
+0 | *)
+	echo Unsupported floppy format $number_of_sectors
+	supported_floppy_formats
+	exit 0;
+;;
+esac
+
+if [[ -z "$output" ]]; then
+   echo "output file is not specified. try with second argument."
+   exit 0
+fi
+
+dd if=/dev/zero of=$output bs=$sector_size count=$number_of_sectors
+echo "Created floppy!"
