@@ -1,6 +1,5 @@
 
-SUBDIRS += src docs/kernel-test
-
+SUBDIRS += lib/libc loader stage1 util
 export MAKKEC = $(MAKE) -C 
 export OUT = build
 export SRC = src 
@@ -8,16 +7,47 @@ export DEPS = include
 
 .PHONY: all clean
 
-all: $(SUBDIRS)
+all: $(OUT)/fat mk $(OUT)/final.img fatfs misc test
+
+$(OUT)/final.img: $(OUT)/stage1.img $(OUT)/loader.img
+	@echo IMG $@
+	@cat $^ > $@
+
+misc: $(OUT)/mkfloppy
+fatfs: $(OUT)/fat/install12
+
+test: fat12_test.img
+
+## USED FOR TEST FAT12 FILESYSTEM
+## FOR BUILD THIS ADD test AT THE END OF all 
+fat12_test.img: $(OUT)/stage1.img $(OUT)/loader.img
+	@echo TEST $@
+	@$(OUT)/mkfloppy 2880 $@
+	@/sbin/mkfs.fat -F 12 -n "NBOS" $@ -R 35
+	@$(OUT)/fat/mkbs12 --prefix=$(OUT)/ -i $@
+	@$(OUT)/fat/install12 $(OUT)/ $@ 
+	#@mcopy -i $@ hello.txt "::hello.txt" UNUSED
+
+
+# copy mkfloppy script to build directory
+$(OUT)/mkfloppy: util/mkfloppy
+	@echo UTIL $@
+	@cp $^ $@
+	
+# copy install12 to build/fat directory
+$(OUT)/fat/install12: util/fat/install12
+	@echo UTIL $@
+	@cp $^ $@
+
+$(OUT)/fat:
+	mkdir -p $@
+
+mk: $(SUBDIRS)
 	@echo "Building All..."
 	for dir in $(SUBDIRS); do \
-		if [[ $$dir == docs/kernel-test ]]; then \
-			cat $(OUT)/stage1.img $(OUT)/loader.img > $(OUT)/CHB.img; \
-		fi; \
         $(MAKKEC) $$dir all_$$dir; \
     done
 	
-
 clean: $(SUBDIRS)
 	@echo "Clearing All..."
 	for dir in $(SUBDIRS); do \
@@ -25,11 +55,4 @@ clean: $(SUBDIRS)
     done
 	
 	rm -rf $(OUT)/*
-
-pack_release:
-	rm -rf release.zip
-	cp $(OUT)/stage1.IMG stage1.IMG
-	cp $(OUT)/loader.IMG loader.IMG
-	cp $(OUT)/CHB.IMG CHB.IMG
-	zip release.zip stage1.IMG loader.IMG CHB.IMG README
-	rm -rf stage1.IMG loader.IMG CHB.IMG
+	rmdir $(OUT)

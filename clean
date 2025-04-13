@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# clean -- clean CHB build
+#
+# Copyright (C) 2021 - 2025 andres26
+#
+# This file is distributed under the terms of the MIT license.
+#
+
 target=$1;
 prog_name=$0
 
