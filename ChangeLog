@@ -1,0 +1,59 @@
+
+03-09-23 andres26
+* created floppy_debug script
+* created floppy_run script
+
+04-09-23 andres26
+* created first stage1
+
+16-01-2024 andres26
+* created size-test script
+* simple build/clean system
+* created compile, clean, configure, .gitignore, README and TODO files
+* created docs/kernel-test directory
+* simple kernel (kernel-test)
+* created first stage2 program
+
+28-02-24 andres26
+* deleted kernel-test
+* deleted floppy_debug script
+* deleted floppy_run script
+
+19-03-25 andres26
+* reorganization of src/ files
+* src/ no longer exists
+* rework of makefiles
+
+20-03-25 andres26 
+* added C part of loader (stage2)
+
+21-03-25 andres26
+* added simple libc functions
+  - printf
+  - sprintf
+  - vsprintf, vprintf
+  - putchar, puts
+  - number converter functions (itoa, atoi)
+  
+22-03-25 andres26
+* added simple libc functions
+  - memory functions (memcmp, memcpy, memset, strchr, strerror, strlen, strncmp, strpbrk, strspn, strstr, strtok)
+
+23-03-25 andres26
+* added simple video controller (mm 0xB8000 for 80x25 video modes)
+* added simple disk controller
+  - Support for INT13 functions 0,2,8 (floppy systems)
+  - device struct
+  
+24-03-25 andres26
+* Support for FAT12 filesystem
+
+25-03-25 andres26
+* added mkfloppy script
+* added fat/install12 script
+* added fat/fatinfo program
+* added fat/mkbs12 program
+
+26-03-2025 andres26
+* created changelog file
+* README no longer exists (reworking!)
