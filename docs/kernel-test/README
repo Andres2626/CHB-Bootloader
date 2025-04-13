@@ -1,8 +1,0 @@
-
-This directory has documents corresponding to the example kernel used to debug and test the CHB kernel boot system
-
-This directory contains:
-
--> Entry.S: The assembler part of the kernel
--> kernel.C The C part of the kernel
--> Makefile used for build this
