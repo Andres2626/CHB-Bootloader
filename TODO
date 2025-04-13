@@ -13,5 +13,4 @@ TODO =============================
 - Rework CHB error system
 - Rework floppy controller in stage1
 - Report disk geometry in stage1 (INT13,8)
-- Rework build system
 - Create documentation

@@ -57,3 +57,6 @@
 26-03-2025 andres26
 * created changelog file
 * README no longer exists (reworking!)
+
+13-04-2025
+* Reworked build system
