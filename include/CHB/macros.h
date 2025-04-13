@@ -1,34 +1,33 @@
 
+/*
+ * macros.h -- C/ASM macros
+ *
+ * Copyright (C) 2021 - 2025 andres26
+ *
+ * This file is distributed under the terms of the MIT license.
+ */
+
 #ifndef _ASM_MACROS_H_
 #define _ASM_MACROS_H_ 1
 
-#if defined (STAGE1_FILE) || defined (LOADER_FILE)
-	/* 
-	 * BIOS message print
-	 * NEVER use this macro on protected mode!
-	 */
-	#define MSG(x) mov $x, %si; call _print 
-
+#if defined(STAGE1_FILE) || defined(LOADER_FILE)
+/* stage1 real mode print */
+#define MSG(x)                                                                                                         \
+   mov $x, % si;                                                                                                       \
+   call _print
 #endif /* STAGE1_FILE */
 
-#if defined (ASM_FILE)
-	/* global label */
-	#define GLOBAL(x) .global x; x:
-	/* declare a variable */
-	#define VARIABLE(x) GLOBAL(x)
-	/* declare a function */
-	#define FUNCTION(x) GLOBAL(x)
-	/* declare section */
-	#define SECTION(x) .##x
+#if defined(ASM_FILE)
+#define GLOBAL(x)                                                                                                      \
+   .global x;                                                                                                          \
+   x:
+#define SECTION(x) .##x
 #else
-	/* global function */
-	#define GLOBAL(x) x
-	/* declare a variable */
-	#define VARIABLE(x) GLOBAL(x)
-	/* declare a function */
-	#define FUNCTION(x) GLOBAL(x)
-	/* declare section */
-	#define SECTION(x) x
+#define GLOBAL(x)  x
+#define SECTION(x) x
 #endif /* ASM_FILE */
+
+#define VARIABLE(x) GLOBAL(x)
+#define FUNCTION(x) GLOBAL(x)
 
 #endif /* !_ASM_MACROS_H_ */
