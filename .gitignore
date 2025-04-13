@@ -6,6 +6,8 @@ build/%.img
 build/%.o
 %.build
 %.ld
+%.elf
+%.img
 
 # directories
 build/
