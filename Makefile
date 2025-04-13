@@ -7,7 +7,7 @@ export DEPS = include
 
 .PHONY: all clean
 
-all: $(OUT)/fat mk $(OUT)/final.img fatfs misc test
+all: $(OUT)/ $(OUT)/fat mk $(OUT)/final.img fatfs misc test
 
 $(OUT)/final.img: $(OUT)/stage1.img $(OUT)/loader.img
 	@echo IMG $@
@@ -19,7 +19,6 @@ fatfs: $(OUT)/fat/install12
 test: fat12_test.img
 
 ## USED FOR TEST FAT12 FILESYSTEM
-## FOR BUILD THIS ADD test AT THE END OF all 
 fat12_test.img: $(OUT)/stage1.img $(OUT)/loader.img
 	@echo TEST $@
 	@$(OUT)/mkfloppy 2880 $@
@@ -41,6 +40,9 @@ $(OUT)/fat/install12: util/fat/install12
 
 $(OUT)/fat:
 	mkdir -p $@
+	
+$(OUT)/:
+	mkdir -p $@
 
 mk: $(SUBDIRS)
 	@echo "Building All..."
@@ -54,5 +56,6 @@ clean: $(SUBDIRS)
         $(MAKKEC) $$dir clean_$$dir; \
     done
 	
+	rm -rf fat12_test.img
 	rm -rf $(OUT)/*
 	rmdir $(OUT)
