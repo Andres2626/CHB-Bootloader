@@ -1,5 +1,12 @@
 # !/bin/bash
 
+# size-test.sh -- write size of file into .h file
+#
+# Copyright (C) 2021 - 2025 andres26
+#
+# This file is distributed under the terms of the MIT license.
+#
+
 # check the file size and write to .h file
 
 PROGNAME=$0
