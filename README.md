@@ -162,17 +162,16 @@ If you are interested in contributing to the code, the following rules must be f
 
   At the beginning of each code file, you should find something like this: 
 
-  */\** 
+/*
+* <file> -- <file\_description>
+* 
+*
+* Copyright (C) <year> <author>
+*
+*
+* *This file is distributed under the terms of the <license>
+*/
 
-* *<file> -- <file\_description>* 
-
-*\** 
-
-* *Copyright (C) <year> <author>* 
-
-*\** 
-
-* *This file is distributed under the terms of the <license> \*/* 
 15. **CHB PLAN (TODO LIST)** 
 - *Add support for other filesystems.* 
 - *Disk and CDROM support. (INT13,4X)* 
@@ -210,4 +209,5 @@ If you encounter any issues with the code, please feel free to report them via G
 
 **Andres26** 
 
-**14-04-2025 github.com/Andres2626/CHB-Bootloader** 
+**14-04-2025**
+**github.com/Andres2626/CHB-Bootloader** 
