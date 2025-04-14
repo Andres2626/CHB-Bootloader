@@ -163,13 +163,9 @@ If you are interested in contributing to the code, the following rules must be f
   At the beginning of each code file, you should find something like this: 
 
 /*
-* <file> -- <file\_description>
-* 
-*
-* Copyright (C) <year> <author>
-*
-*
-* *This file is distributed under the terms of the <license>
+<file> -- <file\_description>
+Copyright (C) <year> <author>
+This file is distributed under the terms of the <license>
 */
 
 15. **CHB PLAN (TODO LIST)** 
