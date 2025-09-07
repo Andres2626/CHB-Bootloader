@@ -24,4 +24,6 @@
 
 /* 0x8000 - 0xFFFFF -- UPPER MEMORY (RESERVED) */
 
+#define KERNEL_LOCALIZATION 0x100000
+
 #endif /* !_MM_H_ */

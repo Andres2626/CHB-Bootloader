@@ -31,7 +31,8 @@ LIB_SRCSC:= stdio/printf.c \
 			string/strtok.c \
 			string/strerror.c \
 			ctype/upper.c \
-			ctype/lower.c
+			ctype/lower.c \
+			errno/errno.c
 			
 LIB_OBJS := $(patsubst %.S, $(OUTDIRS)/%.o, $(LIB_SRCS)) \
 			$(patsubst %.c, $(OUTDIRS)/%.o, $(LIB_SRCSC))

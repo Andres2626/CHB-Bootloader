@@ -18,7 +18,8 @@ Q			:= @
 SFILES := loader.S \
 		  int10_handler.S \
 		  int13_handler.S \
-		  port.S
+		  port.S \
+		  memory.S
 	
 # .c files
 CFILES:= entry.c \

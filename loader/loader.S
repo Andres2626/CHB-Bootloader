@@ -46,6 +46,10 @@ real_start:
 
 	/* load our GDT */
 	call load_gdt
+	
+	/* reload disk system */
+	xor %ah, %ah
+	int $0x13
 
 	/* enter to protected mode */
 	enter_protmode

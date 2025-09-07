@@ -19,7 +19,10 @@
 #include <CHB/stdio.h>
 #include <CHB/string.h>
 
-/* FAT filesystem structures */
+#define SAVE_ERR_RET(err, ret) set_errno(err); \
+        return ret
+
+/* FAT filesystem misc structures */
 
 struct FAT_bootsec {
    uint8_t jmp[3];
@@ -89,25 +92,24 @@ fat_readfat(struct device* dev) {
 int
 fat_init(struct device* dev) {
    f_data = (struct FAT_data*)FS_DRIVER_DATA;
-   uint32_t fat_size = 0;
+   uint32_t fat_size;
    uint32_t rootdir, rootsize, data;
-
-   if (fat_readbs(dev) != ENO) {
-      return EDEV;
+   
+   /* Read Filesystem bootsector */
+   if (!fat_readbs(dev)) {
+	  printf("FAT_driver(): Error reading bootsector.");
+      SAVE_ERR_RET(ERR_DISK_READ, 0);
    }
 
    fat = (uint8_t*)f_data + sizeof(struct FAT_data);
    fat_size = f_data->BS.bs.sector_size * f_data->BS.bs.FAT_size;
    if (sizeof(struct FAT_data) + fat_size > FS_DRIVER_DATA_SIZE) {
-      return ENOMEM;
+      SAVE_ERR_RET(ERR_NO_MEM, 0);
    }
 
-   if (fat_readfat(dev) != ENO) {
-      return EDEV;
-   }
-
-   if (fat_readfat(dev) != ENO) {
-      return EDEV;
+   if (!fat_readfat(dev)) {
+	  printf("FAT_driver(): Error reading bootsector.");
+      SAVE_ERR_RET(ERR_DISK_READ, 0);
    }
 
    rootdir = f_data->BS.bs.reserved_sectors + (f_data->BS.bs.FAT_size * f_data->BS.bs.FAT_count);
@@ -123,8 +125,9 @@ fat_init(struct device* dev) {
    f_data->rootdir.current_sector = 0;
 
    /* read root directory */
-   if (devread(dev, rootdir, 1, f_data->rootdir.buffer) != ENO) {
-      return EREAD;
+   if (!devread(dev, rootdir, 1, f_data->rootdir.buffer)) {
+      printf("FAT_driver(): Error reading root directory.");
+      SAVE_ERR_RET(ERR_DISK_READ, 0);
    }
 
    data = (rootsize + f_data->BS.bs.sector_size - 1) / f_data->BS.bs.sector_size;
@@ -134,7 +137,7 @@ fat_init(struct device* dev) {
       f_data->opened[i].opened = false;
    }
 
-   return ENO;
+   SAVE_ERR_RET(ERR_NO, 1);
 }
 
 uint32_t
@@ -152,8 +155,7 @@ fat_open_entry(struct device* dev, struct FAT_entry* entry) {
    }
 
    if (handle < 0) {
-      printf("FAT_driver(): maximum number of open files exceeded\n");
-      return NULL;
+      SAVE_ERR_RET(ERR_TOO_FILES, NULL);
    }
 
    struct FAT_file* fd = &f_data->opened[handle];
@@ -165,10 +167,9 @@ fat_open_entry(struct device* dev, struct FAT_entry* entry) {
    fd->current_cluster = fd->first_cluster;
    fd->current_sector = 0;
 
-   int ret = devread(dev, fat_cluster2lba(fd->current_cluster), 1, fd->buffer);
-   if (ret != ENO) {
-      printf("FAT_driver(): entry open failed.\n");
-      return NULL;
+   if (!devread(dev, fat_cluster2lba(fd->current_cluster), 1, fd->buffer)) {
+      printf("FAT_driver(): Entry open failed.\n");
+      SAVE_ERR_RET(ERR_DISK_READ, 0);
    }
 
    fd->opened = true;
@@ -208,8 +209,8 @@ fat_read(struct device* dev, struct FAT_file* file, uint32_t count, void* buff) 
       if (left == take) {
          if (fd->handle == ROOT_DIRECTORY_HANDLE) {
             ++fd->current_cluster;
-            if (!devread(dev, fd->current_cluster, 1, fd->buffer) != ENO) {
-               errno = EREAD;
+            if (!devread(dev, fd->current_cluster, 1, fd->buffer)) {
+               set_errno(ERR_DISK_READ);
                break;
             } else {
                if (++fd->current_sector >= f_data->BS.bs.cluster_size) {
@@ -224,8 +225,8 @@ fat_read(struct device* dev, struct FAT_file* file, uint32_t count, void* buff) 
                }
 
                /* read next sector */
-               if (!devread(dev, fat_cluster2lba(fd->current_cluster) + fd->current_sector, 1, fd->buffer) != ENO) {
-                  errno = EREAD;
+               if (!devread(dev, fat_cluster2lba(fd->current_cluster) + fd->current_sector, 1, fd->buffer)) {
+                  set_errno(ERR_DISK_READ);
                   break;
                }
             }
@@ -233,7 +234,7 @@ fat_read(struct device* dev, struct FAT_file* file, uint32_t count, void* buff) 
       }
    }
 
-   errno = ENO;
+   set_errno(ERR_NO);
    return dataout - (uint8_t*)buff;
 }
 
@@ -315,13 +316,12 @@ fat_open(struct device* dev, const char* path) {
       if (fat_find_file(dev, current, name, &entry)) {
          fat_close(current);
          if (!last && (entry.attributes & FAT_DIRECTORY) == 0) {
-            printf("FAT_driver(): %s is not a directory.\n", name);
-            return NULL;
+            SAVE_ERR_RET(ERR_FSYS_ATTR, NULL);
          }
          current = fat_open_entry(dev, &entry);
       } else {
+		 /* file is not found */
          fat_close(current);
-         printf("FAT_driver(): %s not found.\n", name);
          return NULL;
       }
    }

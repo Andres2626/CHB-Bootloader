@@ -25,7 +25,7 @@ fat12_test.img: $(OUT)/stage1.img $(OUT)/loader.img
 	@/sbin/mkfs.fat -F 12 -n "NBOS" $@ -R 35
 	@$(OUT)/fat/mkbs12 --prefix=$(OUT)/ -i $@
 	@$(OUT)/fat/install12 $(OUT)/ $@ 
-	#@mcopy -i $@ hello.txt "::hello.txt" UNUSED
+	@mcopy -i $@ kernel.img "::kernel.BIN"
 
 
 # copy mkfloppy script to build directory
