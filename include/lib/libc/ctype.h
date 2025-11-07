@@ -10,9 +10,11 @@
 #ifndef _CTYPE_H_
 #define _CTYPE_H_ 1
 
-char toupper(int c);
-int isupper(int c);
-char tolower(int c);
-int islower(int c);
+#include "const.h"
+
+PROTOTYPE(char toupper, (int c));
+PROTOTYPE(int isupper, (int c));
+PROTOTYPE(char tolower, (int c));
+PROTOTYPE(int islower, (int c));
 
 #endif /* !_CTYPE_H_ */

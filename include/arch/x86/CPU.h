@@ -20,6 +20,6 @@
 #define PROT_32_CODE_SEG 0x8
 #define PROT_32_DATA_SEG 0x10
 #define PROT_16_DATA_SEG 0x20
-#define REAL_16_CODE_SEG 0
+#define REAL_16_CODE_SEG 0x0
 
 #endif /* !_TYPES_H_ */

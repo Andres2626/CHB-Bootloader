@@ -12,14 +12,14 @@
 
 #if defined(STAGE1_FILE) || defined(LOADER_FILE)
 /* stage1 real mode print */
-#define MSG(x)                                                                                                         \
-   mov $x, % si;                                                                                                       \
+#define MSG(x) \
+   mov $x, % si; \
    call _print
 #endif /* STAGE1_FILE */
 
 #if defined(ASM_FILE)
-#define GLOBAL(x)                                                                                                      \
-   .global x;                                                                                                          \
+#define GLOBAL(x) \
+   .global x; \
    x:
 #define SECTION(x) .##x
 #else
