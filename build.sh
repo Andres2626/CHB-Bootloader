@@ -183,21 +183,22 @@ if ! command -v $HOST_NM 2>&1 >/dev/null; then
 fi
 echo "YES"
 
+DEFAULTFLAGS='-Wall -Werror -Wextra -fno-stack-protector -fomit-frame-pointer -fno-exceptions -ffreestanding -fno-exceptions -mno-red-zone -nodefaultlibs -nostdlib'
 EMPTY=
 case $TARGET in
   i[X]86*)
     export target_cpu=i386
-	export TARGET_CFLAGS='-FPIC -ffreestanding -fno-exceptions -mno-red-zone -nodefaultlibs -nostdlib -Wall -Werror -Wextra'
+	export TARGET_CFLAGS=$DEFAULTFLAGS
   ;;
   x86_64*)
 	export target_cpu=x86_64
-	export TARGET_CFLAGS='-FPIC -m32 -ffreestanding -fno-exceptions -mno-red-zone -nodefaultlibs -nostdlib -Wall -Werror -Wextra'
+	export TARGET_CFLAGS=$DEFAULTFLAGS
 	export TARGET_LDFLAGS='-melf_i386'
   ;;
   *)
 	# CHB assumes that $TARGET supports compiling ELF files for i386
 	export target_cpu=
-	export TARGET_CFLAGS='-FPIC -ffreestanding -fno-exceptions -mno-red-zone -nodefaultlibs -nostdlib -Wall -Werror -Wextra'
+	export TARGET_CFLAGS=$DEFAULTFLAGS
 	export TARGET_LDFLAGS='-melf_i386'
   ;;
 esac
