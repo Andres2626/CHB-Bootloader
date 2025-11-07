@@ -7,23 +7,25 @@
 * This file is distributed under the terms of the MIT license.
 */
 
-#include <CHB/stdlib.h>
+#include "lib/libc/stdlib.h"
 
-int
-atoi(char* ptr) {
-   int number = 0;
-   int sign = 1;
-   int i = 0;
+int atoi(char *ptr) 
+{
+    int number = 0;
+    int sign = 1;
+    
+    /* check if number is negative */
+    if (*ptr == '-') {
+        sign = -1;
+        ptr++;
+    }
+	else if (*ptr == '+')
+        ptr++;
 
-   /* check if number is negative */
-   if (ptr[0] == '-') {
-      sign = -1;
-      i++;
-   }
+    while (*ptr >= '0' && *ptr <= '9') {
+        number = number * 10 + (*ptr - '0');
+		ptr++;
+    }
 
-   for (; ptr[i] != '\0'; i++) {
-      number = number * 10 + ptr[i] - '0';
-   }
-
-   return sign * number;
+    return sign * number;
 }

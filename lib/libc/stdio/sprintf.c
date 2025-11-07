@@ -7,16 +7,13 @@
 * This file is distributed under the terms of the MIT license.
 */
 
-#include <CHB/stdio.h>
+#include "lib/libc/stdio.h"
 
-int
-sprintf(char* s, const char* fmt, ...) {
-   va_list args;
-   va_start(args, fmt);
-
-   int ret = vsprintf(s, fmt, args);
-
-   va_end(args);
-
-   return ret;
+int sprintf(char *s, _CONST char* fmt, ...) 
+{
+    va_list args;
+    va_start(args, fmt);
+    int ret = vsprintf(s, fmt, args);
+    va_end(args);
+    return ret;
 }

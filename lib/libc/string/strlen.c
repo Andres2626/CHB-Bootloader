@@ -7,15 +7,16 @@
 * This file is distributed under the terms of the MIT license.
 */
 
-#include <CHB/string.h>
+#include "lib/libc/string.h"
 
-size_t
-strlen(const char* s) {
-   const char* str = s;
-   size_t index;
-   while (*str != '\0') {
-      *str++;
-      index++;
-   }
-   return index;
+size_t strlen(_CONST char *s) 
+{
+    _CONST char* str = s;
+    size_t index = 0;
+   
+    while (*str++) {
+	    index++;
+    }
+   
+    return index;
 }

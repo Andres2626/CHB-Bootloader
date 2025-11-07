@@ -7,15 +7,15 @@
 * This file is distributed under the terms of the MIT license.
 */
 
-#include <CHB/string.h>
+#include "lib/libc/string.h"
 
-void*
-memset(void* b, int c, size_t n) {
-   unsigned char* p = b;
-   while (n > 0) {
-      *p = c;
-      p++;
-      n--;
-   }
-   return b;
+void * memset(void *b, int c, size_t n) 
+{
+    unsigned char *p = b;
+   
+    while (n--) {
+        *p++ = (unsigned char)c;
+    }
+	
+    return b;
 }

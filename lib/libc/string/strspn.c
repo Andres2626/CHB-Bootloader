@@ -7,25 +7,19 @@
 * This file is distributed under the terms of the MIT license.
 */
 
-#include <CHB/string.h>
+#include "lib/libc/string.h"
 
-size_t
-strspn(char const* s1, char const* s2) {
-   const char* p;
-   const char* a;
-   size_t count = 0;
-
-   for (p = s1; *p != '\0'; ++p) {
-      for (a = s2; *a != '\0'; ++a) {
-         if (*p == *a) {
+size_t strspn(_CONST char *s1, _CONST char *s2)
+{
+    size_t count = 0;
+    for (; *s1; s1++) {
+        const char *p = s2;
+        while (*p && *p != *s1)
+            p++;
+        if (!*p)
             break;
-         }
-      }
-      if (*a == '\0') {
-         return count;
-      }
-      ++count;
-   }
-
-   return count;
+		
+        count++;
+    }
+    return count;
 }
