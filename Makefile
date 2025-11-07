@@ -7,7 +7,8 @@ export DEPS = include
 
 .PHONY: all clean
 
-all: $(OUT)/ $(OUT)/fat mk $(OUT)/final.img fatfs misc test
+all: $(OUT)/ $(OUT)/fat mk $(OUT)/final.img fatfs misc 
+#test
 
 $(OUT)/final.img: $(OUT)/stage1.img $(OUT)/loader.img
 	@echo IMG $@
@@ -16,16 +17,18 @@ $(OUT)/final.img: $(OUT)/stage1.img $(OUT)/loader.img
 misc: $(OUT)/mkfloppy
 fatfs: $(OUT)/fat/install12
 
-test: fat12_test.img
+#test: fat12_test.img
 
+## UNUSED ==============
+## TODO: Create program for 'make' CHB bootable formated images
 ## USED FOR TEST FAT12 FILESYSTEM
-fat12_test.img: $(OUT)/stage1.img $(OUT)/loader.img
-	@echo TEST $@
-	@$(OUT)/mkfloppy 2880 $@
-	@/sbin/mkfs.fat -F 12 -n "NBOS" $@ -R 35
-	@$(OUT)/fat/mkbs12 --prefix=$(OUT)/ -i $@
-	@$(OUT)/fat/install12 $(OUT)/ $@ 
-	@mcopy -i $@ kernel.img "::kernel.BIN"
+#fat12_test.img: $(OUT)/stage1.img $(OUT)/loader.img
+#	@echo TEST $@
+#	@$(OUT)/mkfloppy 2880 $@
+#	@/sbin/mkfs.fat -F 12 -n "FT12" $@ -R 38
+#	@$(OUT)/fat/mkbs12 --prefix=$(OUT)/ -i $@
+#	@$(OUT)/fat/install12 $(OUT)/ $@ 
+#	mcopy -i $@ file.txt "::file.TXT"
 
 
 # copy mkfloppy script to build directory
