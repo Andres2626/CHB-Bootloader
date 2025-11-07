@@ -16,16 +16,15 @@ Q			:= @
 
 # assembly files
 SFILES := loader.S \
-		  int10_handler.S \
-		  int13_handler.S \
-		  port.S \
-		  memory.S
+		  blib.S
 	
 # .c files
 CFILES:= entry.c \
 		 video.c \
 		 disk.c \
-		 fat.c
+		 fs/fat.c \
+         fs/vfs.c \
+		 mm.c 
 
 # .o files
 OFILES := $(patsubst %.S, $(OUTDIR)/%.o, $(SFILES)) \

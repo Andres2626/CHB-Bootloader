@@ -8,7 +8,7 @@ OUTDIR  	:= $(OUT)/tools
 Q			:= @
 PROGS		:= $(OUT)/fat/fatinfo $(OUT)/fat/mkbs12
 TOOLS_INCS	+= -I$(TOP_INC) -I$(THIS_INC) -I$(CHB_INC)
-CFLAGS += $(TOOLS_INCS)
+CFLAGS += $(TOOLS_INCS) -DCHB_UTIL
 
 .PHONY: all clean
 
