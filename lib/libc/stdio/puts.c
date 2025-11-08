@@ -7,12 +7,12 @@
 * This file is distributed under the terms of the MIT license.
 */
 
-#include <CHB/stdio.h>
+#include "lib/libc/stdio.h"
 
-void
-puts(const char* s) {
-   while (*s != '\0') {
-      putchar(*s);
-      s++;
-   }
+void puts(_CONST char *s) 
+{
+    while (*s) {
+        putchar(*s);
+        s++;
+    }
 }

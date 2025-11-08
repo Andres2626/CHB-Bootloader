@@ -24,14 +24,14 @@
 *  (720, 1440, 2880 and 5760 sectors) according to INT13,8
 */
 
-#include <CHB/fs/fat.h>
-#include <CHB/stage1/stage1.h>
-#include <argp.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <fs/fat.h>
+#include <stage1/stage1.h>
+
+#include "types.h"
 
 #include <argp.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #define PROG_NAME "mkbs"
 #define PROG_VER  "1.0"
@@ -40,38 +40,13 @@ const char* argp_program_version = "CHB mkbs 1.0";
 static char* input = NULL;
 static char* prefix = NULL;
 
-struct FAT_bootsec {
-   uint8_t jmp[3];
-   uint8_t oem[8];
-   uint16_t sector_size;
-   uint8_t cluster_size;
-   uint16_t reserved_sectors;
-   uint8_t FAT_count;
-   uint16_t dir_entries;
-   uint16_t drive_size;
-   uint8_t desc_type;
-   uint16_t FAT_size;
-   uint16_t track_size;
-   uint16_t drive_heads;
-   uint32_t hidden_sectors;
-   uint32_t large_sectors;
-
-   /* EBR */
-   uint8_t drive_number;
-   uint8_t reserved;
-   uint8_t signature;
-   uint32_t volumeid;
-   uint8_t label[11];
-   uint8_t id[8];
-} __attribute__((packed));
-
 union FAT_bs {
-   struct FAT_bootsec bs;
-   uint8_t data[512];
+   struct fat_boot_sector bs;
+   u8t data[512];
 };
 
-static int
-parse_opt(int key, char* arg, __attribute__((unused)) struct argp_state* state) {
+static int parse_opt(int key, char *arg, __attribute__((unused)) struct argp_state *state) 
+{
    switch (key) {
       case 'i': input = arg; break;
       case 'p': prefix = arg; break;
@@ -87,10 +62,10 @@ struct argp_option options[] = {
     {0}};
 struct argp argp = {options, parse_opt};
 
-int
-main(int argc, char** argv) {
+int main(int argc, char **argv) 
+{
    FILE *stage1_img, *fat_img;
-   char* buff = malloc(255 * sizeof(char));
+   char *buff = malloc(255 * sizeof(char));
    union FAT_bs stage1_bs, input_bs;
    size_t size;
 

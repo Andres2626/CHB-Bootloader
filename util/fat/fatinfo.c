@@ -7,7 +7,8 @@
 * This file is distributed under the terms of the MIT license.
 */
 
-#include <CHB/fs/fat.h>
+#include <fs/fat.h>
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,48 +16,22 @@
 #define PROG_NAME "fatinfo"
 #define PROG_VER  "1.0"
 
-struct FAT_bootsec {
-   uint8_t jmp[3];
-   uint8_t oem[8];
-   uint16_t sector_size;
-   uint8_t cluster_size;
-   uint16_t reserved_sectors;
-   uint8_t FAT_count;
-   uint16_t dir_entries;
-   uint16_t drive_size;
-   uint8_t desc_type;
-   uint16_t FAT_size;
-   uint16_t track_size;
-   uint16_t drive_heads;
-   uint32_t hidden_sectors;
-   uint32_t large_sectors;
-
-   /* EBR */
-   uint8_t drive_number;
-   uint8_t reserved;
-   uint8_t signature;
-   uint32_t volumeid;
-   uint8_t label[11];
-   uint8_t id[8];
-} __attribute__((packed));
-
 union FAT_bs {
-   struct FAT_bootsec bs;
-   uint8_t data[512];
+   struct fat_boot_sector bs;
+   u8t data[512];
 };
 
-void
-usage() {
-   fprintf(stderr,
-           "CHB %s %s\n"
+void usage() 
+{
+   fprintf(stderr, "CHB %s %s\n"
            "usage: %s <input_file>\n",
            PROG_NAME, PROG_VER, PROG_NAME);
 }
 
 #define BS bs.bs
 
-int
-main(int argc, char** argv) {
+int main(int argc, char** argv) 
+{
    FILE* fp;
    union FAT_bs bs;
    char* input = argv[1];

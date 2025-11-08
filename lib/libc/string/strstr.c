@@ -7,19 +7,17 @@
 * This file is distributed under the terms of the MIT license.
 */
 
-#include <CHB/string.h>
+#include "lib/libc/string.h"
 
-char*
-strstr(const char* s1, const char* s2) {
-   size_t len = strlen(s2);
+char *strstr(_CONST char *s1, _CONST char *s2) 
+{
+    size_t len = strlen(s2);
 
-   while (*s1) {
-      if (!memcmp((char*)s1, s2, len)) {
-         return (char*)s1;
-      }
-
-      s1++;
-   }
+    while (*s1) {
+        if (!memcmp((char*)s1, s2, len))
+            return (char*)s1;
+        s1++;
+    }
 
    return NULL;
 }

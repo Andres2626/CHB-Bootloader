@@ -7,14 +7,15 @@
 * This file is distributed under the terms of the MIT license.
 */
 
-#include <CHB/string.h>
+#include "lib/libc/string.h"
 
-char*
-strchr(const char* s, int c) {
-   for (; *s != (char)c; ++s) {
-      if (*s == '\0') {
-         return NULL;
-      }
-   }
-   return (char*)s;
+char *strchr(_CONST char *s, int c) 
+{
+	while (*s != (char)c) {
+		if (!*s)
+            return NULL;
+		
+		s++;
+	}
+    return (char*)s;
 }

@@ -7,16 +7,21 @@
 * This file is distributed under the terms of the MIT license.
 */
 
-#include <CHB/stdio.h>
+#include "lib/libc/stdio.h"
 
-int
-printf(const char* fmt, ...) {
-   va_list args;
-   va_start(args, fmt);
+#define PRINTF_LIMIT 1024
 
-   int ret = vprintf(fmt, args);
+PRIVATE char _buff[PRINTF_LIMIT];
 
-   va_end(args);
-
-   return ret;
+int printf(_CONST char *fmt, ...) 
+{
+    va_list args;
+    va_start(args, fmt);
+    int ret = vsprintf(_buff, fmt, args);
+    va_end(args);
+	
+	/* print buffer in screen */
+	puts(_buff);
+	
+    return ret;
 }

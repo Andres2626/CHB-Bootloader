@@ -1,7 +1,7 @@
 TOPDIR 		= ../../
 INCFLAGS 	:= -I$(TOPDIR) -I./ -I$(TOPDIR)/include
 LDFLAGS 	+= $(TARGET_LDFLAGS)
-CFLAGS 		+= -FPIC -ffreestanding -fno-exceptions -mno-red-zone -nodefaultlibs -nostdlib $(INCFLAGS)
+CFLAGS 		+= -FPIC $(TARGET_CFLAGS) $(INCFLAGS)
 OUT			:= $(TOPDIR)/$(OUT)
 OUTDIRS  	:= $(OUT)/lib/libc
 LIB 		:= libchb_c.a
@@ -15,10 +15,11 @@ LIB_SRCSC:= stdio/printf.c \
 			stdio/putchar.c \
 			stdio/puts.c \
 			stdio/sprintf.c \
-			stdio/vprintf.c \
 			stdio/vsprintf.c \
 			stdlib/atoi.c \
 			stdlib/itoa.c \
+			stdlib/itoa64.c \
+			stdlib/utoa64.c \
 			string/memcmp.c \
 			string/memset.c \
 			string/memcpy.c \

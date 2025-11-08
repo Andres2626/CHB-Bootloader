@@ -10,9 +10,10 @@
 #ifndef _PORT_H_
 #define _PORT_H_ 1
 
-#include <CHB/types.h>
+#include "types.h"
+#include "const.h"
 
-void port_outb(uint16_t port, uint8_t value);
-uint8_t port_inb(uint16_t port);
+PUBLIC void _ASM port_outb(u16t port, u8t value);
+PUBLIC u8t _ASM port_inb(u16t port);
 
 #endif /* !_PORT_H_ */

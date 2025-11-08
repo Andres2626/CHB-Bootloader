@@ -7,10 +7,11 @@
 * This file is distributed under the terms of the MIT license.
 */
 
-#include <CHB/errno.h>
+#include "lib/libc/errno.h"
 
 int errno = 0;
 
-void set_errno(int error) {
+void set_errno(int error) 
+{
 	errno = error;
 }

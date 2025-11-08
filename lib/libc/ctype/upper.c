@@ -7,7 +7,7 @@
 * This file is distributed under the terms of the MIT license.
 */
 
-#include <CHB/ctype.h>
+#include "lib/libc/ctype.h"
 
 char
 toupper(int c) {

@@ -7,17 +7,20 @@
 * This file is distributed under the terms of the MIT license.
 */
 
-#include <CHB/string.h>
+#include "lib/libc/string.h"
 
-int
-memcmp(const void* s1, const void* s2, size_t n) {
-   const uint8_t* ptr1 = (const uint8_t*)s1;
-   const uint8_t* ptr2 = (const uint8_t*)s2;
+int memcmp(_CONST void *s1, _CONST void *s2, size_t n) 
+{
+    _CONST uint8_t *_s1 = (_CONST uint8_t*)s1;
+    _CONST uint8_t *_s2 = (_CONST uint8_t*)s2;
 
-   for (uint16_t i = 0; i < n; i++) {
-      if (ptr1[i] != ptr2[i]) {
-         return 1;
-      }
-   }
-   return 0;
+    while (n--) {
+        if (*_s1 != *_s2)
+            return (*_s1 < *_s2) ? -1 : 1;
+		
+		_s1++;
+		_s2++;
+    }
+
+    return 0;
 }

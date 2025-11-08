@@ -7,24 +7,30 @@
 * This file is distributed under the terms of the MIT license.
 */
 
-#include <CHB/errno.h>
-#include <CHB/string.h>
+#include "lib/libc/string.h"
+#include "lib/libc/errno.h"
 
-char*
-strerror(int errno) {
-   switch (errno) {
-      case ERR_SECTOR_INV: return "Invalid disk read/write sector";
-      case ERR_DISK_READ: return "Disk reading error";
-      case ERR_DISK_ERR: return "Disk error";
-	  case ERR_DEVICE_INIT: return "Device is not initialized";
-	  case ERR_NO_MEM: return "Not enough memory";
-	  case ERR_TOO_FILES: return "Maximum number of opened files exceeded";
-	  case ERR_KERN_NO: return "Kernel not found in filesystem";
-	  case ERR_KERN_LOC: return "Kernel localization in before 1MB is not supported";
-      case ERR_NO: return "No error.";
-      case ERR_UNKNOUN:
-      default: return "Unknoun error";
-   }
+/* Supported error numbers */
+static char *errno_str[EUNKNOUN] = 
+{
+	[ESINV]    = "Invalid disk sector",
+	[EREAD]    = "Read error",
+	[EDISK]    = "Disk error",
+	[EDEVINT]  = "Disk driver is not initialized",
+	[ENOMEM]   = "No enough memory",
+	[EMFILE]   = "Maximum number of opened files exceeded",
+	[EKERN]    = "Kernel not found",
+	[EFATTR]   = "Invalid file attribute",
+	[EKERNLOC] = "Kernel localization in before 1MB is not supported",
+	[EMEMINIT] = "Memory driver is not initialized",
+	[EIFS]     = "Invalid filesystem",
+	[ENOIMP]   = "Not implemented"
+};
 
-   return NULL;
+char *strerror(int errno) 
+{
+	if (errno <= 0 || errno > EUNKNOUN)
+	    return NULL;
+	
+    return errno_str[errno];
 }

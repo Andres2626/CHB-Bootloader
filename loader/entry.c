@@ -7,99 +7,128 @@
 * This file is distributed under the terms of the MIT license.
 */
 
-#include <CHB/disk.h>
-#include <CHB/fs/fat.h>
-#include <CHB/mm.h>
-#include <CHB/port.h>
-#include <CHB/types.h>
-#include <CHB/video.h>
+#include <fs/fs.h>
+#include <fs/fat.h>
+#include <sys/disk.h>
+#include <sys/mm.h>
+#include <sys/port.h>
+#include <sys/video.h>
 
-#include <CHB/ctype.h>
-#include <CHB/errno.h>
-#include <CHB/minmax.h>
-#include <CHB/stdio.h>
-#include <CHB/string.h>
+#include "const.h"
+#include "types.h"
 
-uint8_t *kernel = (uint8_t*)0x100000; 
-uint8_t *kernel_load = (uint8_t*)0x30000;
+#include "lib/libc/ctype.h"
+#include "lib/libc/errno.h"
+#include "lib/libc/minmax.h"
+#include "lib/libc/stdio.h"
+#include "lib/libc/string.h"
 
-#define KERN_MAX_SIZE 0x10000
-typedef void (*kern_jmp)();
+#define FS_FAT 0
 
-extern int get_lower_memory();
-extern int get_upper_memory();
+struct msys_kern_boot {
+	struct device disk; /* disk properties */
+	struct memory_info mem; /* memory info */
+	u8t vid_mode; /* video BIOS mode */
+};
 
-static void
-perror() {
-   printf("\nCHB error %i: %s.\n", errno, strerror(errno));
+PRIVATE u8t *kernel = (u8t*)KERN_LOC; 
+//PRIVATE u8t *kernel_load = (u8t*)KERN_BUFFER;
+PRIVATE struct fs_ops fat12_ops = {
+    .name   = "fat12",
+    .detect = fat_detect_fs,
+    .mount  = fat_mount,
+    .unmount = fat_unmount,
+    .open   = fat_open,
+};
+
+typedef void (*kern_jmp)(struct msys_kern_boot *header) __attribute__((regparm(1)));
+
+PRIVATE void perror() 
+{
+    if (!errno)
+        return;
+    
+    printf("\nCHB error %i: %s.\n", errno, strerror(errno));
+    for (;;);
+}
+
+PRIVATE int fs_init() 
+{
+    printf("[FS] Initializing FS\n");
+    return vfs_register_fs(&fat12_ops);
 }
 
 /* video cursor colors */
-void
-entry(uint8_t drive_number) {
-   struct device disk = {drive_number, 0, 0, 0, 0};
-
-   /* initialize video system */
-   video_driver_init(0x3);
-
-   /* print welcome message */
-   printf("Loading CHB. Please Wait...\n\n");
+void entry(u8t drive_number) 
+{
+    struct device disk = {drive_number, 0, 0, 0, 0};
+    struct video video = { 0x3, BLACK, LIGHT_GRAY, { true, 15, 16, 0, 0, 0 }};
+    struct memory_info mem;
 	
-   if (!devinit(&disk)) {
-      perror();
-      goto end;
-   }
+    /* initialize video system */
+    video_init(&video);
 
-   /* Initialize FAT12 driver */
-   if (!fat_init(&disk)) {
-      perror();
-      goto end;
-   }
+    /* print welcome message */
+    printf("[LOADER] Loading CHB. Please Wait...\n");
+	
+	if (!memory_init(&mem))
+		perror();
+	
+    if (!devinit(&disk)) 
+        perror();
+    
+    if (!fs_init())
+        perror();
+    
+    struct fs *fd = vfs_detect(&disk);
+    if (!fd)
+        perror();
+    
+    if (!vfs_mount(fd))
+        perror();
+    
+    /* check if kernel is located afther fisrt 1MB of memory. */
+    if ((void*)kernel < (void*)KERN_LOC) {
+	    errno = EKERNLOC;
+	    perror();
+    }
+    
+    /* load the kernel in the memory */
+    struct file *fp = vfs_open("a/file.txt");
+    if (!fp) {
+        printf("[LOADER] a/kernel.bin not found.\n");
+        errno = EKERN;
+        perror();
+    }
+    
+    goto loop;
+
+#if 0
    
-   printf("Lower: %iK\n", get_lower_memory());
-   printf("Upper: %iK\n", get_upper_memory());
+    /* load kernel in memory */
+    printf("[LOADER] Loading kernel...\n");
+
+    u32t read;
+    u8t *kern_buff = kernel;
+    while ((read = fs_table[FS_FAT].read(fp, KERN_MSIZE, kernel_load))) {
+	    memcpy(kern_buff, kernel_load, read);
+	    kern_buff += read;
+    }
+    fs_table[FS_FAT].close(fp);
    
-   /* This part of code loads RAW kernel in the memory without
-  pushing arguments. 
-  
-  TODO: * Fully support for VFS 
-        * Executable formats
-  	    * Other kernel boot methods (Multiboot, linux, BSD, partition, ...)
-  	    * Rework this!
-  */
-   
-   /* Check if kernel is located afther fisrt 1MB of memory. */
-   if ((void*)kernel < (void*)KERNEL_LOCALIZATION) {
-	   set_errno(ERR_KERN_LOC);
-	   perror();
-	   goto end;
-   }
-   
-   /* load the kernel in the memory */
-   struct FAT_file* fp = fat_open(&disk, "/kernel.bin");
-   if (!fp) {
-	  printf("/KERNEL.BIN not found.\n");
-	  set_errno(ERR_KERN_NO);
-      perror();
-      goto end;
-   }
-   
-   /* load kernel in memory */
-   printf("Loading kernel...\n");
-   uint32_t read;
-   uint8_t *kern_buff = kernel;
-   while ((read = fat_read(&disk, fp, KERN_MAX_SIZE, kernel_load))) {
-	   memcpy(kern_buff, kernel_load, read);
-	   kern_buff += read;
-   }
-   fat_close(fp);
-   
-   /* bootstrap kernel */
-   printf("Booting kernel at %p.\n", kernel);
-   kern_jmp kernel_start = (kern_jmp)kernel;
-   kernel_start();
-  
-end:
-   for (;;)
-      ;
+    /* bootstrap kernel */
+    printf("\nBooting kernel at %p.\n", kernel);
+	
+	struct msys_kern_boot header;
+	header.disk = disk;
+	header.mem = mem;
+	header.vid_mode = video.mode;
+	
+    kern_jmp kernel_start = (kern_jmp)kernel;
+    kernel_start(&header);
+    
+#endif
+
+loop:
+    for (;;);
 }

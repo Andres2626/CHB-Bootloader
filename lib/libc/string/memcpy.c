@@ -7,20 +7,16 @@
 * This file is distributed under the terms of the MIT license.
 */
 
-#include <CHB/string.h>
+#include "lib/libc/string.h"
 
-void*
-memcpy(void* s1, const void* s2, size_t n) {
-   char* cdest = (char*)s1;
-   char* csrc = (char*)s2;
-   size_t index = 0;
+void *memcpy(void *s1, _CONST void *s2, size_t n) 
+{
+    unsigned char *_s1 = s1;
+	const unsigned char *_s2 = s2;
 
-   while (index < n) {
-      *cdest = *csrc;
-      cdest++;
-      csrc++;
-      index++;
-   }
+    while (n--) {
+	    *_s1++ = *_s2++;
+    }
 
-   return cdest;
+    return s1;
 }
