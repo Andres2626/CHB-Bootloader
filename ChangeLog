@@ -1,62 +1,412 @@
+2025-11-07  Andres26  andrescamorao9@gmail.com
+    2025-11-7 Main changes
+    
+    * Moved 'CPU.S' to 'include/arch/x86/asm/'
+    * The code of 'enter_realmode' and 'enter_protmode' moved to function instead
+      of macro
+    
+      enter_realmode -> call to 'switch_to_real_mode' routine
+      enter_protmode -> call to 'switch_to_prot_mode' routine
+    
+    * Makefile:
+      - Added 'fs/vfs.c'
+      - Added 'fs/fat.c'
+    * Moved all asm routines to 'blib.S' (bootlib)
+      - Deleted 'port.S'
+      - Deleted 'intX_handler.S'
+      - Deleted 'memory.S'
+      - Suport for INT15,E280
+    * 'loader.S'
+      - 'switch_to_X_mode' routine
+      - Changed GDT macros
+    * 'fat.c'
+      - Rewrite all driver
+      - Support for detect, mount, unmount and open function
+      - Moved file manager to 'vfs.c'
+      - 'path' and 'subdir' names find with tokens (via strtok)
+      - struct fat_fs (internal fs info)
+      - struct fat_internal_file -> deleted some entries and added struct file f
+      - Suport for subdirs
+    * 'vfs.c'
+      - Support for file descriptor
+      - Support for detect, mount, unmount and open function
+      - '*_register_fs'
+        - Register FS info in 'special' table
+        - For register FS, find in each entry until finding an empty entry
+        - TODO: improve this
+      - '*_detect'
+        - Detect FS from disk
+      - '*_mount'
+        - Register disk descriptor in table
+        - For detect FS is the same process as 'vfs_register_fs'
+      - '*_unmount'
+        - Delete FS descriptor from array
+      - '*_open'
+        - File handler from FAT12 old driver
+    
+        This is the path format '/mount_ident/path/to/file.txt'
+        mount identifier valid values: 'A - Z' (not case-sensitive)
+    
+      - '*_close'
+        - Delete file descriptor from file array
+    - 'mm.c'
+      - struct memory info
+      - Get memory info with 'memory_init'
+    - 'video.c'
+      - Improved VGA driver
+    - 'CHB_UTIL' compiler definition for enable internal FS structs in 'fat.h'
+    - 'fatinfo.c' and 'mkbs12.c' deleted internal fat structs from '.c' file
+    - 'util/Makefile' added 'CHB_UTIL' compiler definition
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
 
-03-09-23 andres26
-* created floppy_debug script
-* created floppy_run script
+2025-11-07  Andres26  andrescamorao9@gmail.com
+    2025-11-7 CHB libc
+    
+    * Changed all functions definitions with PROTOTYPE and _CONST
+    * Deleted vprintf
+    * Add vsprintf
+    * Support for ANSI colors (putchar.c)
+    * Added utoa64 and itoa64 functions
+    * 'div_internal' suport for 64t functions (avoid GCC 64t div dependencies)
+    * 'u64_div' 64t divide
+    * 'u64_mod' 64t module
+    * Optimized string functions
+    * Added suport for '%l' format (vsprintf.c)
+    * Added new errors (strerror.c)
+    * Added suport for return value (vsprintf.c and printf.c)
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
 
-04-09-23 andres26
-* created first stage1
+2025-11-07  Andres26  andrescamorao9@gmail.com
+    2025-11-7 CHB libc Makefile
+    
+    * Added suport for itoa64 and utoa64 functions
+    * Deleted vprintf reeplaced by vsprintf
+    * Deleted redundant '$(CFLAGS)'
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
 
-16-01-2024 andres26
-* created size-test script
-* simple build/clean system
-* created compile, clean, configure, .gitignore, README and TODO files
-* created docs/kernel-test directory
-* simple kernel (kernel-test)
-* created first stage2 program
+2025-11-07  Andres26  andrescamorao9@gmail.com
+    2025-11-7 Change include structure
+    
+    * Moved all 'include/CHB' to 'include/'
+    * Add target dependent includes for x86 'include/arch/x86/'
+    * Add directory for supported FS 'include/fs/'
+    * stack.h -> x86 stack definitions
+    * const.h -> compiler constants
+    * New errno definitions
+    * PRIVATE and PUBLIC definitions
+      PRIVATE -> static
+      PUBLIC -> extern
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
 
-28-02-24 andres26
-* deleted kernel-test
-* deleted floppy_debug script
-* deleted floppy_run script
+2025-11-07  Andres26  andrescamorao9@gmail.com
+    2025-11-7 Build system '$(CFLAGS)'
+    
+    * Deleted -FPIC from build system (only for '.a' files)
+      -  Moved -FPIC to 'libchbc.a'
+    * Added '-fno-stack-protector -fomit-frame-pointer'
+    * Added -W** flags '-Wall -Werror -Wextra'
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
 
-19-03-25 andres26
-* reorganization of src/ files
-* src/ no longer exists
-* rework of makefiles
+2025-11-07  Andres26  andrescamorao9@gmail.com
+    2025-7-11 Deleted 'fat12_img' rule from ./Makefile
+    
+    * Implement program for make bootable CHB images (with FS)
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
 
-20-03-25 andres26 
-* added C part of loader (stage2)
+2025-09-07  Andres2626  andrescamorao9@gmail.com
 
-21-03-25 andres26
-* added simple libc functions
-  - printf
-  - sprintf
-  - vsprintf, vprintf
-  - putchar, puts
-  - number converter functions (itoa, atoi)
-  
-22-03-25 andres26
-* added simple libc functions
-  - memory functions (memcmp, memcpy, memset, strchr, strerror, strlen, strncmp, strpbrk, strspn, strstr, strtok)
+2025-09-07 Some changes
+    
+    * Improved readme
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
 
-23-03-25 andres26
-* added simple video controller (mm 0xB8000 for 80x25 video modes)
-* added simple disk controller
-  - Support for INT13 functions 0,2,8 (floppy systems)
-  - device struct
-  
-24-03-25 andres26
-* Support for FAT12 filesystem
+2025-04-15  Andres2626  andrescamorao9@gmail.com
+    15-04-2025 Modified readme
+    
 
-25-03-25 andres26
-* added mkfloppy script
-* added fat/install12 script
-* added fat/fatinfo program
-* added fat/mkbs12 program
+2025-04-15  Andres2626  andrescamorao9@gmail.com
+    15-04-2025 Modified readme
+    
 
-26-03-2025 andres26
-* created changelog file
-* README no longer exists (reworking!)
+2025-04-14  Andres2626  andrescamorao9@gmail.com
+    14-04-2025 Create simple manual and notes
+    
 
-13-04-2025
-* Reworked build system
+2025-04-14  Andres2626  113268055+Andres2626@users.noreply.github.com
+    14-04-2025 Create simple manual and relnotes
+
+2025-04-14  Andres2626  andrescamorao9@gmail.com
+    14-04-2025 Create simple manual and notes
+    
+
+2025-04-14  Andres2626  113268055+Andres2626@users.noreply.github.com
+    14-04-2025 Update README.md
+
+2025-04-14  Andres2626  113268055+Andres2626@users.noreply.github.com
+    14-04-2025 Update README.md
+
+2025-04-14  Andres2626  andrescamorao9@gmail.com
+    14-04-2025 Create simple manual and notes
+    
+
+2025-04-13  Andres2626  andrescamorao9@gmail.com
+    13-04-2025 Reworked CHB build system
+    
+
+2025-04-13  Andres2626  113268055+Andres2626@users.noreply.github.com
+    13-04-2025 Set CHB license as MIT
+
+2025-04-13  Andres2626  andrescamorao9@gmail.com
+    13-04-2025 Reworked CHB build system
+    
+
+2025-04-13  Andres2626  andrescamorao9@gmail.com
+    13-04-2025 Reworked CHB build system
+    
+
+2025-04-13  Andres2626  andrescamorao9@gmail.com
+    13-04-2025 Reworked CHB build system
+    
+
+2025-04-12  Andres2626  andrescamorao9@gmail.com
+    25-03-2025 Added simple FAT12 utils: install12, fatinfo, mkbs12
+    
+
+2025-04-12  Andres2626  andrescamorao9@gmail.com
+    19-03-2025 moved stage1 to $(TOPDIR) and src/ no longer exists
+    
+
+2025-04-12  Andres2626  andrescamorao9@gmail.com
+    19-03-2025 Added C part of loader (stage2), simple floppy driver, simple video (80x25 mode) driver, FAT12 filesystem support, simple LIBC and simple error handler (errno.h). Moved lib and loader to $(TOPDIR), src/ no longer exists
+    
+
+2025-04-12  Andres2626  andrescamorao9@gmail.com
+    20-03-2025 Added C part of loader (stage2), simple floppy driver, simple video (80x25 mode) driver, FAT12 filesystem support, simple LIBC and simple error handler (errno.h)
+    
+
+2025-04-12  Andres2626  andrescamorao9@gmail.com
+    12-04-2025 Added ChangeLog list
+    
+
+2025-04-12  Andres2626  andrescamorao9@gmail.com
+    12-04-2025 Added simple C code styler
+    
+
+2025-04-12  Andres2626  andrescamorao9@gmail.com
+    8-04-2025 Improved size-test.sh
+    
+
+2025-04-12  Andres2626  andrescamorao9@gmail.com
+    8-04-2025 Improved CHB stage1
+    
+
+2025-04-12  Andres2626  andrescamorao9@gmail.com
+    28-02-24 Deleted CHB simple kernel
+    
+
+2025-04-12  Andres2626  andrescamorao9@gmail.com
+    12-04-2025 Modified TODO list
+    
+
+2025-04-12  Andres2626  andrescamorao9@gmail.com
+    12-04-2025 Modified .gitignore
+    
+
+2025-04-12  Andres2626  andrescamorao9@gmail.com
+    19-03-2025 src/ subdirs moved to $(TOPDIR) and src/ no longer exists
+    
+
+2025-04-12  Andres2626  andrescamorao9@gmail.com
+    26-03-2025 Reworking README file
+    
+
+2025-04-12  Andres2626  andrescamorao9@gmail.com
+    19-03-2025 Rework of build system
+    
+
+2024-02-11  Andres2626  andrescamorao9@gmail.com
+    Revert "10-02-2024 Improved stage1 program"
+    
+    This reverts commit 1f0f323ec290447501ab2b895c9051bc089036c5.
+    
+
+2024-02-11  Andres2626  andrescamorao9@gmail.com
+    Revert "10-02-2024 Added support for protected mode"
+    
+    This reverts commit 7934bd01899547c856ed4bf9fce854220ae96fcd.
+    
+
+2024-02-11  Andres2626  andrescamorao9@gmail.com
+    Revert "10-02-2024 Added C part, video subsystem, linker script, CPU switch modes and inline assembly"
+    
+    This reverts commit d72db18a7bb079d6e753fcbf88b8d71919cbf060.
+    
+
+2024-02-11  Andres2626  andrescamorao9@gmail.com
+    Revert "10-02-2024 Added C part, video subsystem, linker script, CPU switch modes and inline assembly"
+    
+    This reverts commit d3177b04dc0249c0df095f75aa14dbc3db8876a2.
+    
+
+2024-02-11  Andres2626  andrescamorao9@gmail.com
+    Revert "10-02-2024 Improved kernel makefile"
+    
+    This reverts commit 24fd0055520dabfd245c80fa89f0e5baccadd7e8.
+    
+
+2024-02-11  Andres2626  andrescamorao9@gmail.com
+    Revert "10-02-2024 Improved kernel makefile"
+    
+    This reverts commit c19e340512cbbc43bfe9e9bd8993d939c2b44b59.
+    
+
+2024-02-10  Andres2626  andrescamorao9@gmail.com
+    10-02-2024 Added C part, video subsystem, linker script, CPU switch modes and inline assembly
+    
+
+2024-02-10  Andres2626  andrescamorao9@gmail.com
+    10-02-2024 Added C part, video subsystem, linker script, CPU switch modes and inline assembly
+    
+
+2024-02-10  Andres2626  andrescamorao9@gmail.com
+    10-02-2024 Improved kernel makefile
+    
+
+2024-02-10  Andres2626  andrescamorao9@gmail.com
+    10-02-2024 Improved kernel makefile
+    
+
+2024-02-10  Andres2626  andrescamorao9@gmail.com
+    10-02-2024 Improved stage1 program
+    
+
+2024-02-10  Andres2626  andrescamorao9@gmail.com
+    10-02-2024 Added support for protected mode
+    
+
+2024-01-24  Andres2626  andrescamorao9@gmail.com
+    24-01-2024 Updated Makefile
+    
+
+2024-01-24  Andres2626  andrescamorao9@gmail.com
+    24-01-2024 Updated TODO list and added TODO list in README
+    
+
+2024-01-24  Andres2626  andrescamorao9@gmail.com
+    Merge remote-tracking branch 'refs/remotes/origin/master'
+    
+
+2024-01-24  Andres2626  andrescamorao9@gmail.com
+    24-01-2024 Improved loader and stage1
+    
+
+2024-01-24  Andres2626  andrescamorao9@gmail.com
+    24-01-2024 Improved loader and stage1
+    
+
+2024-01-24  Andres2626  andrescamorao9@gmail.com
+    24-01-2024 Edited example kernel makefile
+    
+
+2024-01-24  Andres2626  andrescamorao9@gmail.com
+    24-01-2024 Deleted kernel.ld
+    
+
+2024-01-24  Andres2626  andrescamorao9@gmail.com
+    24-01-2024 Added support for pack releases
+    
+
+2024-01-17  Andres2626  113268055+Andres2626@users.noreply.github.com
+    Update README
+
+2024-01-16  Andres2626  andrescamorao9@gmail.com
+    16-01-2024 Improved README
+    
+
+2024-01-16  Andres2626  andrescamorao9@gmail.com
+    16-01-2024 Improved README
+    
+
+2024-01-16  Andres2626  andrescamorao9@gmail.com
+    16-01-2024 Edited Makefile
+    
+
+2024-01-16  Andres2626  andrescamorao9@gmail.com
+    16-01-2024 Edited readme
+    
+
+2024-01-16  Andres2626  andrescamorao9@gmail.com
+    16-01-2024 Added src subdir
+    
+
+2024-01-16  Andres2626  andrescamorao9@gmail.com
+    16-01-2024 Added size_test.sh
+    
+
+2024-01-16  Andres2626  andrescamorao9@gmail.com
+    16-01-2024 Improved headers
+    
+
+2024-01-16  Andres2626  andrescamorao9@gmail.com
+    16-01-2024 Added documents dir and kernel-test
+    
+
+2024-01-16  Andres2626  andrescamorao9@gmail.com
+    16-01-2024 Added CHB build scripts
+    
+
+2024-01-16  Andres2626  andrescamorao9@gmail.com
+    16-01-2024 Updated .gitignore
+    
+
+2024-01-16  Andres2626  andrescamorao9@gmail.com
+    16-01-2024 Updated TODO list
+    
+
+2024-01-16  Andres2626  andrescamorao9@gmail.com
+    16-01-2024 Improved Makefile and added subdirs support
+    
+
+2024-01-16  Andres2626  andrescamorao9@gmail.com
+    16-01-2024 Improved kernel loader
+    
+
+2024-01-16  Andres2626  andrescamorao9@gmail.com
+    16-01-2024 Improved readme
+    
+
+2024-01-16  Andres2626  andrescamorao9@gmail.com
+    16-01-2024 Removed Out directory
+    
+
+2024-01-16  Andres2626  andrescamorao9@gmail.com
+    16-01-2024 Removed LICENSE file
+    
+
+2024-01-16  Andres2626  andrescamorao9@gmail.com
+    16-01-2024 Removed boot sources
+    
+
+2024-01-16  Andres2626  andrescamorao9@gmail.com
+    16-01-2024 Removed boot sources
+    
+
+2023-04-10  Andres2626  113268055+Andres2626@users.noreply.github.com
+     Added first CHB files
+
+2023-04-10  Andres2626  113268055+Andres2626@users.noreply.github.com
+    Initial commit

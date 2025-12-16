@@ -13,6 +13,8 @@
 #include "types.h"
 #include "const.h"
 
+PROTOTYPE(u64t u64_div, (u64t n, u32t base));
+PROTOTYPE(u64t u64_mod, (u64t n, u32t base));
 PROTOTYPE(int atoi, (char *ptr));
 PROTOTYPE(char *utoa64, (char *buf, int base, u64t n));
 PROTOTYPE(char *itoa64, (char *buf, int base, i64t n));

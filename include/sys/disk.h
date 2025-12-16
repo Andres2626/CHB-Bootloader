@@ -15,12 +15,16 @@
 
 #define DRIVE_STATE_1 1 /* no errors */
 
+struct device_geometry {
+    u16t cyl;
+    u16t head;
+    u16t sector;
+};
+
 struct device {
-   u8t number;
-   u16t cyl;
-   u16t sec;
-   u16t head;
+   u8t number; /* reported by BIOS */
    int state; /* initialized */
+   struct device_geometry geom;
 };
 
 /* int13_handler functions */

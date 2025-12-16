@@ -11,7 +11,7 @@
 # arg $2 -- output file
 
 # for install CHB stage 2 on the FAT12 image you must have previously formatted the 
-# image with mkfs.fat and reserved at least 35 sectors (-R option). In addition, 
+# image with mkfs.fat and reserved at least 45 sectors (-R option). In addition, 
 # the image must have a size according to what is reported by INT13,8 (see mkfloppy to know the supported formats).
 
 PREFIX=$1

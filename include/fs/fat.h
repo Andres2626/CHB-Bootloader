@@ -68,6 +68,8 @@ struct fat_boot_sector {
 PUBLIC struct fs *fat_detect_fs(struct device *disk);
 PUBLIC int fat_mount(struct device *disk);
 PUBLIC void fat_unmount();
-PUBLIC struct file *fat_open(const char *path);
+PUBLIC int fat_open(struct file *fp, _CONST char *path);
+PUBLIC i32t fat_read(struct file *file, void *buff, u32t len);
+PUBLIC int fat_close(struct file *fp);
 
 #endif /* !_FAT_H_ */

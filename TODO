@@ -1,16 +1,29 @@
 
-TODO =============================
+At the moment these are the list of things to do in the CHB project.
+
+For bug tracking, please write to:
+
+	https://github.com/Andres2626/CHB-Bootloader/issues
+	
+or
+
+	andrescamorao9@gmail.com
+    
+                          * Andres26 *
+
+==========================================================================
+
+- Support for mounted disks in FAT driver
 - Add support for other filesystems like ext2, exfat, FAT32, ...
 - Disk and CDROM support (INT13,4X)
-- Write support (fat12)
-- Executable formats (pe, elf, coff, a.out, ...)
-- Support for UEFI systems
-- Non x86 support
+- Executable formats (pe, coff, a.out, ...)
+- Implement UEFI
+- Non x86 support (arm, mips, ...)
 - Multiboot specification
 - Long mode support
 - VFS support
 - Memory map
-- Rework CHB error system
 - Rework floppy controller in stage1
 - Report disk geometry in stage1 (INT13,8)
 - Create documentation
+- Implement Command line

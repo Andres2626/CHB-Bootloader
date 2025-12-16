@@ -9,12 +9,12 @@
 
 #include "lib/libc/ctype.h"
 
-char
-toupper(int c) {
+char toupper(int c) 
+{
    return islower(c) ? (c - 'a' + 'A') : c;
 }
 
-int
-isupper(int c) {
+int isupper(int c) 
+{
    return c >= 'A' && c <= 'Z';
 }

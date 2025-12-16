@@ -1,90 +1,87 @@
-CHB Notes and manual
-**Version: 0.03-prealpha**
+                                    CHB Notes and manual
+                                  **Version: 0.03-prealpha**
 
-0.	Introduction 
+                                      0.	Introduction 
 
-CHB (Computers Help Bootloader) is a two-stage bootloader targeting the x86 architecture (x86_64 and i386), 
-primarily intended for kernel bootstrapping and low-level debugging. The current implementation is minimalistic 
-and features a FAT12 file system parser, addressing a limitation of the previous version which lacked support 
-for loading kernels across non-contiguous (dynamic) sectors.
+CHB (Computers Help Bootloader) is a two-stage bootloader targeting the x86 architecture, primarily 
+intended for kernel bootstrapping and low-level debugging. The current implementation is minimalistic 
+and features a FAT12 file system parser, addressing a limitation of the previous version which 
+lacked support for loading kernels across non-contiguous (dynamic) sectors.
 
-As of now, it supports only raw flat binary kernels and doesn't implement support for ELF-formatted executables. 
-Testing has been limited to x86 virtualized environments such as QEMU and Bochs, though it is expected to function 
-correctly on any compliant x86 hypervisor or emulator.
+Testing has been limited to x86 virtualized environments such as QEMU and Bochs, though it is 
+expected to function correctly on any compliant x86 hypervisor or emulator.
 
-1.	Copyright notice
+                                     1.	Copyright notice
 
-All bootloader code is (C) Andres26 2021-2025, but the code can be redistributed under the terms of the MIT 
-License.
+All bootloader code is (C) Andres26 2021-2025, but the code can be redistributed under the terms of 
+the MIT License.
 
-see './COPYING' file for more info.
+See './COPYING' file for more info.
 
-2.	Contribute
+                                       2.	Contribute
 
-Anyone is FREE to contribute to the CHB project if they are interested. I encourage anyone interested in this 
-project to contribute to it.
+Anyone is FREE to contribute to the CHB project if they are interested. I encourage anyone interested 
+in this project to contribute to it.
 
 You can contribute as long as you comply with the terms given by the MIT license.
 
-3.	Prerequisites
+                                      3.	Prerequisites
 
 Build tools:
-	* GCC and Binutils (I use 13.2.0 and 2.41)
-	* GNU Make
-	* GNU Coreutils (dd, mkdir, etc.)
-	* Mtools or any FAT-compatible disk image editor.
-	* mkfs.fat (FAT formatting).
+	*   GCC and Binutils (I use 13.2.0 and 2.41)
+	*   GNU Make
+	*   GNU Coreutils (dd, mkdir, etc.)
+	*   Mtools or any FAT-compatible disk image editor.
+	*   mkfs.fat (FAT formatting).
 
 Debug and run tools:
-	* GDB.
-	* An x86-based virtual machine.
+	*   GDB.
+	*   An x86-based virtual machine. 35
 
-NOTE!: It is recommended that the prefix be defined for the cross compiler because on certain types of hosts 
-(e.g. cygwin, msys2 or some linux environment on windows) cross compilation is not allowed for ELF executables 
-which is necessary to compile CHB correctly.
+NOTE!: It is recommended that the prefix be defined for the cross compiler because on certain types 
+of hosts (e.g. cygwin, msys2 or some linux environment on windows) cross compilation is not allowed 
+for ELF executables which is necessary to compile CHB correctly.
 
-4.	Hardware testing.
+                                     4.	Hardware testing.
 
-CHB has not been tested on physical hardware. Due to its minimal design and limited feature set, it doesn't 
-implement many of the basic functions typically required by modern systems. However, no special requirements 
-are needed to attempt booting CHB on real hardware.
+CHB has not been tested on physical hardware. Due to its minimal design and limited feature set, it 
+doesn't implement many of the basic functions typically required by modern systems. However, no 
+special requirements are needed to attempt booting CHB on real hardware.
 
-If you are interested in testing CHB on a physical machine, doing so is encouraged, as it may help uncover 
-bugs and improve code reliability through real-world testing.
+If you are interested in testing CHB on a physical machine, doing so is encouraged, as it may help 
+uncover bugs and improve code reliability through real hardware testing.
 
-5.	Contents of main repository
+                             5.	Contents of main repository
 
-The following files are located in the main repository:
+    *   include/ -> '.h' files.
+    *   lib/ -> tiny implementation of libc (lchb)
+    *   loader/ -> kernel loader.
+    *   scripts/ -> programs used in compilation.
+    *   stage1/ -> bootsector program.
+    *   util/ -> tools.
+    *   .clang-format
+    *   build.sh -> build system main script.
+    *   Makefile
+    *   README
 
-	* include/ -> '.h' files.
-	* lib/ -> tiny implementation of libc (lchb)
-	* loader/ -> kernel loader.
-	* scripts/ -> programs used in compilation.
-	* stage1/ -> bootsector program.
-	* util/ -> tools.
-	* .clang-format
-	* build.sh -> build system main script.
-	* Makefile
-	* README
+                                   6.	CHB Philosophy
 
-6.	CHB Philosophy
-
-CHB is an independent bootloader project, designed from scratch rather than derived from existing solutions 
-like GRUB or LILO. Its core philosophy is simplicity: to provide a lightweight, minimalistic alternative 
-for kernel loading and experimentation.
+CHB is an independent bootloader project, designed from scratch rather than derived from existing 
+solutions like GRUB or LILO. Its core philosophy is simplicity: to provide a lightweight, 
+minimalistic alternative for kernel loading and experimentation.
 
 7.	Technical aspects and general characteristics
     
-	* Simple build script: For enable support for cross-compiling, CHB implements the build script, this
-	  configure important variables used by makefile (e.j compiler prefix) and runs makefile for build
-	  CHB. The script does not validate tool versions, so it is recommended to use at least the 
-	  dependencies listed in section 3.
+	* Simple build script: For enable support for cross-compiling, CHB implements the build script, 
+      this configure important variables used by makefile (e.j compiler prefix) and runs makefile 
+      for build CHB. The script does not validate tool versions, so it is recommended to use at least 
+      the dependencies listed in section 3.
 
 	* Simple and dynamic kernel loading: This version add support for very simple FS driver (FAT12), 
-	  'stage2' find '/kernel.bin' in the filesystem and tries to runs it. Therefore 'stage1' pass control 
-	  to 'stage2' and load kernel. At the moment CHB doesn't report BIOS disk extensions, cpuid, memory 
-	  map, etc. So you would have to implement this yourself in your kernel. Please note that CHB only 
-	  **supports binary kernels**. ELF, PE and COFF are not currently supported by 'stage2'.
+	  'stage2' find '/kernel.ELF' in the filesystem and tries to runs it. Therefore 'stage1' pass 
+      control to 'stage2' and load kernel. At the moment CHB doesn't report BIOS disk extensions, 
+      cpuid, memory map, etc. So you would have to implement this yourself in your kernel. CHB at the
+      moment only support ELF formatted executables.
 	
 	* Protected mode: CHB changes to protected mode before 'stage1' program, and runs kernel in protected
 	  mode, At the moment CHB doesn't support long mode, If you will load kernel using CHB, you must 
@@ -103,10 +100,16 @@ for kernel loading and experimentation.
 	* Memory: CHB obtains the memory usable before 1MB via INT12 and reports it in the display. These 
 	  values ​​are not passed to the kernel and are only used for debugging and important information 
 	  when running CHB.
+    
+    * VFS: CHB uses simple VFS for support multiple filesystems. Internally, it adds a prefix to the 
+      file path so it can be found. The file system associates a file prefix with a letter of the 
+      alphabet according to the mount order. Prefixes are handled like this: '/prefix/path/to/file'. 
+      For example, '/A/boot/hello.txt', '/B/usr/a.txt'
 
-8.	Building CHB
+                                         8.	Building CHB
 
-Please note that there are 2 possible files that build CHB from source: using Makefile or build.sh script.
+Please note that there are 2 possible files that build CHB from source: using Makefile or build.sh 
+script.
 
 './build.sh' has the following options, so use them with care especially when defining a cross-compilation 
 interface.
@@ -146,7 +149,7 @@ NOTES:
     * To set the number of sectors on the floppy disk, it is necessary to keep in mind that 
       the program only accepts the values reported by INT13,8. See './mkfloppy' for more information.
 	* For FAT12 images is necessary set the number to reserved sectors after MBR because 
-      loader is stored here (stage2) the program. CHB requests at least 35 sectors for store loader. 
+      loader is stored here (stage2) the program. CHB requests at least 45 sectors for store loader. 
       See 'mkfs.fat –-help' for more info
 
 For install CHB bootsector in the previous file run:
@@ -162,51 +165,39 @@ And that's it, you now have your FAT12 image with CHB inside.
 	* BIOS configures the initial environment to run CHB and jumps to 'stage1'
 	* 'stage1' enables A20, loads the total sectors from 'stage2' obtained using 'scripts/size-test.sh', 
 	  and passes control to 'stage2'.
+    * 'stage2' gets memory map, and initialize disk and mount current FS.
 	* 'stage2' checks if the kernel is linked at address '0x100000' and if it is smaller than 128 sectors 
-	  (due to BIOS interrupt limitations).
-	* 'stage2' jump to kernel.
+	  (due to BIOS interrupt limitations), and jump there.
 
-13.	CHB memory map
+                                    13.	CHB memory map
 
 Address          Description
 -------------    -----------------------
-00000 - 00499    BIOS reserved.
-00500 - 07AFF    FS driver data.
-07B00 - 07BFF    Unused.
-07C00 - 07FFF    Stage1 and stack.
-08000 - 0FFFF    Stage2 program.
-80000 - fffff    Reserved (upper memory)
-100000 - ?       Kernel program
+00000 - 9FFFF    Lower memory.
+A0000 - FFFFF    Upper memory.
 
-14.	CHB PLAN (TODO LIST)
+00000 - 07BFF    BIOS, RM-IDT, BDA and INT13 scratch.
+07C00 - 07E00    Stage1 (bootsector) and stack.
+07E01 - 07FFF    Unused.
+08000 - 0FFEF    Stage2 (64 sectors)
+0FFF0 - 0FFFF    Stage2 stack.
+10000 - 102FF    Unused.
+10300 - 12FFF    Stage2 FS driver buffer.
+13000 - 23000    Kernel load buffer.
+23001 - 9FFFF    Unused.
+A0000 - FFFFF    Video memory, and mapped hardware.
+100000 - ?????   Extended memory (kernel)
 
-	* Add support for other filesystems.
-	* Disk and CDROM support. (INT13,4X)
-	* Write support. (fat12)
-	* Executable formats. (pe, elf, coff, a.out, ...)
-	* Support for UEFI systems.
-	* Non x86 support.
-	* Multiboot specification.
-	* Long mode support.
-	* VFS support.
-	* Memory map.
-	* Rework CHB error system.
-	* Rework floppy controller in stage1.
-	* Report disk geometry in stage1. (INT13,8)
-	* Create more complete documentation.
 
-15.	Changelog
+                                    14.	CHB PLAN (TODO LIST)
 
-	*	Added simple libc. (stdlib, stdio, ctype and string)
-	*	Added C part of loader. (stage2)
-	*	Improved documentation.
-	*	FAT12 read support.
-	*	Simple INT13 floppy controller.
-	*	Simple video controller. (for 80x25 modes)
-	*	Rework of build system
-	*	Reorganization of source files.
+Please see './TODO' for more info.
 
-16. Contact
+                                     15.	Changelog
+
+Please see './ChangeLog' for more info.
+
+                                       16. Contact
 
 Any questions, doubts or clarifications, with subject 'CHB CONTACT' mail to:
 
@@ -223,10 +214,11 @@ or in attached email.
 That's it! Once CHB is installed on the formatted image, you can start experimenting with your 
 kernels. For now, CHB is a small bootloader, but there are plans to add new features in the future.
 
-At the moment, CHB doesn't support keyboard input or have a simple shell that allows for further extensions 
-to its functionality. All CHB does is automatically load the kernel without any initial configuration.
+At the moment, CHB doesn't support keyboard input or have a simple shell that allows for further 
+extensions to its functionality. All CHB does is automatically load the kernel without any initial 
+configuration.
 
-18. Appendix A: Minimal kernel example
+                           18. Appendix A: Minimal kernel example
 
 # =========================================
 # kernel.S entry point of the kernel
@@ -248,14 +240,13 @@ stop:                               # stop function
 	jmp stop                        # infinite loop
 
 
-// =========================================
-// kernel.c C part of the kernel.
-// =========================================
+/* kernel.c -- C part of the kernel. */
 
 #define VGA_MEM 0xB8000             // location of display memory (text mode)
 
 /* kernel main entry */
-void kmain(void) {
+void kmain(void) 
+{
 	char *video = (char*)VGA_MEM;
 	video[0] = 'H';                 // put 'h' to first display entry
 	video[1] = 0x07;                // set 'h' color attribute (gray text and black foreground) 

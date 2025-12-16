@@ -18,6 +18,7 @@ LIB_SRCSC:= stdio/printf.c \
 			stdio/vsprintf.c \
 			stdlib/atoi.c \
 			stdlib/itoa.c \
+            stdlib/div.c \
 			stdlib/itoa64.c \
 			stdlib/utoa64.c \
 			string/memcmp.c \
@@ -33,7 +34,6 @@ LIB_SRCSC:= stdio/printf.c \
 			string/strerror.c \
 			ctype/upper.c \
 			ctype/lower.c \
-			errno/errno.c
 			
 LIB_OBJS := $(patsubst %.S, $(OUTDIRS)/%.o, $(LIB_SRCS)) \
 			$(patsubst %.c, $(OUTDIRS)/%.o, $(LIB_SRCSC))

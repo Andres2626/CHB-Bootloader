@@ -16,7 +16,7 @@
 
 PRIVATE struct fs_ops *vfs_reg_tab[MAX_FS];
 PRIVATE struct fs *vfs_mount_list[MAX_MOUNT_POINTS];
-PRIVATE struct file *vfs_opened_list[MAX_FILES_OPENED];
+PRIVATE struct file vfs_opened_list[MAX_FILES_OPENED];
 
 int vfs_register_fs(struct fs_ops *fs) 
 { 
@@ -27,19 +27,17 @@ int vfs_register_fs(struct fs_ops *fs)
     int i; /* FS register index */ 
     
     if (!fs)
-        goto fail;
+        return SIGN(EFAULT);
     
     for (i = 0; i < MAX_FS; i++) { 
         if (!vfs_reg_tab[i])
             goto table_scan_success;
     }
     
-fail:
-    errno = EREGFS; 
-    return 0;
+    return SIGN(EREGFS);
 table_scan_success:
     vfs_reg_tab[i] = fs; 
-    return 1; 
+    return EIO; 
 }
 
 struct fs *vfs_detect(struct device *disk)
@@ -47,10 +45,8 @@ struct fs *vfs_detect(struct device *disk)
     PRIVATE struct fs_ops *ops; /* FS functions */
     PRIVATE struct fs *fs;      /* FS descriptor */
     
-    if (!disk) {
-        errno = EDEVINT;
-        goto fail;
-    }
+    if (!disk)
+        return NULL;
     
     for (int i = 0; i < MAX_FS; i++) {
         ops = vfs_reg_tab[i];
@@ -62,12 +58,10 @@ struct fs *vfs_detect(struct device *disk)
             goto success;
     }
 
-    errno = EIFS;
+    return NULL;
 success:
     fs->ops = ops;
     return fs;
-fail:
-    return NULL;
 }
 
 int vfs_mount(struct fs *fs)
@@ -75,10 +69,10 @@ int vfs_mount(struct fs *fs)
     int i; /* FS mount index */
 
     if (!fs || !fs->ops || !fs->fs_dev)
-        goto fail;
+        return SIGN(EINVAL);
 
     if (!fs->ops->mount(fs->fs_dev))
-        goto fail;
+        return SIGN(EFAULT);
 
     for (i = 0; i < MAX_MOUNT_POINTS; i++) {
         if (!vfs_mount_list[i])
@@ -86,13 +80,11 @@ int vfs_mount(struct fs *fs)
     }
 
     if (i == MAX_MOUNT_POINTS)
-        goto fail;
+        return SIGN(EREGFS);
 
     vfs_mount_list[i] = fs;
 
-    return 1;
-fail:
-    return 0;
+    return EIO;
 }
 
 int vfs_unmount(struct fs *fs)
@@ -100,23 +92,24 @@ int vfs_unmount(struct fs *fs)
     int i; /* FS mount index */
 
     if (!fs || !fs->ops || !fs->fs_dev)
-        goto fail;
+        return SIGN(EINVAL);
     
     for (i = 0; i < MAX_MOUNT_POINTS; i++) {
         if (vfs_mount_list[i] == fs)
             goto success;
     }
-
+    
+    if (i == MAX_MOUNT_POINTS)
+        return SIGN(EREGFS);
+    
 success:
     /* unmount internal FS */
     fs->ops->unmount();
     vfs_mount_list[i] = NULL;
-    return 1;
-fail:
-    return 0;
+    return EIO;
 }
 
-PUBLIC struct file *vfs_open(_CONST char *path)
+struct file *vfs_open(_CONST char *path)
 {
     /* 
      * This is the path format '/mount_ident/path/to/file.txt'
@@ -145,20 +138,20 @@ PUBLIC struct file *vfs_open(_CONST char *path)
     if ((mpoint >= 'a' && mpoint <= 'z') || (mpoint >= 'A' && mpoint <= 'Z'))
         mpoint = toupper(mpoint);
     else {
-        printf("[FS] Invalid path prefix");
+        printf("[FS] Invalid path prefix\n");
         goto fail;
     }
     
     /* get the volume index from ident */
     vol = (char)(mpoint - 'A');
     if (vol < 0 || vol >= MAX_MOUNT_POINTS) {
-        printf("[FS] Invalid volume prefix");
+        printf("[FS] Invalid volume prefix\n");
         goto fail;
     }
     path++;
     
     if (*path != '/') {
-        printf("[FS] Invalid path prefix");
+        printf("[FS] Invalid path prefix\n");
         goto fail;
     }
     path++;
@@ -177,49 +170,56 @@ PUBLIC struct file *vfs_open(_CONST char *path)
         goto fail;
     }
     
-    /* pass remaining path to FS driver */
-    fp = fs->ops->open(buff);
-    if (!fp)
-        goto fail;
-    
-    fp->fs->ops = fs->ops;
-
     for (i = 0; i < MAX_FILES_OPENED; i++) {
-        if (!vfs_opened_list[i])
-            break;
+        if (!vfs_opened_list[i].opened) {
+            fp = &vfs_opened_list[i];
+            memset(fp, 0, sizeof(struct file));
+            goto end_table_scan;
+        }
     }
+    goto fail;
     
-    if (i >= MAX_FILES_OPENED) {
-        errno = EMFILE;
+end_table_scan:
+    fp->opened = true;
+    fp->pos = 0;
+    fp->inode_number = i;
+    
+    /* pass remaining path to FS driver */
+    if (fs->ops->open(fp, buff) < 0)
         goto fail;
-    }
     
-    /* push file descriptor in file array */
-    vfs_opened_list[i] = fp;
+    fp->fs = fs;
     
     return fp;
 fail:
     return NULL;
 }
 
+i32t vfs_read(struct file *fp, void *buff, u32t len)
+{
+    if (!fp || !fp->fs || !fp->fs->ops || !fp->fs->ops->read)
+        return SIGN(EINVAL);
+    
+    if (!buff || !len)
+        return SIGN(EINVAL);
+    
+    return fp->fs->ops->read(fp, buff, len);
+}
+
 int vfs_close(struct file *fp)
 {
-    int i; /* file index */
-    
     if (!fp)
-        goto fail;
+        return SIGN(EINVAL);
     
     /* delete file from array */
-    for (i = 0; i < MAX_FILES_OPENED; i++) {
-        if (vfs_opened_list[i] == fp)
+    for (int i = 0; i < MAX_FILES_OPENED; i++) {
+        if (fp->inode_number == i && fp->opened) {
+            memset(fp, 0, sizeof(struct file));
             goto success;
+        }
     }
     
 success:
-    /* clean file manager */
-    vfs_opened_list[i] = NULL;
-    memset(fp, 0, sizeof(struct file));
-    return 1;
-fail:
+    fp = NULL;
     return 0;
 }

@@ -23,9 +23,7 @@ union FAT_bs {
 
 void usage() 
 {
-   fprintf(stderr, "CHB %s %s\n"
-           "usage: %s <input_file>\n",
-           PROG_NAME, PROG_VER, PROG_NAME);
+   fprintf(stderr, "CHB %s %s\n" "usage: %s <input_file>\n", PROG_NAME, PROG_VER, PROG_NAME);
 }
 
 #define BS bs.bs
@@ -74,7 +72,7 @@ int main(int argc, char** argv)
    /* print bootsector */
    printf("asm instruction: 0x%x 0x%x 0x%x\n", BS.jmp[0], BS.jmp[1], BS.jmp[2]);
    printf("asm instruction (valid): %s\n",
-          (BS.jmp[0] == 0xEB && BS.jmp[2] == 0x90) ? "valid" : "invalid expected 0xEB X 0x90");
+          (BS.jmp[0] == 0xEB && BS.jmp[2] == 0x90) ? "valid" : "invalid expected 0xEB, 0x90");
    printf("oem: %s\n", BS.oem);
    printf("sector size: %i\n", BS.sector_size);
    printf("cluster size: %i\n", BS.cluster_size);
@@ -94,4 +92,6 @@ int main(int argc, char** argv)
    printf("volume id: 0x%x\n", BS.volumeid);
    printf("label: %s\n", BS.label);
    printf("id: %s\n", BS.id);
+   
+   return 0;
 }

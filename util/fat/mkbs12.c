@@ -10,7 +10,7 @@
 
 /* 
 * For use this program you should have created FAT image via mkfs.fat,
-* specifying at least 35 reserved sectors (option -R), these sectors are used for CHB to save stage 2.
+* specifying at least 45 reserved sectors (option -R), these sectors are used for CHB to save stage 2.
 * The program changes the machine code given by mkfs.fat and changes it to the 
 * CHB code, which means that it changes the instruction at the beginning so 
 * that the program jumps to 0x3C and the bootsector leaves it intact and rewrites 
@@ -18,8 +18,8 @@
 * NOTES!: 
 * - The bootloader by default jmp to 0x3C but can change, So be careful when editing the BOOT_BPB_END 
 *   definition in stage1/stage1.h
-* - CHB requires requires the input image to have at least 35 sectors to store stage 2, Therefore the 
-*   number of reserved sectors must be at least 35
+* - CHB requires requires the input image to have at least 45 sectors to store stage 2, Therefore the 
+*   number of reserved sectors must be at least 45
 * - The image must have the number of sectors reported by the mkfloppy program 
 *  (720, 1440, 2880 and 5760 sectors) according to INT13,8
 */
@@ -124,7 +124,7 @@ int main(int argc, char **argv)
    }
 
    /* check if the image have enough space for save stage2 */
-   if (input_bs.bs.reserved_sectors < 35) {
+   if (input_bs.bs.reserved_sectors < 45) {
       printf("Invalid FAT reserved sectors. %i\n", input_bs.bs.reserved_sectors);
       return 1;
    }
