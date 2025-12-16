@@ -132,7 +132,6 @@ FUNCTION(_print)
  * 1. Test if A20 is enabled
  * 2. Enable A20 (fast)
  * 3. Enable from BIOS
- * 4. Enable with keyboard
  */
 FUNCTION(enable_a20)
    /* test if A20 is enabled */

@@ -33,10 +33,6 @@ void video_init(struct video *vid)
     
     /* setup video info */
     video_info = vid;
-    
-    printf("[VIDEO] Initialized, mode: %i, cursor: %i, start: %i, end: %i, x: %i, y: %i, "
-           "bg: %i, fg: %i\n",
-	       vid->mode, csr.state, csr.start, csr.end, csr.x, csr.y, vid->bg, vid->fg);
 }
 
 void video_driver_cursor_enable(u8t start, u8t end) 

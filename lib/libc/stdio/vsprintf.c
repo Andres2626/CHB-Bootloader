@@ -26,7 +26,6 @@ void copy_internal(_CONST char *src, char **dst)
 int vsprintf(char *s, _CONST char *fmt, va_list arg) 
 {
 	char *begin = s;
-    *s = 0;
 
     int state = STATE_NORMAL;
     while (*fmt) {
@@ -37,7 +36,7 @@ int vsprintf(char *s, _CONST char *fmt, va_list arg)
                 *s++ = *fmt;
 			fmt++;
         }
-		else if (state >= STATE_NORMAL) {
+		else {
 			if (*fmt == 'l') {
                 if (state == STATE_FORMAT)
                     state = STATE_LONG;

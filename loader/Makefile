@@ -20,6 +20,7 @@ SFILES := loader.S \
 	
 # .c files
 CFILES:= entry.c \
+         elfload.c \
 		 video.c \
 		 disk.c \
 		 fs/fat.c \

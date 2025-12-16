@@ -11,6 +11,6 @@
 #define _STACK_H_ 1
 
 /* real mode stack */
-#define STACK16 0xFFF0
+#define STACK16 0xF000
 
 #endif /* !_STACK_H_ */

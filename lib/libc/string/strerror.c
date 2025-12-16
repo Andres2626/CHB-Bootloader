@@ -11,25 +11,27 @@
 #include "lib/libc/errno.h"
 
 /* Supported error numbers */
-static char *errno_str[EUNKNOUN] = 
+static char *errno_str[EUNKNOWN] = 
 {
-	[ESINV]    = "Invalid disk sector",
-	[EREAD]    = "Read error",
-	[EDISK]    = "Disk error",
-	[EDEVINT]  = "Disk driver is not initialized",
-	[ENOMEM]   = "No enough memory",
-	[EMFILE]   = "Maximum number of opened files exceeded",
-	[EKERN]    = "Kernel not found",
-	[EFATTR]   = "Invalid file attribute",
-	[EKERNLOC] = "Kernel localization in before 1MB is not supported",
-	[EMEMINIT] = "Memory driver is not initialized",
-	[EIFS]     = "Invalid filesystem",
-	[ENOIMP]   = "Not implemented"
+	[ENOMEM]    = "No enough memory",
+	[EMFILE]    = "Maximum number of opened files exceeded.",
+	[EKERN]     = "Kernel not found",
+	[EIFS]      = "Invalid filesystem",
+	[EREGFS]    = "Number of registered filesystems exceeded",
+	[EIO]       = "Input/Output error",
+	[ENOEXEC]   = "Executable format error",
+	[EINVAL]    = "Invalid value",
+	[EFAULT]    = "Invalid pointer",
+	[ESYSINIT]  = "Subsystem not initialized",
+	[EFILE]     = "File not found",
+    [EKERNLOC]  = "Kernel localization before 1MB is not supported",
+    [EFS]       = "Filesystem error",
+	[ENOIMP]    = "Not implemented"
 };
 
 char *strerror(int errno) 
 {
-	if (errno <= 0 || errno > EUNKNOUN)
+	if (errno <= 0 || errno > EUNKNOWN)
 	    return NULL;
 	
     return errno_str[errno];

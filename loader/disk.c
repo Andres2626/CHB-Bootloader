@@ -17,45 +17,52 @@
 
 PRIVATE void lba2chs(struct device *dev, int sector, u16t *cyl, u16t *sec, u16t *head) 
 {
-   *sec = sector % dev->sec + 1;
-   *cyl = (sector / dev->sec) / dev->head;
-   *head = (sector / dev->sec) % dev->head;
+    struct device_geometry *g = &dev->geom;
+    
+    *sec = sector % g->sector + 1;
+    *cyl = (sector / g->sector) / g->head;
+    *head = (sector / g->sector) % g->head;
 }
 
 int devread(struct device *dev, int sector, int count, u8t *buff) 
 {
-    u16t cyl, sec, head;
-	
-    if (dev->state != 1) {
-        SAVE_ERR_RET(EDEVINT, 0);
-    }
+    struct device_geometry g;
+    
+    /* check if drive is not initialized */
+    if (dev->state != 1)
+        return SIGN(EIO);
    
-    if (sector < 0 || (count < 0 || count > 0x80)) {
-        SAVE_ERR_RET(ESINV, 0);
-    }
+    /* 
+     * check if sector is not 'out-of-bounds' 
+     * TODO: This is not aplicable for CD or drive with INT13,4X
+     */
+    if (sector < 0 || (count < 0 || count > 0x80))
+        return SIGN(EINVAL);
    
     /* convert absolute LBA sector to CHS */
-    lba2chs(dev, sector, &cyl, &sec, &head);
+    lba2chs(dev, sector, &g.cyl, &g.sector, &g.head);
    
     for (int i = 0; i < 3; i++) {
-        if (disk_read(dev->number, cyl, sec, head, count, buff)) 
-		    return 1;
+        if (disk_read(dev->number, g.cyl, g.sector, g.head, count, buff)) 
+		    return count * 512; /* return read bytes */
 	 
         disk_reset_controller(dev->number);
     }
 
-    SAVE_ERR_RET(EREAD, 0);
+    return SIGN(EIO);
 }
 
 int devinit(struct device *dev) 
 {
+    struct device_geometry g;
+    
 	printf("[DISK] Initializing number: 0x%x\n", dev->number);
 	
-    if (!disk_get_parameters(dev->number, 0, &dev->cyl, &dev->sec, &dev->head)) {
-        SAVE_ERR_RET(EDISK, 0);
-    }
+    if (!disk_get_parameters(dev->number, 0, &g.cyl, &g.sector, &g.head))
+        return SIGN(EIO);
   
-    /* save disk number as valid state */
+    /* save disk as 'initialized' */
+    dev->geom = g;
     dev->state = DRIVE_STATE_1;
-    return 1;
+    return 0;
 }

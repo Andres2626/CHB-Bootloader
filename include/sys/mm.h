@@ -13,22 +13,10 @@
 #include "const.h"
 #include "types.h"
 
-/* 0x0 - 0x499 -- REALMODE RESERVED */
-
-/* 0x500 - 0x7AFF (0x7600) -- FILESYSTEM DRIVER */
-#define FS_DRIVER_DATA      0x500
-#define FS_DRIVER_DATA_SIZE 0x7600
-
-/* 0x7B00 - 0x7BFF -- UNUSED MEMORY */
-
-/* 0x7C00 - 0x7FFF -- STAGE1 PROGRAM, STACK AND RESERVED MEMORY */
-
-/* 0x8000 - 0x7FFFF -- LOADER MEMORY */
-
-/* 0x8000 - 0xFFFFF -- UPPER MEMORY (RESERVED) */
-
+#define FS_DRIVER_DATA      0x10300
+#define FS_DRIVER_DATA_SIZE 0x2D00
 #define KERN_SIZE 0x10000
-#define KERN_BUFFER 0x30000
+#define KERN_BUFFER 0x13000
 #define KERN_LOC 0x100000
 
 #include <stdint.h>
