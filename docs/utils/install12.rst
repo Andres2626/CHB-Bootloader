@@ -15,7 +15,7 @@ Arguments
 stage1.IMG
 
 *arg2:* Output file (previously formatted with ‘\ *mkfs.fat’* and
-`mkfs12 <mkfs12.docx>`__)
+`mkfs12 <mkfs12.rst>`__)
 
 Description
 -----------
@@ -29,7 +29,7 @@ jump to it.
   depending on the definition in *'stage1/stage1.h'.*
 
 - The image must have the number of sectors specified by INT13.8; `see
-  supported floppy formats <mkfloppy.docx>`__ for more info
+  supported floppy formats <mkfloppy.rst>`__ for more info
 
 Examples
 --------
@@ -44,7 +44,7 @@ The following is a list of things that *'mkfs12'* may fail to do:
 - The prefix and output image were not specified.
 
 - Output image doesn’t have **obligatory** sectors (`see supported
-  floppy formats <mkfloppy.docx>`__)
+  floppy formats <mkfloppy.rst>`__)
 
 - Output image or loader file not found by ‘\ *dd*\ ’
 
