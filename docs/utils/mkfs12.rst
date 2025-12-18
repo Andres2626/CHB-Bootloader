@@ -26,7 +26,7 @@ Description
 *‘mkfs12’* creates a bootsector containing the CHB *'stage1'* code. The
 input image must be previously formatted as *'mkfs.fat'* and configured
 with at least 45 reserved sectors to allow for the installation of the
-bootloader after the bootsector via `install12 <install12.docx>`__
+bootloader after the bootsector via `install12 <install12.rst>`__
 command.
 
 **Notes:**
@@ -35,7 +35,7 @@ command.
   depending on the definition in *'stage1/stage1.h'.*
 
 - The image must have the number of sectors specified by INT13.8; `see
-  supported floppy formats <mkfloppy.docx>`__ for more info.
+  supported floppy formats <mkfloppy.rst>`__ for more info.
 
 - The end of the bootsector must contain the signature 0xAA55 for the
   program to recognize it.
@@ -57,7 +57,7 @@ The following is a list of things that *'mkfs12'* may fail to do:
 - Input image could not be opened.
 
 - Input image doesn’t have **obligatory** sectors (`see supported floppy
-  formats <mkfloppy.docx>`__)
+  formats <mkfloppy.rst>`__)
 
 - Input image doesn’t have enough space for BPB.
 
