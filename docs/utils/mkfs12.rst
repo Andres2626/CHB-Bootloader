@@ -13,12 +13,12 @@ Options
 
 -i, --input-fat-img=[FILE]
 
-Input formatted FAT12 image. This image is edited and at the end it
-remains with the boot sector of CHB and the BPB of FAT.
+   Input formatted FAT12 image. This image is edited and at the end it
+   remains with the boot sector of CHB and the BPB of FAT.
 
 -p, --prefix=[PATH]
 
-Directory where CHB was installed. The program looks for stage1.IMG
+   Directory where CHB was installed. The program looks for stage1.IMG.
 
 Description
 -----------
@@ -26,7 +26,7 @@ Description
 *‘mkfs12’* creates a bootsector containing the CHB *'stage1'* code. The
 input image must be previously formatted as *'mkfs.fat'* and configured
 with at least 45 reserved sectors to allow for the installation of the
-bootloader after the bootsector via `install12 <install12.rst>`__
+bootloader after the bootsector via `install12 <install12.docx>`__
 command.
 
 **Notes:**
@@ -35,7 +35,7 @@ command.
   depending on the definition in *'stage1/stage1.h'.*
 
 - The image must have the number of sectors specified by INT13.8; `see
-  supported floppy formats for more information. <mkfloppy.rst>`__
+  supported floppy formats <mkfloppy.docx>`__ for more info.
 
 - The end of the bootsector must contain the signature 0xAA55 for the
   program to recognize it.
@@ -45,8 +45,8 @@ Examples
 
 ./mkfs12 --input-fat-image=floppy.img --prefix=/boot/CHB/
 
-Error handling:
----------------
+Error handling
+--------------
 
 The following is a list of things that *'mkfs12'* may fail to do:
 
@@ -57,7 +57,7 @@ The following is a list of things that *'mkfs12'* may fail to do:
 - Input image could not be opened.
 
 - Input image doesn’t have **obligatory** sectors (`see supported floppy
-  formats <mkfloppy.rst>`__)
+  formats <mkfloppy.docx>`__)
 
 - Input image doesn’t have enough space for BPB.
 
@@ -69,4 +69,4 @@ License
 -------
 
 This program can be redistributed under the terms of the MIT License.
-See './COPYING' file for more info
+See './COPYING' file for more information.
