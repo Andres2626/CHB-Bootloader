@@ -6,7 +6,9 @@ Install CHB loader in formatted FAT12 image.
 Usage
 -----
 
-./install12 <arg1> <arg2>
+.. code-block:: bash
+
+    ./install12 <arg1> <arg2>
 
 Arguments
 ---------
@@ -33,8 +35,9 @@ jump to it.
 
 Examples
 --------
+.. code-block:: bash 
 
-./install12 /boot/CHB CHB.img
+    ./install12 /boot/CHB CHB.img
 
 Error handling
 --------------

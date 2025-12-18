@@ -6,7 +6,9 @@ View information of FAT12 formatted image.
 Usage
 -----
 
-./fatinfo <*arg1*>
+.. code-block:: bash
+
+    ./fatinfo <*arg1*>
 
 Arguments
 ---------
@@ -22,7 +24,9 @@ bootsector.
 Examples
 --------
 
-./fatinfo fat12.img
+.. code-block:: bash
+
+    ./fatinfo fat12.img
 
 Error handling:
 ---------------

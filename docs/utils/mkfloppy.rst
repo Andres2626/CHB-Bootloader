@@ -7,7 +7,9 @@ reported by INT13,8.
 Usage
 -----
 
-./mkfloppy <*arg1*> <*arg2*>
+.. code-block:: bash 
+
+    ./mkfloppy <*arg1*> <*arg2*>
 
 Arguments
 ---------
@@ -44,7 +46,9 @@ Examples
 
 Create 1.44MB floppy image:
 
-./mkfloppy 2880 myfloppy.img
+.. code-block:: bash
+
+    ./mkfloppy 2880 myfloppy.img
 
 Error handling:
 ---------------

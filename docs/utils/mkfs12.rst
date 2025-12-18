@@ -6,7 +6,9 @@ Make FAT12 CHB bootsector.
 Usage
 -----
 
-./mkfs12 [-i] [-p]
+.. code-block:: bash
+
+    ./mkfs12 [-i] [-p]
 
 Options
 -------
@@ -43,7 +45,9 @@ command.
 Examples
 --------
 
-./mkfs12 --input-fat-image=floppy.img --prefix=/boot/CHB/
+.. code-block:: bash
+
+    ./mkfs12 --input-fat-image=floppy.img --prefix=/boot/CHB/
 
 Error handling
 --------------
