@@ -4,8 +4,9 @@ export MAKKEC = $(MAKE) -C
 export OUT = build
 export SRC = src 
 export DEPS = include
+export DOCS = docs
 
-.PHONY: all clean
+.PHONY: all clean doc-clean doc-html doc-latex doc-pdf doc-htmlhelp doc-text
 
 all: $(OUT)/ $(OUT)/fat mk $(OUT)/final.img fatfs misc test
 
@@ -25,7 +26,7 @@ fat12_test.img: $(OUT)/stage1.img $(OUT)/loader.img
 	@echo TEST $@
 	@$(OUT)/mkfloppy 2880 $@
 	@/sbin/mkfs.fat -F 12 -n "FT12" $@ -R 45
-	@$(OUT)/fat/mkbs12 --prefix=$(OUT)/ -i $@
+	@$(OUT)/fat/mkfs12 --prefix=$(OUT)/ -i $@
 	@$(OUT)/fat/install12 $(OUT)/ $@ 
 	mcopy -i $@ kernel.elf "::kernel.ELF"
 
@@ -61,3 +62,22 @@ clean: $(SUBDIRS)
 	rm -rf fat12_test.img
 	rm -rf $(OUT)/*
 	rmdir $(OUT)
+
+# Sphinx documentation
+doc-html:
+	$(MAKKEC) $(DOCS) html
+
+doc-latex:
+	$(MAKKEC) $(DOCS) latex
+
+doc-pdflatex:
+	$(MAKKEC) $(DOCS) pdflatex
+
+doc-htmlhelp:
+	$(MAKKEC) $(DOCS) htmlhelp
+
+doc-text:
+	$(MAKKEC) $(DOCS) text
+
+doc-clean:
+	$(MAKKEC) $(DOCS) clean

@@ -1,5 +1,5 @@
-CHB MKFS12 PROGRAM
-==================
+mkfs12
+======
 
 Make FAT12 CHB bootsector.
 

@@ -1,12 +1,12 @@
-CHB INSTALL12 PROGRAM
-=====================
+install12
+=========
 
 Install CHB loader in formatted FAT12 image.
 
 Usage
 -----
 
-.. code-block:: bash
+.. code-block:: bash 
 
     ./install12 <arg1> <arg2>
 

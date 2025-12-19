@@ -1,5 +1,5 @@
 /*
-* mkbs12.c -- Make fat12 CHB bootsector
+* mkfs12.c -- Make FAT12 CHB bootsector
 *
 * Copyright (C) 2021 - 2025 andres26
 *
@@ -33,14 +33,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define PROG_NAME "mkbs"
+#define PROG_NAME "mkfs"
 #define PROG_VER  "1.0"
 
-const char* argp_program_version = "CHB mkbs 1.0";
+const char* argp_program_version = "CHB mkfs12 1.0";
 static char* input = NULL;
 static char* prefix = NULL;
 
-union FAT_bs {
+union FAT_bootsec {
    struct fat_boot_sector bs;
    u8t data[512];
 };
@@ -66,7 +66,7 @@ int main(int argc, char **argv)
 {
    FILE *stage1_img, *fat_img;
    char *buff = malloc(255 * sizeof(char));
-   union FAT_bs stage1_bs, input_bs;
+   union FAT_bootsec stage1_sec, input_sec;
    size_t size;
 
    argp_parse(&argp, argc, argv, 0, 0, 0);
@@ -89,10 +89,10 @@ int main(int argc, char **argv)
       fclose(stage1_img);
       return 1;
    }
-
+   
    free(buff);
 
-   fread(&stage1_bs, 512, 1, stage1_img);
+   fread(&stage1_sec, 512, 1, stage1_img);
    fclose(stage1_img);
 
    fat_img = fopen(input, "rb");
@@ -104,7 +104,7 @@ int main(int argc, char **argv)
    fseek(fat_img, 0, SEEK_END);
    size = ftell(fat_img);
    fseek(fat_img, 0, SEEK_SET);
-   fread(&input_bs, 512, 1, fat_img);
+   fread(&input_sec, 512, 1, fat_img);
    fclose(fat_img);
 
    /* check if image have correct sector size */
@@ -118,25 +118,25 @@ int main(int argc, char **argv)
    }
 
    /* detect valid JMP */
-   if (input_bs.bs.jmp[1] != BOOT_BPB_END) {
-      printf("Invalid JMP instruction. 0x%x\n", input_bs.bs.jmp[1]);
+   if (input_sec.bs.jmp[1] != BOOT_BPB_END) {
+      printf("Invalid JMP instruction. 0x%x\n", input_sec.bs.jmp[1]);
       return 1;
    }
 
    /* check if the image have enough space for save stage2 */
-   if (input_bs.bs.reserved_sectors < 45) {
-      printf("Invalid FAT reserved sectors. %i\n", input_bs.bs.reserved_sectors);
+   if (input_sec.bs.reserved_sectors < 45) {
+      printf("Invalid FAT reserved sectors. %i\n", input_sec.bs.reserved_sectors);
       return 1;
    }
 
    /* check if BPB have enough space for copy FAT BPB */
-   if (input_bs.bs.jmp[1] < 0x3C) {
-      printf("Invalid BPB size.0x%x\n", input_bs.bs.jmp[1]);
+   if (input_sec.bs.jmp[1] < 0x3C) {
+      printf("Invalid BPB size.0x%x\n", input_sec.bs.jmp[1]);
       return 1;
    }
 
    /* detect valid BIOS signature */
-   if (input_bs.data[510] != 0x55 || input_bs.data[511] != 0xaa) {
+   if (input_sec.data[510] != 0x55 || input_sec.data[511] != 0xaa) {
       printf("Invalid bootsector signature.\n");
       return 0;
    }
@@ -150,11 +150,11 @@ int main(int argc, char **argv)
    }
 
    for (int i = BOOT_BPB_END; i < 510; i++) {
-      input_bs.data[i] = stage1_bs.data[i];
+      input_sec.data[i] = stage1_sec.data[i];
    }
 
    fseek(fat_img, 0, SEEK_SET);
-   fwrite(&input_bs, 512, 1, fat_img);
+   fwrite(&input_sec, 512, 1, fat_img);
    fclose(fat_img);
    printf("copied CHB code into input image.\n");
    return 0;

@@ -15,7 +15,7 @@ need_arg() { if [ -z "$OPTARG" ]; then build_err "No arg for --$OPT option"; fi;
 build_help() {
 	cat << EOF
 '$0 -- build/clean system for CHB'
-Usage: $0 [t] [h] [b] [c] [?] [v] 
+Usage: $0 [t] [h] [b] [d] [c] [?] [v] 
 
 Configure CHB for build/clean
 
@@ -66,6 +66,15 @@ Options:
 		
     -c, --clean
         Clean compiled CHB files.
+        
+    -d, --docs=[MODE]
+        build all CHB documentation with Sphinx, current modes supported are:
+            - html      -- Generate HTML pages
+            - latex     -- Generate .tex file
+            - pdflatex  -- Convert .tex to pdf
+            - htmlhelp  -- Generate windows CHM format 
+            - text      -- Generate text file
+            - clean     -- Clean documentation generated files
 	
     -v, --version
         Print program version
@@ -80,7 +89,7 @@ TARGET=
 HOST=
 MODE=
 
-while getopts \?t:h:bvc-: OPT; do
+while getopts \?t:h:bd:vc-: OPT; do
 	if [[ "$OPT" = "-" ]]; then
 		OPT="${OPTARG%%=*}"
 		OPTARG="${OPTARG#"$OPT"}"
@@ -101,6 +110,28 @@ while getopts \?t:h:bvc-: OPT; do
 	;;
 	c | clean)
 		MODE=2
+	;;
+    d | docs)
+		export DOCMODE="$OPTARG"
+        case "$DOCMODE" in
+            "html")
+                ;;
+            "latex")
+                ;;
+            "pdflatex")
+                ;;
+            "htmlhelp")
+                ;;
+            "text")
+                ;;
+            "clean")
+                ;;
+            *)
+                build_err "Document mode not supported."
+                ;;
+        esac
+        
+        (cd ./ && make doc-$DOCMODE)
 	;;
 	\? | help)
 		build_help;
