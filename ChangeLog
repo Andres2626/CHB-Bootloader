@@ -1,3 +1,154 @@
+2025-12-18  Andres26  andrescamorao9@gmail.com
+
+2025-12-18 Some fixes
+    
+    * Delete set_errno() function (deprecated)
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2025-12-18  Andres26  andrescamorao9@gmail.com
+
+2025-12-18 mkbs renamed to mkfs12 program
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2025-12-18  Andres26  andrescamorao9@gmail.com
+
+2025-12-18 Add Sphinx documentation
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2025-12-18  Andres26  andrescamorao9@gmail.com
+
+2025-12-18 Documentation and Sphinx
+    
+    * Add complete CHB documentation (for now) with Sphinx.
+    * Add Sphinx for build documentation.
+    * Support for html, laTeX, pdflaTeX, htmlhelp (CHM windows format) and txt.
+    * TODO: github compatible documentation.
+    * TODO: Index all '.rst' in a main page (README).
+    * TODO: integrate '.rst' documentation in (README)
+    * Add code of conduct.
+    * Refactor all readme sections (in rst.files)
+    * TODO: Add github code_of_conduct.
+    * TODO: Create new readme from scratch.
+    * TODO: Add support for windows (generate documentation)
+    * TODO: Change style of html and pdflaTeX (like RBIL)
+    * TODO: More support for documentation types
+    * TODO: Add help page in makefile.
+    * TODO: Organize all '.rst' documents.
+    * 0.05-prealpha patch.
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2025-12-18  Andres26  andrescamorao9@gmail.com
+
+2025-12-18 Documentation
+    
+    * Add code blocks.
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2025-12-18  Andres26  andrescamorao9@gmail.com
+
+2025-12-18 Documentation
+    
+    * Fix documentation bug
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2025-12-18  Andres26  andrescamorao9@gmail.com
+
+2025-12-18 Documentation
+    
+    * Fix bug in install12.rst
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2025-12-18  Andres26  andrescamorao9@gmail.com
+
+2025-12-18 Documentation
+    
+    Fix bugs in documentation
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2025-12-18  Andres26  andrescamorao9@gmail.com
+
+2025-12-18 Documentation
+    
+    * Add documentation of 'util/' directory.
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2025-12-16  Andres26  andrescamorao9@gmail.com
+
+2025-12-16 Updated README
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2025-12-16  Andres2626  113268055+Andres2626@users.noreply.github.com
+    Merge pull request #2 from Andres2626/simple-elf
+    
+    Simple elf
+
+2025-12-16  Andres26  andrescamorao9@gmail.com
+
+2025-12-16 0.04-prealpha Main Changes
+    
+    * Updated memory definitions (./README)
+    * Updated TODO list.
+    * Changed RM stack to 0xF000.
+    * Rework error system.
+      - Deleted errno.c.
+      - Update error codes.
+    * Added vfs_read() function.
+    * Simple ELF loader for kernel
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2025-12-16  Andres26  andrescamorao9@gmail.com
+
+2025-12-16 Integer division
+    
+    * Added u64_div() function.
+    * Added u64_mod() function.
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2025-12-16  Andres26  andrescamorao9@gmail.com
+
+2025-12-16 Simple ELF loader
+    
+    * Added elf_loader() function.
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2025-12-16  Andres26  andrescamorao9@gmail.com
+
+2025-12-16 ELF header
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2025-11-07  Andres2626  113268055+Andres2626@users.noreply.github.com
+    Merge pull request #1 from Andres2626/vfs
+    
+    0.04-prealpha
+
 2025-11-07  Andres26  andrescamorao9@gmail.com
     2025-11-7 Main changes
     

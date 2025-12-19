@@ -13,7 +13,7 @@ expected to function correctly on any compliant x86 hypervisor or emulator.
 
                                      1.	Copyright notice
 
-All bootloader code is (C) Andres26 2021-2025, but the code can be redistributed under the terms of 
+All bootloader code is (C) andres26 2021-2025, but the code can be redistributed under the terms of 
 the MIT License.
 
 See './COPYING' file for more info.
@@ -36,7 +36,7 @@ Build tools:
 
 Debug and run tools:
 	*   GDB.
-	*   An x86-based virtual machine. 35
+	*   An x86-based virtual machine.
 
 NOTE!: It is recommended that the prefix be defined for the cross compiler because on certain types 
 of hosts (e.g. cygwin, msys2 or some linux environment on windows) cross compilation is not allowed 
@@ -207,7 +207,6 @@ For bug tracking, please write to:
 
 	https://github.com/Andres2626/CHB-Bootloader/issues
 	
-or in attached email.
 
 17.	Have Fun!
 
