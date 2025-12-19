@@ -12,8 +12,6 @@
 
 #include "const.h"
 
-PUBLIC int errno;
-
 #define SIGN(x) -x
 
 #define ENO         0   /* no error */
@@ -33,7 +31,5 @@ PUBLIC int errno;
 #define ENOIMP      254 /* Not implemented */
 
 #define EUNKNOWN    255 /* Unknoun error */
-
-PROTOTYPE(void set_errno, (int error));
 
 #endif /* !_ERRNO_H_ */
