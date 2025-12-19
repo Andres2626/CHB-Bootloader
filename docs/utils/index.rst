@@ -1,0 +1,15 @@
+UTILITIES
+=========
+
+This section documents the command-line utilities provided by CHB.
+
+----
+
+.. toctree::
+   :caption: Contents
+   :maxdepth: 1
+
+   fatinfo
+   install12
+   mkfloppy
+   mkfs12

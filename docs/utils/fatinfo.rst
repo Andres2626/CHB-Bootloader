@@ -1,14 +1,14 @@
-CHB FATINFO PROGRAM
-===================
+fatinfo
+=======
 
 View information of FAT12 formatted image.
 
 Usage
 -----
 
-.. code-block:: bash
+.. code-block:: bash 
 
-    ./fatinfo <*arg1*>
+    ./fatinfo <arg1>
 
 Arguments
 ---------
@@ -24,7 +24,7 @@ bootsector.
 Examples
 --------
 
-.. code-block:: bash
+.. code-block:: bash 
 
     ./fatinfo fat12.img
 

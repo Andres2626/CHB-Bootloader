@@ -1,5 +1,5 @@
-CHB MKFLOPPY PROGRAM
-====================
+mkfloppy
+========
 
 Create empty floppy image compatible with standard sizes of IMB/PC
 reported by INT13,8.
