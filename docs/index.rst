@@ -9,10 +9,9 @@ lacked support for loading kernels across non-contiguous (dynamic) sectors.
 Testing has been limited to x86 virtualized environments such as QEMU and Bochs, though it is 
 expected to function correctly on any compliant x86 hypervisor or emulator.
 
-This is the top portion of the CHB (C)omputers (H)elp (B)ootloader project documentation. The entire 
-project is licensed under the MIT license (see ./COPYING for more information).
-
 Copyright (C) andres26 2021-2025
+
+**ALL** code may be used or redistributed under the terms of the MIT License.
 
 ----
 

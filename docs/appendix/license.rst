@@ -1,8 +1,9 @@
 APPENDIX C: MIT license
 =======================
 
-All bootloader code is (C) andres26 2021-2025, but the code can be redistributed under the terms of 
-the MIT License.
+Copyright (C) andres26 2021-2025
+
+**ALL** code may be used or redistributed under the terms of the MIT License.
 
 ----
 
