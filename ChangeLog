@@ -1,3 +1,47 @@
+2025-12-19  Andres26  andrescamorao9@gmail.com
+
+2025-19-12 0.05-prealpha
+    
+    * Fix HTML index bug.
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2025-12-19  Andres26  andrescamorao9@gmail.com
+    Merge branch 'master' of github.com:Andres2626/CHB-Bootloader
+    
+
+2025-12-19  Andres26  andrescamorao9@gmail.com
+
+2025-12-18 0.05-prealpha patch
+    
+    * Create new README from scratch.
+    * Updated TODO list.
+    * Change COPYRIGHT Notice.
+    * Index all './docs/*.rst' files in README.
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2025-12-18  Andres2626  113268055+Andres2626@users.noreply.github.com
+    Merge pull request #3 from Andres2626/docs
+    
+    Docs
+
+2025-12-18  Andres26  andrescamorao9@gmail.com
+
+2025-12-18 0.05-prealpha patch
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2025-12-18  Andres26  andrescamorao9@gmail.com
+
+2025-12-18 0.05-prealpha patch
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
 2025-12-18  Andres26  andrescamorao9@gmail.com
 
 2025-12-18 Some fixes
