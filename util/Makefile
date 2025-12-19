@@ -6,7 +6,7 @@ THIS_INC	:=./
 OUT			:= $(TOPDIR)/$(OUT)
 OUTDIR  	:= $(OUT)/tools
 Q			:= @
-PROGS		:= $(OUT)/fat/fatinfo $(OUT)/fat/mkbs12
+PROGS		:= $(OUT)/fat/fatinfo $(OUT)/fat/mkfs12
 TOOLS_INCS	+= -I$(TOP_INC) -I$(THIS_INC) -I$(CHB_INC)
 CFLAGS += $(TOOLS_INCS) -DCHB_UTIL
 
@@ -14,7 +14,7 @@ CFLAGS += $(TOOLS_INCS) -DCHB_UTIL
 
 all_util: $(OUTDIR) $(OUTDIR)/fat $(PROGS)
 
-$(OUT)/fat/mkbs12: $(OUTDIR)/fat/mkbs12.o
+$(OUT)/fat/mkfs12: $(OUTDIR)/fat/mkfs12.o
 	@echo UTIL $@
 	$(Q)$(HOST_CC) -o $@ $^ -largp
 
@@ -29,7 +29,7 @@ $(OUTDIR)/fat/%.o: fat/%.c
 	
 clean_util:
 	rm -rf $(PROGS)
-	rm -rf $(OUTDIR)/fat/mkbs12.o $(OUTDIR)/fat/fatinfo.o
+	rm -rf $(OUTDIR)/fat/mkfs12.o $(OUTDIR)/fat/fatinfo.o
 
 $(OUTDIR)/fat:
 	mkdir -p $@

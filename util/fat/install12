@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# install12 -- Install stage2 into FAT12 image
+# install12 -- Install loader into FAT12 image
 #
 # Copyright (C) 2021 - 2025 andres26
 #
