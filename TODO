@@ -28,9 +28,9 @@ or
 - Implement Command line
 - github compatible documentation.
 - Index all '.rst' in a main page (README).
-- integrate '.rst' documentation in (README)
-- add github code_of_conduct.
-- create new readme from scratch.
+- Integrate '.rst' documentation in (README)
+- Add github code_of_conduct.
+- Create new readme from scratch.
 - Add support for windows (generate documentation)
 - Change style of html and pdflaTex (like RBIL)
 - More support for documentation types
