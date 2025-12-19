@@ -132,6 +132,7 @@ while getopts \?t:h:bd:vc-: OPT; do
         esac
         
         (cd ./ && make doc-$DOCMODE)
+        exit 0
 	;;
 	\? | help)
 		build_help;

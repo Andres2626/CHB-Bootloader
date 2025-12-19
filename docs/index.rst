@@ -42,10 +42,6 @@ Copyright (C) andres26 2021-2025
     have-fun
     contact
     utils/index
-    - utils/fatinfo
-    - utils/install12
-    - utils/mkfloppy
-    - utils/mkfs12
     appendix/minimal-kernel-example
     appendix/clib
     appendix/license
