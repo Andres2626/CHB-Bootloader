@@ -11,16 +11,22 @@ the system is based on error numbers.
 - **Disk Read error**: It appears if the disk could not be read to
   locate 'loader' and prints **'READ Error.**'
 
-- **A20 Error:** It appears if A20 could not be enabled by means of
-  INT15,240X, prints **'A20 Error**' and stops.
+- **Disk geometry error**: The disk geometry has an invalid parameter,
+  prints '**GEOM Error**'
+  
+- **Hard disk error**: 'stage1' determines that the disk is an HDD and 
+   is not working, prints '**HDD Error**'
 
-   **IMPORTANT NOTE:** ‘\ *stage1*\ ’ has a mechanism to hand control
-   back to the BIOS via INT18 in case of a failure. If this mechanism is
-   not present, the program enters an infinite loop. The *hlt*
-   instruction is NEVER called because in some BIOSes and firmware,
-   executing the *cli* leaves the CPU in a dead state, preventing any
-   further action in case of failure (*Ctrl+Alt+Del*) and rendering the
-   CPU unusable for restarting.
+- **Floppy error**: The determination of the floppy's geometry was 
+  unsuccessful. prints '**FLOPPY Error**'
+
+**IMPORTANT NOTE:** ‘\ *stage1*\ ’ has a mechanism to hand control
+back to the BIOS via INT18 in case of a failure. If this mechanism is
+not present, the program enters an infinite loop. The *hlt*
+instruction is NEVER called because in some BIOSes and firmware,
+executing the *cli* leaves the CPU in a dead state, preventing any
+further action in case of failure (*Ctrl+Alt+Del*) and rendering the
+CPU unusable for restarting.
 
 ‘loader’ possible errors
 ------------------------

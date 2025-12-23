@@ -1,7 +1,8 @@
 Installing CHB
 ==============
 
-Currently, CHB only supports floppy images (TODO: implement this)
+Currently, CHB only supports floppy disk images but can support HDDs, but 
+note that the only available file system is FAT12. (TODO: implement this)
 
 Creating empty floppy image
 ---------------------------
