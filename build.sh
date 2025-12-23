@@ -215,7 +215,8 @@ if ! command -v $HOST_NM 2>&1 >/dev/null; then
 fi
 echo "YES"
 
-DEFAULTFLAGS='-Wall -Werror -Wextra -fno-stack-protector -fomit-frame-pointer -fno-exceptions -ffreestanding -fno-exceptions -mno-red-zone -nodefaultlibs -nostdlib'
+DEFAULTFLAGS='-Wall -Werror -Wextra -fno-builtin -ffunction-sections -fdata-sections -fno-stack-protector -fomit-frame-pointer -fno-exceptions -ffreestanding -fno-exceptions -mno-red-zone -nodefaultlibs -nostdlib'
+DEFAULTLDFLAGS='-melf_i386 --gc-sections'
 EMPTY=
 case $TARGET in
   i[X]86*)
@@ -225,13 +226,13 @@ case $TARGET in
   x86_64*)
 	export target_cpu=x86_64
 	export TARGET_CFLAGS=$DEFAULTFLAGS
-	export TARGET_LDFLAGS='-melf_i386'
+	export TARGET_LDFLAGS=$DEFAULTLDFLAGS
   ;;
   *)
 	# CHB assumes that $TARGET supports compiling ELF files for i386
 	export target_cpu=
 	export TARGET_CFLAGS=$DEFAULTFLAGS
-	export TARGET_LDFLAGS='-melf_i386'
+	export TARGET_LDFLAGS=$DEFAULTLDFLAGS
   ;;
 esac
 

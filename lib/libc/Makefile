@@ -47,12 +47,12 @@ $(LIBC): $(LIB_OBJS)
 $(OUTDIRS)/%.o: %.S
 	$(Q)mkdir -p $(@D)
 	@echo AS $<
-	$(Q)$(TARGET_CC) -c -o $@ $< $(CFLAGS)
+	$(Q)$(TARGET_CC) -Os -c -o $@ $< $(CFLAGS)
 
 $(OUTDIRS)/%.o: %.c
 	$(Q)mkdir -p $(@D)
 	@echo CC $<
-	$(Q)$(TARGET_CC) -c -o $@ $< $(CFLAGS)
+	$(Q)$(TARGET_CC) -Os -c -o $@ $< $(CFLAGS)
 
 clean_lib/libc:
 	@echo "Clearing LIBC"

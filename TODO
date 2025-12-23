@@ -14,17 +14,15 @@ or
 ==========================================================================
 
 - Support for mounted disks in FAT driver
-- Add support for other filesystems like ext2, exfat, FAT32, ...
-- Disk and CDROM support (INT13,4X)
+- Add support for other filesystems like extX, exfat, VFAT, FAT16/32, minix...
 - Executable formats (pe, coff, a.out, ...)
-- Implement UEFI
+  * PE '.h' file for implement libefi
+- Implement libefi
+- Implement UEFI support
 - Non x86 support (arm, mips, ...)
 - Multiboot specification
 - Long mode support
-- VFS support
-- Memory map
-- Rework floppy controller in stage1
-- Report disk geometry in stage1 (INT13,8)
+- Implement sector-by-sector reading in CHS mode in stage1
 - Implement Command line
 - Github compatible documentation.
 - Add support for windows (generate documentation)
