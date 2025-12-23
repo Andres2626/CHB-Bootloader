@@ -49,8 +49,7 @@ typedef void (*kern_jmp)(struct msys_kern_hdr *header) __attribute__((regparm(1)
 
 PRIVATE void error(int code) 
 {   
-    code = -code;
-    printf("\nCHB error %i: %s.\n", code, strerror(code));
+    printf("\nCHB error %i: %s.\n", -code, strerror(-code));
     for (;;);
 }
 
@@ -99,7 +98,7 @@ void entry(u8t drive_number)
     
     struct fs *fd = vfs_detect(&disk);
     if (!fd)
-        error(EFS);
+        error(SIGN(EFS));
     
     printf("[LOADER] Current FS name: %s, disk: 0x%x\n", fd->ops->name, drive_number);
     

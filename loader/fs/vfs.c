@@ -37,7 +37,7 @@ int vfs_register_fs(struct fs_ops *fs)
     return SIGN(EREGFS);
 table_scan_success:
     vfs_reg_tab[i] = fs; 
-    return EIO; 
+    return ENO; 
 }
 
 struct fs *vfs_detect(struct device *disk)

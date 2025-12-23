@@ -25,15 +25,15 @@
 .endm
 
 /* 
-* Sets the current video mode via INT10,0.
-*
-* Note that this function is used to ensure that the video mode 
-* delivered by the BIOS is correct (80x25); This mode is 0x3.
-*
-* TODO: Implement different video modes 
-*
-* function: int video_driver_set_mode(uint8_t mode)
-*/
+ * Sets the current video mode via INT10,0.
+ *
+ * Note that this function is used to ensure that the video mode 
+ * delivered by the BIOS is correct (80x25); This mode is 0x3.
+ *
+ * TODO: Implement different video modes 
+ *
+ * function: int video_driver_set_mode(u8t mode)
+ */
 FUNCTION(video_driver_set_mode) 
 	push %ebp 
 	mov %esp, %ebp
@@ -53,10 +53,10 @@ FUNCTION(video_driver_set_mode)
 .code32
 
 /*
-* Reset specified disk controller via INT13,0
-* 
-* function: int disk_reset_controller(uint8_t)
-*/
+ * Reset specified disk controller via INT13,0
+ * 
+ * function: int disk_reset_controller(u8t)
+ */
 FUNCTION(disk_reset_controller) 
 	push %ebp 
 	mov %esp, %ebp
@@ -83,11 +83,87 @@ FUNCTION(disk_reset_controller)
 	pop %ebp 
 	ret
 
+/* 
+ * Get drive extensions via INT13,41
+ *
+ * function: int disk_get_extensions(u8t)
+ */
+FUNCTION(disk_get_extensions)
+    push %ebp 
+	mov %esp, %ebp
+
+	enter_realmode
+    
+    mov $0x41, %ah
+    mov $0x55aa, %bx
+    mov 8(%bp), %dl /* get drive number */
+    int $0x13
+    
+    jc 1f
+    cmp $0xaa55, %bx
+    jne 1f
+    
+    mov $1, %bx
+    jmp 2f
+1:
+    mov $0, %bx
+2:
+    enter_protmode
+    
+    mov %bx, %ax
+    
+    mov %ebp, %esp 
+	pop %ebp 
+	ret
+    
+/* 
+ * Get extended parameters via INT13,48
+ *
+ * function: int disk_get_edd_parameters(u8t, struct device_edd_geometry*)
+ */
+FUNCTION(disk_get_edd_parameters)
+    push %ebp 
+	mov %esp, %ebp
+
+	enter_realmode
+    
+    push %ds 
+	push %esi 
+    
+    mov 8(%bp), %dl /* get drive number */
+    
+    /* convert edd pointer to offset:segment */
+    mov 12(%bp), %eax
+    
+    linear_to_segment 12(%bp), %ds, %esi, %si
+    
+    mov $0x48, %ah /* function 0x48 */
+    int $0x13
+    jc 1f
+    
+    mov $1, %eax
+    jmp 2f 
+1:
+    xor %eax, %eax 
+2:  
+	pop %esi 
+	pop %ds
+    
+    mov %ax, %bx
+    
+    enter_protmode
+    
+    mov %bx, %ax
+    
+    mov %ebp, %esp 
+	pop %ebp 
+	ret
+
 /*
-* Get drive properties via INT18,8
-* 
-* function: int disk_get_parameters(uint8_t, uint16_t*, uint16_t*, uint16_t*, uint16_t*)
-*/
+ * Get drive properties via INT13,8
+ * 
+ * function: int disk_get_parameters(u8t, u16*, u16*, u16*, u16*)
+ */
 FUNCTION(disk_get_parameters) 
 	push %ebp 
 	mov %esp, %ebp
@@ -105,11 +181,13 @@ FUNCTION(disk_get_parameters)
 	mov %di, %es /* buffer at 0000:0000*/
 	stc 
 	int $0x13
-
-	/* set return value */
-	mov $1, %eax 
-	sbb $0, %eax /* in case of error return 0 */
-
+    jc 1f
+    
+    mov $1, %eax
+    jmp 2f 
+1:
+    xor %eax, %eax 
+2:  
 	/* TWO ARGUMENT: disk type */
 	linear_to_segment 12(%bp), %es, %esi, %si 
 	mov %bl, %es:(%si)
@@ -151,10 +229,56 @@ FUNCTION(disk_get_parameters)
 	pop %ebp 
 	ret
 
+
+/*
+* Read disk via INT13,42
+* 
+* function: int disk_edd_read(u8t, struct device_edd_packet*)
+*/
+FUNCTION(disk_edd_read)
+    push %ebp 
+	mov %esp, %ebp
+
+    enter_realmode
+    
+    push %ds
+    push %esi
+    push %di
+
+    /* get drive number */
+    mov 8(%bp), %dl 
+    
+    /* get packet */
+    linear_to_segment 12(%bp), %ds, %esi, %si
+
+    mov $0x42, %ah
+    int $0x13
+    jc 1f
+    
+    mov $1, %eax
+    jmp 2f 
+1:
+    xor %eax, %eax 
+2:  
+
+    pop %di
+    pop %esi
+    pop %ds
+    
+    mov %ax, %bx 
+
+    enter_protmode
+    
+    mov %bx, %ax
+    
+    mov %ebp, %esp 
+	pop %ebp 
+	ret
+
 /*
 * Read floppy via INT13,2
 * 
-* function: int disk_read(uint8_t, uint16_t, uint16_t, uint16_t, uint8_t, void*)
+* function: int disk_read(u8t, u16, u16, u16, u8t, void*)
 */
 FUNCTION(disk_read) 
 	push %ebp 
@@ -178,13 +302,15 @@ FUNCTION(disk_read)
 	linear_to_segment 28(%bp), %es, %ebx, %bx /* buffer */
 
 	mov $2, %ah 
-	stc 
-	int $0x13
-
-	/* set return value */
-	mov $1, %eax 
-	sbb $0, %eax /* in case of error return 0 */
-
+	stc
+    int $0x13
+    jc 1f
+    
+    mov $1, %eax
+    jmp 2f 
+1:
+    xor %eax, %eax 
+2:  
 	pop %es 
 	pop %ebx
 
@@ -327,14 +453,14 @@ success:
 	pop %ebp 
 	ret
 	
-/* void port_outb(uint16_t port, uint8_t value) */
+/* void port_outb(u16t port, u8t value) */
 FUNCTION(port_outb)
 	movw 4(%esp), %dx 
 	movb 8(%esp), %al 
 	out %al, %dx 
 	ret
 
-/* uint8_t port_inb(uint16_t port) */
+/* u8t port_inb(u16t port) */
 FUNCTION(port_inb)
 	movw 4(%esp), %dx 
 	xorl %eax, %eax 

@@ -52,8 +52,8 @@ loader_start:
 	mov %ax, %ss
 
     /* set stack localization in memory */
-	movl $STACK16, %esp 
-    movl %esp, %ebp
+	movw $0xF000, %sp 
+    movw %sp, %bp
 
 	/* save the drive number */
 	movb %dl, drive_number /* reported by stage1 */

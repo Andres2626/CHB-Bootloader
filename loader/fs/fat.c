@@ -190,14 +190,16 @@ struct fs *fat_detect_fs(struct device *disk)
     fs_dev = disk;
     fs = (struct fat_fs*)FS_DRIVER_DATA;
     
-    if (!fs_dev || fs_dev->state != DRIVE_STATE_1)
+    if (!fs_dev || fs_dev->state != DRIVE_OK)
         goto fail;
+
     
     if (!read_bsec())
         goto fail;
     
     /* check valid FAT format */
     u16t sig = (fs->b.buffer[511] << 8) | fs->b.buffer[510];
+    
     if (sig == FAT_MAGIC)
         goto success;
     
@@ -219,7 +221,7 @@ int fat_mount(struct device *disk)
     if (!fs)
         return SIGN(EFAULT);
     
-    if (!fs_dev || fs_dev->state != DRIVE_STATE_1)
+    if (!fs_dev || fs_dev->state != DRIVE_OK)
         return SIGN(EIO);
     
     /* FAT driver only accepts multiples of 512 in sector size */
