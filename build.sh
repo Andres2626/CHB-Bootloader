@@ -139,7 +139,7 @@ while getopts \?t:h:bd:vc-: OPT; do
 		exit 2;
 	;;
 	v | version)
-		echo "CHB $0 version 0.02-Prealpha";
+		echo "CHB $0 version 0.06-Prealpha";
 	;;
 	*)
 		build_err "Illegal option --$OPT" ;;
@@ -215,7 +215,7 @@ if ! command -v $HOST_NM 2>&1 >/dev/null; then
 fi
 echo "YES"
 
-DEFAULTFLAGS='-Wall -Werror -Wextra -fno-builtin -ffunction-sections -fdata-sections -fno-stack-protector -fomit-frame-pointer -fno-exceptions -ffreestanding -fno-exceptions -mno-red-zone -nodefaultlibs -nostdlib'
+DEFAULTFLAGS='-nostdinc -Wall -Werror -Wextra -fno-builtin -ffunction-sections -fdata-sections -fno-stack-protector -fomit-frame-pointer -fno-exceptions -ffreestanding -fno-exceptions -mno-red-zone -nodefaultlibs -nostdlib'
 DEFAULTLDFLAGS='-melf_i386 --gc-sections'
 EMPTY=
 case $TARGET in
@@ -225,13 +225,13 @@ case $TARGET in
   ;;
   x86_64*)
 	export target_cpu=x86_64
-	export TARGET_CFLAGS=$DEFAULTFLAGS
+	export TARGET_CFLAGS=-m32 $DEFAULTFLAGS
 	export TARGET_LDFLAGS=$DEFAULTLDFLAGS
   ;;
   *)
 	# CHB assumes that $TARGET supports compiling ELF files for i386
 	export target_cpu=
-	export TARGET_CFLAGS=$DEFAULTFLAGS
+	export TARGET_CFLAGS=-m32 $DEFAULTFLAGS
 	export TARGET_LDFLAGS=$DEFAULTLDFLAGS
   ;;
 esac
