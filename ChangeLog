@@ -1,3 +1,119 @@
+2026-01-09  Andres26  andrescamorao9@gmail.com
+
+2025-01-09 Patch 0.07-prealpha
+    
+    * Add loader embebed variables (loader header)
+    * 'loader/entry.c' renamed to 'loader/init.c'
+    * Rewrite 'loader/init.c'
+    * Deleted VFS
+      Now the fs works by changing the functions currently used in the loader
+    * Moved INT15,E820 buffer to absolute address '0x7B016'
+    * Create 'config.h' file
+    * Delete 'stdint.h' from include dependencies (not work in target)
+    * Fix compilation-time bug in utilities
+    * 'panic()' and 'error()' funcions
+    * Change TODO list
+    * Change README
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2026-01-09  Andres26  andrescamorao9@gmail.com
+
+2026-01-09 Reorganized 'docs/' directory
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2026-01-09  Andres26  andrescamorao9@gmail.com
+
+2026-01-09 Rename './Makefile' to 'makefile.mk'
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2026-01-09  Andres26  andrescamorao9@gmail.com
+
+2026-01-09 Deleted .clang-format
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2026-01-09  Andres26  andrescamorao9@gmail.com
+
+2026-01-09 Change documentation organization.
+    
+    * Fix documentation errors.
+    * Added boot protocol documentation.
+    * Fix memory map table bug.
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2026-01-08  Andres26  andrescamorao9@gmail.com
+
+2026-01-08 Fix version bug
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2025-12-23  Andres26  andrescamorao9@gmail.com
+
+2025-12-23 Patch 0.06
+    
+    * Update TODO.
+    * Changed CFLAGS in build script.
+    * '-Os' option in libchbc.
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2025-12-23  Andres26  andrescamorao9@gmail.com
+
+2025-12-23 Patch 0.06
+    
+    * Implemented non-CHS mode in 'loader'.
+    * Add INT13,4X handler functions.
+    * Rework C part of disk handler.
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2025-12-23  Andres26  andrescamorao9@gmail.com
+
+2025-12-23 Patch 0.06
+    
+    * Document 'stage1' errors.
+    * Change to 0.06-prealpha.
+    * Note of support in non-floppy drives.
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2025-12-23  Andres26  andrescamorao9@gmail.com
+
+2025-12-23 Patch 0.06
+    
+    * Report floppy geometry with INT13,8
+    * Support extended mode INT13,4X
+      - Non-floppy Support
+    * floppy_test values (in case of fail INT13,8)
+    * lba_to_chs implemented for locate 'loader'
+    * Add disk_address_packet (for extended mode)
+    * TODO: Implement sector-by-sector reading in CHS mode (may cause
+      problems in older BIOS versions). For now, load the entire loader
+      in a single operation using size_test.sh
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2025-12-19  Andres26  andrescamorao9@gmail.com
+
+2025-12-19 Updated ChangeLog
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
 2025-12-19  Andres26  andrescamorao9@gmail.com
 
 2025-19-12 0.05-prealpha

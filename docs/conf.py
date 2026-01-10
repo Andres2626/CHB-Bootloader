@@ -1,6 +1,6 @@
 project = 'CHB Notes and Manual'
 author = 'Andres26'
-release = '0.06-prealpha'
+release = '0.07-prealpha'
 
 extensions = [] 
 templates_path = ['_templates']
