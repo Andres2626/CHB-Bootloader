@@ -14,7 +14,7 @@ latex:
 	$(SPHINXBUILD) -b latex $(SOURCEDIR) $(BUILDDIR)/latex
 
 pdflatex: latex
-	cd $(BUILDDIR)/latex && pdflatex *.tex
+	cd $(BUILDDIR)/latex && lualatex *.tex
 
 htmlhelp:
 	$(SPHINXBUILD) -b htmlhelp $(SOURCEDIR) $(BUILDDIR)/htmlhelp

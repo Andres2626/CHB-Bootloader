@@ -1,9 +1,6 @@
+=========
 UTILITIES
 =========
-
-This section documents the command-line utilities provided by CHB.
-
-----
 
 .. toctree::
    :caption: Contents

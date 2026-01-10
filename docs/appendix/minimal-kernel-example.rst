@@ -1,3 +1,4 @@
+==================================
 APPENDIX A: Minimal kernel example
 ==================================
 
@@ -8,19 +9,16 @@ APPENDIX A: Minimal kernel example
     # =========================================
 
     .code32                             # use protected mode
-    .section .text                      # _start must be located in .text section
-    global _start                       # set _start as global function
-
-    _start:                             # _start function
-    
-    /* if the start function is called, jump to kernel_epoint function */
-    kernel_epoint:                      # kernel entry point function
+    .section .text
+    .global _start                      # set _start as global function
+    _start:
         mov $0x90000, %esp              # setup stack (%esp can be arbitrary value)
         push %eax                       # push pointer of CHB structure
+        
         call kmain                      # call to C kernel function
 
     /* if kmain returns call to stop (just in case) */
-    stop:                               # stop function
+    stop:
         jmp stop                        # infinite loop
 
 .. code-block:: C

@@ -8,10 +8,9 @@ exclude_patterns = []
 
 # HTML GEN
 html_theme = 'classic'
-html_static_path = ['_static']
 
 # LATEX GEN
-latex_engine = 'pdflatex'
+latex_engine = 'lualatex'
 
 latex_documents = [
     (
@@ -25,7 +24,6 @@ latex_documents = [
 
 latex_elements = {
     'classoptions': ',openany',
-    'documentclass': 'article',
     'papersize': 'a4paper',
     'pointsize': '10pt',
 }
