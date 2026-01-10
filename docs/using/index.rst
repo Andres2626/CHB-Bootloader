@@ -1,5 +1,5 @@
 =================
-Developer notes
+Using
 =================
 
 .. toctree::

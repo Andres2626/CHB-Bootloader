@@ -15,7 +15,7 @@ latex_engine = 'lualatex'
 latex_documents = [
     (
         'index',
-        'chb.tex',
+        'CHB.tex',
         'CHB Documentation and manual',
         'andres26',
         'manual',
@@ -30,4 +30,4 @@ latex_elements = {
 
 
 # CHM GEN
-htmlhelp_basename = 'CHBManual'
+htmlhelp_basename = 'CHB'
