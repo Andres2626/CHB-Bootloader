@@ -67,7 +67,7 @@ cylinders:
 afther_bpb:
 	/* 
 	  Some bogus BIOS doesn't charge boot sector correctly.
-	  jump to 0x7c00 instead of 0:7c00 
+	  jump to 07c0:0 instead of 0:7c00
 	*/
 	ljmp $0, $real_start
 	

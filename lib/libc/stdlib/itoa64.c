@@ -20,9 +20,9 @@ char *itoa64(char *buf, int base, i64t n)
     char *start;
     u64t num;
 
-    if ((int64_t)n < 0 && base == 10) {
+    if ((i64t)n < 0 && base == 10) {
         *ptr++ = '-';
-        num = (uint64_t)(-(n + 1)) + 1;
+        num = (u64t)(-(n + 1)) + 1;
     } 
 	else
         num = n;

@@ -19,11 +19,11 @@ Usage: $0 [t] [h] [b] [d] [c] [?] [v]
 
 Configure CHB for build/clean
 
-For use this program $0 detect if ./Makefile exists. Please note that to 
-compile CHB only $0 is used because $0 sets up all initial variables and 
+For use this program '$0' detect if './Makefile' exists. Please note that to 
+compile CHB only '$0' is used because '$0' sets up all initial variables and 
 enables the interface for the cross compiler.
 
-Initially to use $0 it is necessary to configure the program mode, which 
+Initially to use '$0' it is necessary to configure the program mode, which 
 are:
 
 * build -- compile CHB from source
@@ -38,16 +38,14 @@ windows) cross compilation is not allowed for ELF executables which is
 necessary to compile CHB correctly.
 
 Notes:
-* If you're going to compile CHB for an x86_64 machine, $0 automatically 
-compiles it for i386 because CHB doesn't support long mode.
 
-* Note that CHB only supports x86-based machines. (TODO: implement this.)
+    - If you're going to compile CHB for an x86_64 machine, '$0' automatically
+      force '-m32' flag in gcc and '-melf_i386' in CHB doesn't support long mode.
 
-* If you plan to use the cross-compilation interface, you must have the 
-GCC and binutils compilers installed on your system first.
+    - Note that CHB only supports x86-based machines. (TODO: implement this.)
 
 Options:
-    -t, --target=[TARGET_PREFIX]
+    '-t, --target=[COMPILER_PREFIX]'
         Sets the cross-compiler prefix so that the compiler you specified 
         is used when compiling.
 		
@@ -55,19 +53,19 @@ Options:
         because some systems do not support compiling to generate ELF format 
         files.
 		
-    -h, --host=[HOST_PREFIX]
+    '-h, --host=[COMPILER_PREFIX]'
         Set the host machine.
 		
         Unlike --target, it is not necessary to specify the host because 
         the script automatically detects the host if it is not specified.
 		
-    -b, --build
+    '-b, --build'
         Build CHB from source.
 		
-    -c, --clean
+    '-c, --clean'
         Clean compiled CHB files.
         
-    -d, --docs=[MODE]
+    '-d, --docs=[MODE]'
         build all CHB documentation with Sphinx, current modes supported are:
             - html      -- Generate HTML pages
             - latex     -- Generate .tex file
@@ -76,15 +74,16 @@ Options:
             - text      -- Generate text file
             - clean     -- Clean documentation generated files
 	
-    -v, --version
+    '-v, --version'
         Print program version
 	
-    -?, --help
+    '-?, --help'
 	    Print Help
 EOF
 	
 }
 
+export MAKE=make
 TARGET=
 HOST=
 MODE=
@@ -131,7 +130,7 @@ while getopts \?t:h:bd:vc-: OPT; do
                 ;;
         esac
         
-        (cd ./ && make doc-$DOCMODE)
+        (cd ./ && $MAKE -f makefile.mk doc-$DOCMODE)
         exit 0
 	;;
 	\? | help)
@@ -215,7 +214,7 @@ if ! command -v $HOST_NM 2>&1 >/dev/null; then
 fi
 echo "YES"
 
-DEFAULTFLAGS='-nostdinc -Wall -Werror -Wextra -fno-builtin -ffunction-sections -fdata-sections -fno-stack-protector -fomit-frame-pointer -fno-exceptions -ffreestanding -fno-exceptions -mno-red-zone -nodefaultlibs -nostdlib'
+DEFAULTFLAGS='-ffunction-sections -fdata-sections -Wall -Werror -Wextra -fno-builtin -ffunction-sections -fdata-sections -fno-stack-protector -fomit-frame-pointer -fno-exceptions -ffreestanding -fno-exceptions -mno-red-zone -nodefaultlibs -nostdlib'
 DEFAULTLDFLAGS='-melf_i386 --gc-sections'
 EMPTY=
 case $TARGET in
@@ -225,13 +224,13 @@ case $TARGET in
   ;;
   x86_64*)
 	export target_cpu=x86_64
-	export TARGET_CFLAGS=-m32 $DEFAULTFLAGS
+	export TARGET_CFLAGS=$DEFAULTFLAGS
 	export TARGET_LDFLAGS=$DEFAULTLDFLAGS
   ;;
   *)
 	# CHB assumes that $TARGET supports compiling ELF files for i386
 	export target_cpu=
-	export TARGET_CFLAGS=-m32 $DEFAULTFLAGS
+	export TARGET_CFLAGS=$DEFAULTFLAGS
 	export TARGET_LDFLAGS=$DEFAULTLDFLAGS
   ;;
 esac
@@ -300,16 +299,14 @@ if ! command -v $TARGET_NM 2>&1 >/dev/null; then
 fi
 echo "YES"
 
-export MAKE=make
-
 build_info "Configure finished!"
 
 case $MODE in 
 1)
-	(cd ./ && $MAKE all)
+	(cd ./ && $MAKE -f makefile.mk all)
 	;;
 2)
-	(cd ./ && $MAKE clean)
+	(cd ./ && $MAKE -f makefile.mk clean)
 	;;
 *)
 	build_err "mode $MODE is not supported"

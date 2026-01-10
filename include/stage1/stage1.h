@@ -40,4 +40,7 @@
 /* stage1 stack */
 #define BOOT_STACK          0x7c00
 
+/* CHB magic number */
+#define CHB_MAGIC 0x93A76FD8
+
 #endif /* !_STAGE1_H_ */

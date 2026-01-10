@@ -11,8 +11,8 @@
 
 void *memcpy(void *s1, _CONST void *s2, size_t n) 
 {
-    unsigned char *_s1 = s1;
-	const unsigned char *_s2 = s2;
+    u8t *_s1 = s1;
+	_CONST u8t *_s2 = s2;
 
     while (n--) {
 	    *_s1++ = *_s2++;

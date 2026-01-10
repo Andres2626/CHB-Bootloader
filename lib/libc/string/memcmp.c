@@ -11,8 +11,8 @@
 
 int memcmp(_CONST void *s1, _CONST void *s2, size_t n) 
 {
-    _CONST uint8_t *_s1 = (_CONST uint8_t*)s1;
-    _CONST uint8_t *_s2 = (_CONST uint8_t*)s2;
+    _CONST u8t *_s1 = (_CONST u8t*)s1;
+    _CONST u8t *_s2 = (_CONST u8t*)s2;
 
     while (n--) {
         if (*_s1 != *_s2)

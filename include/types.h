@@ -10,36 +10,22 @@
 #ifndef _TYPES_H_
 #define _TYPES_H_ 1
 
-#include <stdint.h>
-
-#if defined (bool) 
-#undef bool
-#endif
-
-#if defined (true)
-#undef true
-#endif
-
-#if defined (false)
-#undef false
-#endif
-
 /* boolean types */
 #define bool  _Bool
 #define true  1
 #define false 0
 
 /* integer types */
-typedef int8_t i8t;
-typedef int16_t i16t;
-typedef int32_t i32t;
-typedef int64_t i64t;
+typedef signed char        i8t;
+typedef signed short       i16t;
+typedef signed int         i32t;
+typedef signed long long   i64t;
 
 /* unsigned integer types */
-typedef uint8_t u8t;
-typedef uint16_t u16t;
-typedef uint32_t u32t;
-typedef uint64_t u64t;
+typedef unsigned char      u8t;
+typedef unsigned short     u16t;
+typedef unsigned int       u32t;
+typedef unsigned long long u64t;
 
 typedef u32t uptrt;
 

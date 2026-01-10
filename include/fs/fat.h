@@ -10,16 +10,21 @@
 #ifndef _FAT_H_
 #define _FAT_H_ 1
 
-#include "fs.h"
-
 #include "types.h"
 #include "const.h"
 
 #define FAT_MAGIC 0xAA55
 
+/* 
+ * ***_FS_IDENT: This is the number which CHB detects to know that it is working 
+ * with a specific FS 
+ */
+#define FAT12_FS_IDENT 0x1
+#define FAT12_FS_LABEL "FAT12"
+
 /* FAT12 common definitions */
-#define FAT_BPB_SIZE12          (sizeof(struct fat_bootsec))
-#define FAT_EOF12               0xFF8
+#define FAT12_BPB_SIZE          (sizeof(struct fat_bootsec))
+#define FAT12_EOF               0xFF8
 
 /* FAT common definitions */
 #define FAT_SECSIZE              512
@@ -28,15 +33,13 @@
 /* FAT file flags */
 #define FAT_RONLY                0x1
 #define FAT_HIDDEN               0x2
-#define FAT_SYSTEM               0x8
+#define FAT_SYSTEM               0x4
 #define FAT_VID                  0x8
 #define FAT_DIR                  0x10
 #define FAT_ARCHIVE              0x20
 #define FAT_LFN                  (FAT_READONLY | FAT_HIDDEN | FAT_SYSTEM | FAT_VOLUMEID)
 
 struct device;
-
-#if defined (CHB_UTIL)
 
 struct fat_boot_sector {
    u8t jmp[3];
@@ -63,13 +66,32 @@ struct fat_boot_sector {
    u8t id[8];
 } __attribute__(( packed ));
 
-#endif
+struct fat_entry {
+   u8t name[11];
+   u8t attributes;
+   u8t reserved;
+   u8t created_time_tenths;
+   u16t created_time;
+   u16t created_date;
+   u16t accessed_date;
+   u16t cluster_hi;
+   u16t modified_time;
+   u16t modified_date;
+   u16t cluster_lo;
+   u32t size;
+} __attribute__(( packed ));
 
-PUBLIC struct fs *fat_detect_fs(struct device *disk);
+
+#ifndef CHB_UTIL
+
+#include "fs.h"
+
 PUBLIC int fat_mount(struct device *disk);
 PUBLIC void fat_unmount();
-PUBLIC int fat_open(struct file *fp, _CONST char *path);
-PUBLIC i32t fat_read(struct file *file, void *buff, u32t len);
-PUBLIC int fat_close(struct file *fp);
+PUBLIC int fat_open(_CONST char *path);
+PUBLIC i32t fat_read(void *buff, u32t len);
+PUBLIC int fat_close();
+
+#endif
 
 #endif /* !_FAT_H_ */

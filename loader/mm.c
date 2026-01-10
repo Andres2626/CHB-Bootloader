@@ -4,15 +4,13 @@
 #include "lib/libc/errno.h"
 #include "lib/libc/stdio.h"
 
-PRIVATE struct memory_block memory_regs[MEMORY_MAX_REGIONS];
+PRIVATE struct memory_block *memory_regs = (struct memory_block*)MM_BUFFER;
 
 int memory_init(struct memory_info *info) 
 {
     struct memory_block block;
 	int count = 0;
 	u32t continuation = 0;
-    
-	printf("[MM] Checking memory\n");
 	
 	/* get upper and lower memory */
 	info->lo = get_lower_memory();

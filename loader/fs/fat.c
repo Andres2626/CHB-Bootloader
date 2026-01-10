@@ -20,56 +20,15 @@
 #include "lib/libc/string.h"
 #include "lib/libc/stdlib.h"
 
-/* FAT filesystem misc structures */
-struct fat_boot_sector {
-   u8t jmp[3];
-   u8t oem[8];
-   u16t sector_size;
-   u8t cluster_size;
-   u16t reserved_sectors;
-   u8t FAT_count;
-   u16t dir_entries;
-   u16t drive_size;
-   u8t desc_type;
-   u16t FAT_size;
-   u16t track_size;
-   u16t drive_heads;
-   u32t hidden_sectors;
-   u32t large_sectors;
-
-   /* EBR */
-   u8t drive_number;
-   u8t reserved;
-   u8t signature;
-   u32t volumeid;
-   u8t label[11];
-   u8t id[8];
-} __attribute__(( packed ));
-
-struct fat_entry {
-   u8t name[11];
-   u8t attributes;
-   u8t reserved;
-   u8t created_time_tenths;
-   u16t created_time;
-   u16t created_date;
-   u16t accessed_date;
-   u16t cluster_hi;
-   u16t modified_time;
-   u16t modified_date;
-   u16t cluster_lo;
-   u32t size;
-} __attribute__(( packed ));
-
 struct fat_inode {
     bool opened;
     bool dir;
     bool root;
     u32t lba;
+    u32t pos;
     u32t first_cluster;
     u32t current_cluster;
     u32t current_sector;
-    struct file f;
     struct fat_entry entry;
     u8t buffer[FAT_SECSIZE];
 };
@@ -81,19 +40,26 @@ struct fat_fs {
     } b;
     
     struct fat_inode root;
-    
+
     struct {
         u32t lba;
         u32t size;
     } data;
     
-    struct fat_inode opened[MAX_FILES_OPENED];
+    struct fat_inode file;
 };
 
+/* durrent disk */
 PRIVATE struct device *fs_dev;
-PRIVATE struct fat_fs *fs; /* FS info */
+
+/* main FAT info */
+PRIVATE struct fat_fs *fs;
+
+/* file allocation table */
 PRIVATE u8t *fs_tab; /* The file allocation table */
-PRIVATE struct fs f;
+
+/* DOS name buffer */
+PRIVATE char fatname[12];
 
 PRIVATE int read_bsec()
 {
@@ -114,25 +80,23 @@ PRIVATE int read_fat()
 }
 
 PRIVATE int read_root(u32t sector)
-{
+{ 
+    if (!fs_dev)
+        return SIGN(EFAULT);
+    
     /* get info */
     u32t size = sizeof(struct fat_entry) * fs->b.info.dir_entries;
     u32t root_sec = (size + fs->b.info.sector_size - 1) / fs->b.info.sector_size;
     u32t begin = (fs->b.info.reserved_sectors + (fs->b.info.FAT_size * fs->b.info.FAT_count));
-    
+
     /* check if sector is not out of root directory */
     if (sector >= root_sec)
         return SIGN(EINVAL);
-    
-    if (!fs_dev)
-        return SIGN(EFAULT);
-    
-    /* set root info */
+
+    /* set root directory info */
     fs->root.root = true;
     fs->root.dir = true;
-    fs->root.f.pos = 0;
-    fs->root.f.inode.dir = true;
-    fs->root.f.inode.size = size;
+    fs->root.pos = 0;
     fs->root.lba = begin + sector;
     fs->root.first_cluster = 0;
     fs->root.current_cluster = 0;
@@ -162,7 +126,6 @@ PRIVATE u16t fat_next_cluster(u16t cluster)
 
 PRIVATE char *fat_path_to_dos(_CONST char *path)
 {
-    PRIVATE char fatname[12];
     _CONST char *dot = strchr(path, '.');
 
     memset(fatname, ' ', 11);
@@ -185,54 +148,42 @@ PRIVATE char *fat_path_to_dos(_CONST char *path)
     return fatname;
 }
 
-struct fs *fat_detect_fs(struct device *disk)
-{
+int fat_mount(struct device *disk)
+{   
+    int ret = 0;
+    u32t fat_size = 0;
     fs_dev = disk;
     fs = (struct fat_fs*)FS_DRIVER_DATA;
     
-    if (!fs_dev || fs_dev->state != DRIVE_OK)
+    if (fs_dev->state != DRIVE_OK) {
+        ret = SIGN(EIO);
         goto fail;
-
+    }
     
-    if (!read_bsec())
+    /* probe FAT12 filesystem */
+    if (read_bsec() < 0)
         goto fail;
     
     /* check valid FAT format */
     u16t sig = (fs->b.buffer[511] << 8) | fs->b.buffer[510];
-    
-    if (sig == FAT_MAGIC)
-        goto success;
-    
-fail:
-    return NULL;
-success:
-    /* push FS descriptor */
-    f.type = FAT12_TYPE;
-    f.fs_data = (void*)fs;
-    f.fs_dev = fs_dev;
-    return &f;
-}
-
-int fat_mount(struct device *disk)
-{   
-    u32t fat_size = 0;
-    fs_dev = disk;
-    
-    if (!fs)
-        return SIGN(EFAULT);
-    
-    if (!fs_dev || fs_dev->state != DRIVE_OK)
-        return SIGN(EIO);
+    if (sig != FAT_MAGIC) {
+        ret = SIGN(EIFS);
+        goto fail;
+    }
     
     /* FAT driver only accepts multiples of 512 in sector size */
-    if ((fs->b.info.sector_size % 512) != 0) 
-        return SIGN(EIFS);
+    if ((fs->b.info.sector_size % 512) != 0) {
+        ret = SIGN(EIFS);
+        goto fail;
+    }
     
     fat_size = fs->b.info.FAT_size * fs->b.info.sector_size;
-    if ((sizeof(struct fat_fs) + fat_size) > FS_DRIVER_DATA_SIZE)
-        return SIGN(ENOMEM);
+    if ((sizeof(struct fat_fs) + fat_size) > FS_DRIVER_DATA_SIZE){
+        ret = SIGN(ENOMEM);
+        goto fail;
+    }
     
-    int ret = read_fat();
+    ret = read_fat();
     if (ret < 0)
         goto fail;
     
@@ -243,7 +194,7 @@ int fat_mount(struct device *disk)
     /* get data info */
     fs->data.size = (fs->b.info.dir_entries * 32 + fs->b.info.sector_size - 1)  / fs->b.info.sector_size;
     fs->data.lba = fs->b.info.reserved_sectors + fs->b.info.FAT_count * fs->b.info.FAT_size + fs->data.size;
-    return EIO;
+    return 0;
 fail:
     return ret;
 }
@@ -255,7 +206,7 @@ PUBLIC void fat_unmount()
     fs_tab = NULL;
 }
 
-int fat_open(struct file *fp, _CONST char *path)
+int fat_open(_CONST char *path)
 {
     if (!path || !fs || !fs_dev) 
         return SIGN(EFAULT); /* filesystem not mounted */
@@ -272,6 +223,9 @@ int fat_open(struct file *fp, _CONST char *path)
     
     if (plen >= sizeof(tmp)) 
         return SIGN(EINVAL); /* invalid path size */
+    
+    if (fs->file.opened == true)
+        return SIGN(EMFILE); /* too many opened files */
     
     /* tokenize path */
     char *tok = strtok(tmp, "/");
@@ -305,17 +259,14 @@ int fat_open(struct file *fp, _CONST char *path)
                     if (!memcmp(entries[i].name, fatname, 11)) {
                         entry = entries[i];
                         found = true;
-                        break;
+                        goto end_subdir_scan;
                     }
                 }
-                
-                if (found)
-                    break;
             }     
         }
         else {
             u16t cluster = cur.first_cluster;
-            while (cluster < FAT_EOF12) {
+            while (cluster < FAT12_EOF) {
                 u32t lba = fat_to_lba(cluster);
                 
                 for (u32t s = 0; s < fs->b.info.cluster_size; s++) {
@@ -334,16 +285,10 @@ int fat_open(struct file *fp, _CONST char *path)
                         if (!memcmp(entries[i].name, fatname, 11)) {
                             entry = entries[i];
                             found = true;
-                            break;
+                            goto end_subdir_scan;
                         }
                     }
-                    
-                    if (found)
-                        break;
                 }
-                
-                if (found)
-                    break;
                 
                 /* recalculate cluster */
                 cluster = fat_next_cluster(cluster);
@@ -352,7 +297,7 @@ int fat_open(struct file *fp, _CONST char *path)
         
 end_subdir_scan:
         if (!found) {
-            ret = -EFILE;
+            ret = SIGN(EFILE);
             goto out;
         }
 
@@ -368,30 +313,21 @@ end_subdir_scan:
             /* reload internal file descriptor */
             cur.first_cluster = entry.cluster_lo;
             cur.lba = fat_to_lba(entry.cluster_lo);
-            cur.f.inode.dir = true;
+            cur.dir = true;
             cur.root = false;
         }
         else
         {
             /* push FAT info */
-            struct fat_inode *fi = &fs->opened[fp->inode_number];
-            fi->opened = true;
-            fi->dir = false;
-            fi->root = false;
-            fi->first_cluster = entry.cluster_lo;
-            fi->current_cluster = entry.cluster_lo;
-            fi->current_sector = 0;
-            fi->lba = fat_to_lba(entry.cluster_lo);
-            fi->f.inode.size = entry.size;
-            fi->f.pos = 0;
-            fi->entry = entry;
-            
-            
-            /* push file descriptor to 'VFS' */
-            fp->inode.dir = false;
-            fp->inode.size = entry.size;
-            fp->pos = 0;
-            
+            fs->file.opened = true;
+            fs->file.dir = false;
+            fs->file.root = false;
+            fs->file.first_cluster = entry.cluster_lo;
+            fs->file.current_cluster = entry.cluster_lo;
+            fs->file.current_sector = 0;
+            fs->file.lba = fat_to_lba(entry.cluster_lo);
+            fs->file.pos = 0;
+            fs->file.entry = entry;
             ret = 0;
             goto out;
         }
@@ -401,28 +337,28 @@ out:
     return ret;
 }
 
-i32t fat_read(struct file *fp, void *buff, u32t len)
+i32t fat_read(void *buff, u32t len)
 {   
-    if (!fp || !fp->fs)
+    struct fat_inode *fil = &fs->file;
+    u8t *out = (u8t*)buff;
+    u32t ret = 0;
+
+    if (!fs || !fs_dev || !fs->file.opened)
         return SIGN(EFAULT);
-    
+
     if (!buff || !len)
         return SIGN(EFAULT);
     
-    int ninode = fp->inode_number;
-    struct fat_inode *fil = &fs->opened[ninode];
-    u8t *out = (u8t*)buff;
-    u32t bytes_read = 0;
+    /* Check if file position not exceed reported by FS */
+    if (fs->file.pos >= fs->file.entry.size)
+        return 0; /* EOF */
     
-    if (fp->pos >= fil->f.inode.size)
-        return SIGN(EIFS);
+    if (fs->file.pos + len > fs->file.entry.size)
+        len = fs->file.entry.size - fs->file.pos; 
 
-    if (fp->pos + len > fil->f.inode.size)
-        len = fil->f.inode.size - fp->pos;
-    
     while (len > 0) {
-        u32t sector_offset = u64_mod(u64_div(fp->pos, fs->b.info.sector_size), fs->b.info.cluster_size);
-        u32t offset = u64_mod(fp->pos, fs->b.info.sector_size);
+        u32t sector_offset = u64_mod(u64_div(fs->file.pos, fs->b.info.sector_size), fs->b.info.cluster_size);
+        u32t offset = u64_mod(fs->file.pos, fs->b.info.sector_size);
         u32t lba = fat_to_lba(fil->current_cluster) + sector_offset;
 
         if (devread(fs_dev, lba, 1, fil->buffer) < 0)
@@ -431,34 +367,25 @@ i32t fat_read(struct file *fp, void *buff, u32t len)
         u32t take = min(len, fs->b.info.sector_size - offset);
         memcpy(out, fil->buffer + offset, take);
 
-        out        += take;
-        fp->pos    += take;
-        bytes_read += take;
-        len        -= take;
+        out          += take;
+        fs->file.pos += take;
+        ret          += take;
+        len          -= take;
 
-        if (!u64_mod(u64_div(fp->pos, fs->b.info.sector_size), fs->b.info.cluster_size)) {
+        if (!u64_mod(u64_div(fs->file.pos, fs->b.info.sector_size), fs->b.info.cluster_size)) {
             u16t next = fat_next_cluster(fil->current_cluster);
-            if (next >= FAT_EOF12 || next == 0x000)
-                break;
+            if (next >= FAT12_EOF || next == 0x000)
+                break; /* read finished */
             fil->current_cluster = next;
         }
     }
-
-    return bytes_read;
+    
+    /* return bytes readed */
+    return ret;
 }
 
-int fat_close(struct file *fp)
+int fat_close()
 {
-    if (!fp)
-        return SIGN(EFAULT);
-    
-    /* delete file from array */
-    for (int i = 0; i < MAX_FILES_OPENED; i++) {
-        if (fp->inode_number == i) {
-            memset(&fs->opened[fp->inode_number], 0, sizeof(struct fat_inode));
-            break;
-        }
-    }
-    
+    fs->file.opened = false;
     return 0;
 }

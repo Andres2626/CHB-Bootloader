@@ -87,45 +87,44 @@ out:
 
 int devinit(struct device *dev) 
 {
-	printf("[DISK] Initializing number: 0x%x\n", dev->number);
-	
     struct device_geometry g;
     
-    /* check if drive have extensions */
-    bool ext = disk_get_extensions(dev->number);
-    if (ext) {
-        dev->ext = true;
-        
-        /* get extended parameters */
-        g.size = 0x1e; /* for 2.0 edd */
-        if (!disk_get_edd_parameters(dev->number, &g))
-            return SIGN(EIO);
-        
-        /* check if sector size is valid */
-        if (g.sector_size % 512 != 0)
-            return SIGN(EINVAL);
-        
-        dev->geom = g;
-    }
-    else {
-        u16t cyl, sec, head;
-        
-        dev->ext = false;
-        
-        /* get CHS parameters */
-        if (!disk_get_parameters(dev->number, 0, &cyl, &sec, &head))
-            return SIGN(EIO);
-        
-        /* push all parameters */
-        g.cyl = (u32t)cyl;
-        g.sector = (u32t)sec;
-        g.head = (u32t)head;
-        g.total_sectors = (u64t)cyl * (u64t)sec * (u64t)head;
-        g.sector_size = 512;
-        dev->geom = g;
-    }
-  
-    /* save disk as 'initialized' */  
+    /* check BIOS HDD bit and extensions */
+    bool chk = (dev->number & 0x80) && disk_get_extensions(dev->number);
+    if (!chk)
+        goto chs_mode;
+    
+    /* get extended parameters */
+    g.size = 0x1e; /* for 2.0 edd */
+    if (!disk_get_edd_parameters(dev->number, &g))
+        goto chs_mode;
+    
+    /* check if sector size is valid */
+    if (g.sector_size % 512 != 0)
+        goto chs_mode;
+    
+    goto out;
+    
+chs_mode:
+    u16t cyl, sec, head;
+    
+    /* get CHS parameters */
+    if (!disk_get_parameters(dev->number, 0, &cyl, &sec, &head))
+        return SIGN(EIO);
+    
+    /* push all parameters */
+    g.cyl = (u32t)cyl;
+    g.sector = (u32t)sec;
+    g.head = (u32t)head;
+    g.total_sectors = (u64t)cyl * (u64t)sec * (u64t)head;
+    g.sector_size = 512;   
+    
+out:
+    printf("disk detected number: 0x%x, type: %s\n", dev->number, chk ? "LBA" : "CHS");
+    
+    /* push disk info' */
+    dev->ext = chk;
+    dev->geom = g;
     dev->state = DRIVE_OK;
-    return 0;
+    return 1;
 }

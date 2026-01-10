@@ -41,7 +41,7 @@ struct device_edd_packet {
 struct device {
    u8t number; /* reported by BIOS */
    int state; /* initialized */
-   bool ext; /* INT13,4X */
+   bool ext; /* INT13,4X support */
    struct device_geometry geom;
 };
 

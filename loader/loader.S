@@ -9,6 +9,8 @@
 #define ASM_FILE
 #define LOADER_FILE
 
+#include "config.h"
+
 #include "arch/x86/asm/CPU.S"
 #include "arch/x86/stack.h"
 #include "arch/x86/macros.h"
@@ -26,18 +28,44 @@ start:
 	jmp loader_start 
 	nop
 
-.org 0x8
+.org BOOT_BPB_START
 
-/*
-* Loader initial parameters
-* DO NO MOVE THIS!
-*/
-params: 
-/* CHB store value reported by BIOS in %dl register here */
-drive_number:
+/* 
+ * This is CHB header used by C part for detect some reported info
+ * Offset  Size     Description
+ * 0x0     0x4      CHB magic number, must be '0x93A76FD8' for sucessful load.
+ * 0x4     0x4      Header size. (0x5C for 0.06)
+ * 0x8     0x1      Reported disk number (BIOS)
+ * 0x9     0x3      Version number (byte 0: Major, byte 1: Minor, byte 2: Revision)
+ * 0xC     0x10     Version string.
+ * 0x1C    0x20     First option that CHB can boot from FS.
+ * 0x3C    0x20     Second boot option TODO: Not implemented.
+ * 
+ * For CHB to detect the header, it must be set to 0x8000 + 0x4. 
+ */
+VARIABLE(loader_hdr)
+VARIABLE(magic_number)
+    .long 0x93A76FD8
+VARIABLE(header_size)
+    .long loader_hdr_end - loader_hdr
+VARIABLE(drive_number)
 	.byte 0
+VARIABLE(loader_version)
+    .byte VERSION_MAJOR, VERSION_MINOR, VERSION_REV
+VARIABLE(loader_string)
+    .string CHB_VERSION_STRING
+    .space 16 - (. - loader_string)
+VARIABLE(loader_first_boot)
+    .string CHB_FIRST_BOOT_OPTION
+    .space 32 - (. - loader_first_boot)
+VARIABLE(loader_second_boot)
+    .byte 0xff
+    .space 32 - (. - loader_second_boot)
+VARIABLE(loader_hdr_end)
 
-.org 0x11
+/* reserve for future versions */
+
+.space 0x100 - (. - _start)
 
 loader_start:
     cli
@@ -83,14 +111,16 @@ loader_start:
 	cld 
 	rep stosb
 	
-	xor %edx, %edx 
-	movb drive_number, %dl 
+	xor %edx, %edx
+    
+    /* load header */
+	leal loader_hdr, %edx
 	
 	/* put drive_number to C function */
 	push %edx
 	
 	/* init C function */
-	call entry
+	call init_loader
 	
 	pop %edx
 	

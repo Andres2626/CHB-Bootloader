@@ -5,8 +5,8 @@
 
 CHB (Computers Help Bootloader) is a two-stage bootloader targeting the x86 architecture, primarily 
 intended for kernel bootstrapping and low-level debugging. The current implementation is minimalistic 
-and features a FAT12 file system parser, addressing a limitation of the previous version which 
-lacked support for loading kernels across non-contiguous (dynamic) sectors.
+and features a FAT12 file system parser, addressing a limitation of the previous version that 
+lacked support for loading kernels into dynamic sectors
 
 Testing has been limited to x86 virtualized environments such as QEMU and Bochs, though it is 
 expected to function correctly on any compliant x86 hypervisor or emulator.
@@ -57,7 +57,7 @@ variables necessary to build CHB with cross-compilation.
 
 To construct CHB correctly, refer to:                             
 
-    ./build --help
+    ./build.sh --help
     
                               4. Documentation Index
 
@@ -79,8 +79,8 @@ Using CHB:
 
 CHB Details:
 
+* Boot process <docs/boot-process.rst>
 * Kernel <docs/kernel.rst>
-* Filesystem <docs/filesystem.rst>
 * Memory Map <docs/memory-map.rst>
 
 Developer notes:

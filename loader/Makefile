@@ -19,12 +19,11 @@ SFILES := loader.S \
 		  blib.S
 	
 # .c files
-CFILES:= entry.c \
+CFILES:= init.c \
          elfload.c \
 		 video.c \
 		 disk.c \
 		 fs/fat.c \
-         fs/vfs.c \
 		 mm.c 
 
 # .o files

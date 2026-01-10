@@ -13,18 +13,14 @@ or
 
 ==========================================================================
 
-- Support for mounted disks in FAT driver
 - Add support for other filesystems like extX, exfat, VFAT, FAT16/32, minix...
 - Executable formats (pe, coff, a.out, ...)
-  * PE '.h' file for implement libefi
-- Implement libefi
 - Implement UEFI support
+  * Implement libefi from scratch.
 - Non x86 support (arm, mips, ...)
 - Multiboot specification
 - Long mode support
 - Implement sector-by-sector reading in CHS mode in stage1
-- Implement Command line
-- Github compatible documentation.
 - Add support for windows (generate documentation)
 - Change style of html and pdflaTex (like RBIL)
 - More support for documentation types
