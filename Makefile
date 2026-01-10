@@ -26,10 +26,11 @@ clean: $(SUBDIRS)
 	
 	rm -rf $(OUT)/*
 
-pack_release:
+pack: all
+	@echo "packing all build for git release"
 	rm -rf release.zip
 	cp $(OUT)/stage1.IMG stage1.IMG
 	cp $(OUT)/loader.IMG loader.IMG
 	cp $(OUT)/CHB.IMG CHB.IMG
-	zip release.zip stage1.IMG loader.IMG CHB.IMG README
+	zip release.zip include/CHB/* include/CHB/loader/* include/CHB/stage1/* build/*.IMG build/*.a build/*.h README docs/kernel-test/build/*
 	rm -rf stage1.IMG loader.IMG CHB.IMG

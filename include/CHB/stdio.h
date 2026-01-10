@@ -5,6 +5,8 @@
 #include <stdarg.h>
 #include <CHB/types.h>
 
+void clrscr(void);
+
 void putchar(int c);
 int getchar(void);
 

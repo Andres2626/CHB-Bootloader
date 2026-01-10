@@ -1,7 +1,34 @@
-				
+
+====================================================================================================
+**CHB LEGACY TERMINAL TEST (pre-0.01, 2023-2024)**
+
+This is an early version of CHB, uploaded for historical purposes.
+
+This version was created in 2023-2024, long before the official version 0.01 of this repository. 
+Implements a shell with very simple commands in 'stage2'.
+
+This branch is not intended to be merged with 'master' and is read-only. Its purpose is to show the 
+old design and how CHB evolved from its initial form to its current state.
+
+**NOTE OF BINARIES**
+
+This version does not have compiled binaries, but the makefile compiles without issue; you can try 
+it yourself and study its code.
+
+**LICENSE**
+
+The day this code was uploaded it was unlicensed, now it has the MIT license
+
+IMPORTANT NOTE: This protocol of shell is deprecated, For the time being, the shell was removed from 
+CHB due to the responsibility of a bootloader; likewise, a better system for loading files one by one 
+was considered, thus avoiding excessive memory usage, and the bootloader is not a mini-OS like GRUB.
+
+2025-01-10 Andres26
+====================================================================================================
+
 					CHB Notes and manual
 
-Version: 0.01 Pre-Alpha
+Version: 0.01 Pre-Alpha (pre-official 0.01)
 
 
 					0.	Introduction

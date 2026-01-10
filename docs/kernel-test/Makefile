@@ -2,31 +2,38 @@
 SFILES:= entry.S
 CFILES:= kernel.c
 
-OUTPUT_IMAGES:= final.IMG kernel.IMG
+OUTDIRS:= ./build
+OUTPUT_IMAGES:= $(OUTDIRS)/kernel.IMG $(OUTDIRS)/final.IMG 
 
 CHBIMG := ../../build/CHB.IMG
 
-LDFLAGS += $(TARGET_LDFLAGS) -Ttext=0x7C00
+LDFLAGS += $(TARGET_LDFLAGS) -Ttext=0x100000
 CFLAGS += $(TARGET_CFLAGS) -I$(TOPDIR) -I./ -I$(TOPDIR)/include -I$(OUT)
 
-all_docs/kernel-test: $(CHBIMG) kernel.IMG final.IMG
+all_docs/kernel-test: $(OUTDIRS) $(CHBIMG) $(OUTPUT_IMAGES)
 
-%.o: %.c
+$(OUTDIRS)/%.o: %.c
+	@mkdir -p $(@D)
 	$(TARGET_CC) -c $< -o $@ $(CFLAGS)
 
-%.o: %.S
+$(OUTDIRS)/%.o: %.S
+	@mkdir -p $(@D)
 	$(TARGET_CC) -c $< -o $@ $(CFLAGS)
 
-kernel.IMG: entry.o kernel.o
-	$(TARGET_LD) -Ttext=0x100000 $^ -o kernel.elf -melf_i386
-	$(TARGET_OBJCOPY) -O binary kernel.elf $@
+$(OUTDIRS)/kernel.IMG: $(OUTDIRS)/entry.o $(OUTDIRS)/kernel.o
+	$(TARGET_LD) $(LDFLAGS) $^ -o $(OUTDIRS)/kernel.elf -melf_i386
+	$(TARGET_OBJCOPY) -O binary $(OUTDIRS)/kernel.elf $@
 
-final.IMG:
-	dd count=10 if=/dev/zero of=$@ bs=512
+$(OUTDIRS)/final.IMG:
+	dd count=120 if=/dev/zero of=$@ bs=512
 	dd if=$(CHBIMG) of=$@ seek=0 conv=notrunc
-	dd if=kernel.IMG of=$@ seek=5 conv=notrunc
+	dd if=$(OUTDIRS)/kernel.IMG of=$@ seek=40 conv=notrunc
 
 clean_docs/kernel-test:
-	rm -rf ./*.IMG
-	rm -rf ./*.o
-	rm -rf ./*.elf
+	rm -rf $(OUTDIRS)/*.IMG
+	rm -rf $(OUTDIRS)/*.o
+	rm -rf $(OUTDIRS)/*.elf
+	rmdir $(OUTDIRS)
+
+$(OUTDIRS):
+	mkdir -p $@

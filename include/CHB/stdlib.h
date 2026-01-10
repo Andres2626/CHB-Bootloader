@@ -4,6 +4,7 @@
 
 #include <CHB/types.h>
 
+int atoi(char* ptr);
 char* itoa(char *buf, int base, int n);
 
 #endif /* !_STDLIB_H_ */

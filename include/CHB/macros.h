@@ -20,6 +20,15 @@
 	#define FUNCTION(x) GLOBAL(x)
 	/* declare section */
 	#define SECTION(x) .##x
+	
+	/* convert linear segment to memory segment */
+	.macro linear_to_segment bp, es, esi, si
+		mov \bp, \esi     
+		shr $4, \esi
+		mov \si, \es
+		mov \bp, \esi
+		and $0xf, \esi
+	.endm
 #else
 	/* global function */
 	#define GLOBAL(x) x
