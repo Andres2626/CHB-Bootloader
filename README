@@ -1,6 +1,14 @@
 CHB Notes and manual
 **Version: 0.03-prealpha**
 
+====================================================================================================
+IMPORTANT NOTE: This protocol of VFS is deprecated, For the time being, the VFS was removed from CHB
+due to the responsibility of a bootloader; likewise, a better system for loading files one by one 
+was considered, thus avoiding excessive memory usage, and the bootloader is not a mini-OS like GRUB.
+
+2025-01-10
+====================================================================================================
+
 0.	Introduction 
 
 CHB (Computers Help Bootloader) is a two-stage bootloader targeting the x86 architecture (x86_64 and i386), 
@@ -267,3 +275,4 @@ void kmain(void) {
 Andres26
 14-04-2025
 github.com/Andres2626/CHB-Bootloader
+
