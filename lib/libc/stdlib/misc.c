@@ -1,0 +1,33 @@
+
+#include "sys\stdlib.h"
+
+char* itoa(int value, char* buffer, int base) {
+	char* rc;
+	char* ptr;
+	char* low;
+
+	if (base < 2 || base > 36) {
+		*buffer = '\0';
+		return buffer;
+	}
+	rc = ptr = buffer;
+
+	if (value < 0 && base == 10) {
+		*ptr++ = '-';
+	}
+
+	low = ptr;
+	do {
+		*ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz"[35 + value % base];
+		value /= base;
+	} while (value);
+
+	*ptr-- = '\0';
+
+	while (low < ptr) {
+		char tmp = *low;
+		*low++ = *ptr;
+		*ptr-- = tmp;
+	}
+	return rc;
+}
