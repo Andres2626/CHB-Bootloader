@@ -1,36 +1,94 @@
+CHB_VERSION		:= CHB_0.1
 
-SUBDIRS += src docs/kernel-test
 
-export MAKKEC = $(MAKE) -C 
-export OUT = build
-export SRC = src 
-export DEPS = include
+# Enable interface for cross compiling platform
+CROSS		:= 
+ifneq ($(CROSS_PREFIX), )
+	CROSS 	:= $(CROSS_PREFIX)
+endif
 
-.PHONY: all clean
+# OPTIONAL: Configure your compiler dir
+COMPDIR		:=
+ifneq ($(COMPILER_DIR), )
+	COMPDIR	:= $(COMPILER_DIR)
+endif
 
-all: $(SUBDIRS)
-	@echo "Building All..."
-	for dir in $(SUBDIRS); do \
-		if [[ $$dir == docs/kernel-test ]]; then \
-			cat $(OUT)/stage1.img $(OUT)/loader.img > $(OUT)/CHB.img; \
-		fi; \
-        $(MAKKEC) $$dir all_$$dir; \
-    done
-	
+# Use the 64-bit compiler compatibility
+# this macro adds -m64 flag in gcc compiler and -melf_i386
+USE_X86_64	:= NO
+ifeq ($(USE_86-64), )
+USE_X86_64	:= YES
+endif
 
-clean: $(SUBDIRS)
-	@echo "Clearing All..."
-	for dir in $(SUBDIRS); do \
-        $(MAKKEC) $$dir clean_$$dir; \
-    done
-	
-	rm -rf $(OUT)/*
+# Configure your enviroment
+CC			:=$(COMPDIR)$(CROSS_PREFIX)gcc
+LD			:=$(COMPDIR)$(CROSS_PREFIX)ld
+AS			:=$(CC)
+CPP			:=$(COMPDIR)$(CROSS_PREFIX)g++
+NM			:=$(COMPDIR)$(CROSS_PREFIX)nm
+AR			:=$(COMPDIR)$(CROSS_PREFIX)ar
+READELF		:=$(COMPDIR)readelf
+OBJCOPY		:=$(COMPDIR)objcopy
+OBJDUMP		:=$(COMPDIR)objdump
+SH			:=$(COMPDIR)sh
+BASH		:=$(COMPDIR)bash
+PHTYHON		:=$(COMPDIR)python
+MKDIR 		:=$(COMPDIR)mkdir -p
+RMDIR		:=$(COMPDIR)rmdir
+RM			:=$(COMPDIR)rm -rf
+BOCHS		:=$(COMPDIR)bochs -f 
 
-pack: all
-	@echo "packing all build for git release"
-	rm -rf release.zip
-	cp $(OUT)/stage1.IMG stage1.IMG
-	cp $(OUT)/loader.IMG loader.IMG
-	cp $(OUT)/CHB.IMG CHB.IMG
-	zip release.zip include/CHB/* include/CHB/loader/* include/CHB/stage1/* build/*.IMG build/*.a build/*.h README docs/kernel-test/build/*
-	rm -rf stage1.IMG loader.IMG CHB.IMG
+# project directories
+INCLUDEDIR	:=Include
+SRCDIR		:=Src
+SCRIPSDIR	:=Scripts
+
+# Directories to create
+STAGE1_OUT_DIR += Out/$(CROSS)/stage1
+CREATEDIRS	+= $(STAGE1_OUT_DIR)
+
+# source directories
+STAGE1_SRC_DIR += $(SRCDIR)/stage1
+STAGE1_INC_DIR += $(INCLUDEDIR)/CHB/stage1
+
+# Output images
+STAGE1_IMG	:= $(STAGE1_OUT_DIR)/stage1.IMG
+OS_IMG		:= ./os.IMG
+
+# stage1 objs and headers
+STAGE1_OBJS	:= $(STAGE1_OUT_DIR)/stage1.o
+STAGE1_INCS	:= $(STAGE1_INC_DIR)/stage1.h
+
+# Tools
+FLOPPY_RUN	:= ./$(SCRIPSDIR)/floppy_run.sh $(OS_IMG)
+
+# compiler flags
+CFLAGS		:= -nodefaultlibs -nostdlib -ffreestanding -mno-red-zone -fpic -I./$(INCLUDEDIR) -I./$(INCLUDEDIR)/CHB
+
+PHONY		:= all clean install run debug
+.PHONY: $(PHONY)
+all: $(CREATEDIRS) $(OS_IMG)
+
+$(OS_IMG): $(STAGE1_OUT_DIR)/stage1.IMG
+	cat $^ > $@
+
+$(STAGE1_OUT_DIR)/stage1.IMG: $(STAGE1_OBJS)
+	$(LD) -o $@ $^ -Ttext=7C00 --oformat binary 
+
+$(STAGE1_OUT_DIR)/%.o: $(STAGE1_SRC_DIR)/%.S
+	$(CC) -c $^ -o $@ $(CFLAGS)
+
+clean:
+	$(RM) Out/*
+
+install:
+
+$(CREATEDIRS):
+	$(MKDIR) $@
+
+run: $(OS_IMG)
+	$(SH) $(FLOPPY_RUN)
+
+debug: $(OS_IMG)
+	$(BOCHS) $(SCRIPSDIR)/floppy_debug
+

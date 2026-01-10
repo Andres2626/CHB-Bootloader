@@ -1,38 +1,24 @@
 
-#ifndef _STAGE1_H_
-#define _STAGE1_H_ 1
+/* Define the start of BIOS parameter block */
+#define BPB_START 0x04
 
-/* the first part size */
-#define BOOT_PART_SIZE 510
+/* Define the end of BIOS parameter block */
+#define BPB_END 0x64
 
-/* magic boot number */
-#define BOOT_MAGIC 0xaa55
+/* Define the localization of Bootloader */
+#define BOOT_STACK_LOC 0x7c00
 
-/* BIOS parameter block start */
-#define BOOT_BPB_START 0x4
+/* Define the start of MBR */
+#define MBR_START 0x1b4
 
-/* BIOS parameter block end */
-#define BOOT_BPB_END 0x5a
+/* Define the end of MBR*/
+#define MBR_END 0x1fe
 
-/* define the total bootblock size */
-#define BOOT_TOTAL_SIZE 1024
+/* Define signature of bootloader */
+#define BOOT_SIGNATUTE 0xaa55
 
-/* define the localization of stack */
-#define BOOT_LOC 0x7c00
+/* Macro for print messages */
+#define MSG(x) 	mov $x, %si; call print
 
-/* define the localization of disk buffer */
-#define BOOT_DISK_BUFFER 0x2000
-
-/* define the MBR start */
-#define MBR_START 0x1b8
-
-/* define MBR partiion start */
-#define MBR_PARTITION_START 0x1be
-
-/* loader size */
-#define PRE_STAGE2_SIZE 24
-
-/* stage1 stack */
-#define BOOT_STACK 0x7c00
-
-#endif /* !_STAGE1_H_ */
+/* Macro for print error*/
+#define ERROR(x) MSG(x); MSG(general_error); MSG(newline)
