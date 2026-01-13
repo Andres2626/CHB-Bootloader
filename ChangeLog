@@ -1,3 +1,42 @@
+2026-01-13  Andres26  andrescamorao9@gmail.com
+
+2026-01-13 Fix FATFS bug.
+    
+    * Delete debug for(;;);
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2026-01-12  Andres26  andrescamorao9@gmail.com
+
+2026-01-12 Final 0.08 Patch
+    
+    * Fix README.
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2026-01-12  Andres26  andrescamorao9@gmail.com
+
+2026-01-12 0.08 Patch
+    
+    - Improve LINUX compilation.
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2026-01-12  Andres2626  113268055+Andres2626@users.noreply.github.com
+    Merge pull request #9 from Andres2626/0.08-patch
+    
+    0.08 patch
+
+2026-01-12  Andres26  andrescamorao9@gmail.com
+
+2026-01-12 Final 0.08 Patch
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
 2026-01-12  Andres26  andrescamorao9@gmail.com
 
 2026-01-12 0.08 Patch
