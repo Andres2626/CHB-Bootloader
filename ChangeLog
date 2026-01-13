@@ -1,5 +1,16 @@
 2026-01-13  Andres26  andrescamorao9@gmail.com
 
+2026-01-13 Final 0.09-prealpha Patch
+    
+    * Move docs/using to docs/getting-started.
+    * Delete code of conduct.
+    * Improve LINUX compilation.
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2026-01-13  Andres26  andrescamorao9@gmail.com
+
 2026-01-13 Final 0.08 Patch
     
     Signed-off-by: Andres26 <andrescamorao9@gmail.com>
