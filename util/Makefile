@@ -4,35 +4,28 @@ CHB_INC		:= $(TOPDIR)/include
 TOP_INC		:= $(TOPDIR)
 THIS_INC	:=./
 OUT			:= $(TOPDIR)/$(OUT)
-OUTDIR  	:= $(OUT)/tools
+OUTDIR  	:= $(OUT)/util
 Q			:= @
-PROGS		:= $(OUT)/fat/fatinfo $(OUT)/fat/mkfs12
+PROGS		:= $(OUT)/install
 TOOLS_INCS	+= -I$(TOP_INC) -I$(THIS_INC) -I$(CHB_INC)
 CFLAGS += $(TOOLS_INCS) -DCHB_UTIL
 
 .PHONY: all clean
 
-all_util: $(OUTDIR) $(OUTDIR)/fat $(PROGS)
+all_util: $(OUTDIR) $(PROGS)
 
-$(OUT)/fat/mkfs12: $(OUTDIR)/fat/mkfs12.o
+$(OUT)/install: $(OUTDIR)/install.o
 	@echo UTIL $@
 	$(Q)$(HOST_CC) -o $@ $^ -largp
 
-$(OUT)/fat/fatinfo: $(OUTDIR)/fat/fatinfo.o
-	@echo UTIL $@
-	$(Q)$(HOST_CC) -o $@ $^ -largp
-
-$(OUTDIR)/fat/%.o: fat/%.c
+$(OUTDIR)/%.o: %.c
 	@mkdir -p $(@D)
 	@echo HOST_CC $<
 	$(Q)$(HOST_CC) -c -o $@ $< $(CFLAGS)
 	
 clean_util:
 	rm -rf $(PROGS)
-	rm -rf $(OUTDIR)/fat/mkfs12.o $(OUTDIR)/fat/fatinfo.o
-
-$(OUTDIR)/fat:
-	mkdir -p $@
+	rm -rf $(OUTDIR)/*
 
 $(OUTDIR):
 	mkdir -p $@

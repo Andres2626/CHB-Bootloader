@@ -7,6 +7,11 @@
 * This file is distributed under the terms of the MIT license.
 */
 
+/* 
+ * At the moment the driver found FAT32 from first partition with type 0x0B or 0x0C 
+ * TODO: Improve this!
+ */
+
 #include <fs/fat.h>
 
 #include <sys/mm.h>
@@ -33,7 +38,13 @@ struct fat_inode {
     u8t buffer[FAT_SECSIZE];
 };
 
-struct fat_fs {    
+struct fat_fs { 
+    /* Type of FAT filesystem */
+    u8t type;
+    u32t sec_count;
+    u32t data_clusters;
+    u32t data_size;
+    
     union {
         struct fat_boot_sector info;
         u8t buffer[FAT_SECSIZE];
@@ -61,49 +72,18 @@ PRIVATE u8t *fs_tab; /* The file allocation table */
 /* DOS name buffer */
 PRIVATE char fatname[12];
 
+/* partition first sector LBA */
+PRIVATE u32t part_index = 0;
+
+/* Read partition */
+#define PART_READ(disk, sector, count, buff) devread((disk), (sector + part_index), (count), (buff))
+
 PRIVATE int read_bsec()
 {
     if (!fs_dev)
         return SIGN(EFAULT); /* fail */
     
-    return devread(fs_dev, 0, 1, fs->b.buffer);
-}
-
-PRIVATE int read_fat()
-{
-    if (!fs_dev)
-        return SIGN(EFAULT); /* fail */
-    
-    /* set location of 'FAT' in memory */
-    fs_tab = (u8t*)(FS_DRIVER_DATA + sizeof(struct fat_fs));
-    return devread(fs_dev, fs->b.info.reserved_sectors, fs->b.info.FAT_size, fs_tab);
-}
-
-PRIVATE int read_root(u32t sector)
-{ 
-    if (!fs_dev)
-        return SIGN(EFAULT);
-    
-    /* get info */
-    u32t size = sizeof(struct fat_entry) * fs->b.info.dir_entries;
-    u32t root_sec = (size + fs->b.info.sector_size - 1) / fs->b.info.sector_size;
-    u32t begin = (fs->b.info.reserved_sectors + (fs->b.info.FAT_size * fs->b.info.FAT_count));
-
-    /* check if sector is not out of root directory */
-    if (sector >= root_sec)
-        return SIGN(EINVAL);
-
-    /* set root directory info */
-    fs->root.root = true;
-    fs->root.dir = true;
-    fs->root.pos = 0;
-    fs->root.lba = begin + sector;
-    fs->root.first_cluster = 0;
-    fs->root.current_cluster = 0;
-    fs->root.current_sector = sector;
-    
-    /* read root */
-    return devread(fs_dev, fs->root.lba, 1, fs->root.buffer);
+    return PART_READ(fs_dev, 0, 1, fs->b.buffer);
 }
 
 PRIVATE u32t fat_to_lba(u32t cluster) 
@@ -111,17 +91,109 @@ PRIVATE u32t fat_to_lba(u32t cluster)
    return fs->data.lba + (cluster - 2) * fs->b.info.cluster_size;
 }
 
-PRIVATE u16t fat_next_cluster(u16t cluster)
+PRIVATE u32t fat_next_cluster(u16t cluster)
 {
-    u32t offset = (cluster * 3) / 2;
-    u16t val = *(u16t*)(fs_tab + offset);
+    u32t ret = 0xFFFFFFFF;
+    u32t fat_sector;
+    u32t offset;
 
-    if (cluster & 1)
-        val >>= 4;
-    else
-        val &= 0xFFF;
+    /* check if disk is initialized */
+    if (!fs_dev) {
+        ret = 0xFFFFFFFF;
+        goto out;
+    }
+    
+    switch (fs->type) {
+    case FAT12_FS_IDENT:
+        fat_sector = fs->b.info.reserved_sectors + (cluster * 3) / 2 / 512;
+        offset = (cluster * 3) / 2 % 512;
+        break;
+    case FAT16_FS_IDENT:
+        fat_sector = fs->b.info.reserved_sectors + (cluster * 2) / 512;
+        offset = (cluster * 2) % 512;
+        break;
+    case FAT32_FS_IDENT:
+        fat_sector = fs->b.info.reserved_sectors + (cluster * 4) / 512;
+        offset = (cluster * 4) % 512;
+    }
+    
+    if (PART_READ(fs_dev, fat_sector, 1, fs_tab) < 0) {
+        ret = 0xFFFFFFFF;
+        goto out;
+    }
 
-    return val;
+    switch (fs->type) {
+    case FAT12_FS_IDENT:
+        ret = *(u16t*)(fs_tab + offset);
+        ret = (cluster & 0x1) ? (ret >> 4) : (ret & 0xFFF);
+        break;
+    case FAT16_FS_IDENT:
+        ret = *(u16t*)(fs_tab + offset);
+        break;
+    case FAT32_FS_IDENT:
+        ret = *(u32t*)(fs_tab + offset) & 0xFFFFFFF;
+        break;
+    default:
+        ret = 0xFFFFFFFF;
+        break;
+    }
+    
+out:
+    return ret;
+}
+
+PRIVATE int read_root(u32t sector)
+{ 
+    if (!fs_dev)
+        return SIGN(EFAULT);
+    
+    u32t lba = 0;
+    u32t first_cluster = 0;
+    u32t current_cluster = 0;
+    u32t sector_in_cluster = 0;
+    
+    fs->root.root = true;
+    fs->root.dir = true;
+    fs->root.pos = 0;
+    
+    if (fs->type == FAT32_FS_IDENT) {
+        first_cluster = fs->b.info.root_cluster;
+        current_cluster = first_cluster;
+        
+        /* convert cluster to sector */
+        u32t cluster_index = sector / fs->b.info.cluster_size;
+        sector_in_cluster = sector % fs->b.info.cluster_size;
+        
+        for (u32t i = 0; i < cluster_index; i++) {
+            current_cluster = fat_next_cluster(current_cluster);
+            if (current_cluster >= FAT32_EOF)
+                return SIGN(EINVAL); /* check if sector is not out-of-bounds */
+        }
+        
+        /* get lba sector of cluster */
+        lba = fat_to_lba(current_cluster) + sector_in_cluster;
+    }
+    else {
+        /* get info */
+        u32t size = sizeof(struct fat_entry) * fs->b.info.dir_entries;
+        u32t root_sec = (size + fs->b.info.sector_size - 1) / fs->b.info.sector_size;
+        u32t begin = (fs->b.info.reserved_sectors + (fs->b.info.FAT_size * fs->b.info.FAT_count));
+
+        /* check if sector is not out of root directory */
+        if (sector >= root_sec)
+            return SIGN(EINVAL);
+        
+        /* get sector */
+        lba = begin + sector;
+    }
+    
+    fs->root.lba = lba;
+    fs->root.first_cluster = first_cluster;
+    fs->root.current_cluster = current_cluster;
+    fs->root.current_sector = sector_in_cluster;
+    
+    /* read root */
+    return PART_READ(fs_dev, fs->root.lba, 1, fs->root.buffer);
 }
 
 PRIVATE char *fat_path_to_dos(_CONST char *path)
@@ -151,16 +223,41 @@ PRIVATE char *fat_path_to_dos(_CONST char *path)
 int fat_mount(struct device *disk)
 {   
     int ret = 0;
-    u32t fat_size = 0;
     fs_dev = disk;
     fs = (struct fat_fs*)FS_DRIVER_DATA;
+    memset(fs, 0, sizeof(struct fat_fs));
     
     if (fs_dev->state != DRIVE_OK) {
         ret = SIGN(EIO);
         goto fail;
     }
     
-    /* probe FAT12 filesystem */
+    /* check first partition with 0xB or 0xC type TODO: Improve this! */
+    for (int i = 0; i < 4; i++) {
+        struct mbr_partition_entry *entry = &disk->part.entry[i];
+        
+        /* check type of partition */
+        if ((entry->type == 0x0B || entry->type == 0x0C) && 
+            (entry->flags & 0x80) != 0) {
+            part_index = entry->lba;
+            
+            /* 
+             * QEMU BUG: Detect if drive is an HDD if FAT32 is detected
+             * avoid triple fault.
+             */
+            if ((disk->number & 0x80) != 0) {
+                ret = SIGN(EINVAL);
+                goto fail;
+            }
+            
+            break; /* FAT32 partition found */
+        }
+    }
+    
+    /* set localizacion of FAT */
+    fs_tab = (u8t*)(FS_DRIVER_DATA + sizeof(struct fat_fs));
+    
+    /* probe FAT filesystem */
     if (read_bsec() < 0)
         goto fail;
     
@@ -177,24 +274,54 @@ int fat_mount(struct device *disk)
         goto fail;
     }
     
-    fat_size = fs->b.info.FAT_size * fs->b.info.sector_size;
-    if ((sizeof(struct fat_fs) + fat_size) > FS_DRIVER_DATA_SIZE){
-        ret = SIGN(ENOMEM);
+    for (;;);
+    
+    /* check if drive is FAT32 */
+    u32t fatsize;
+    bool is_fat32 = (fs->b.info.dir_entries == 0 && fs->b.info.FAT_size == 0 && fs->b.info.fat32_size != 0);
+    if (is_fat32) {
+        fs->type = FAT32_FS_IDENT;
+        fatsize  = fs->b.info.fat32_size;
+        fs->data.size = 0;
+        
+        /* check root is in safe cluster */
+        if (fs->b.info.root_cluster < 2) {
+            ret = SIGN(EIFS);
+            goto fail;
+        }
+    }
+    else {
+        /* fot FAT1X */
+        fatsize = fs->b.info.FAT_size;
+        fs->data.size = (fs->b.info.dir_entries * 32 + fs->b.info.sector_size - 1) / fs->b.info.sector_size;
+    }
+    
+    /* calculate data section */
+    fs->data.lba = fs->b.info.reserved_sectors + (fs->b.info.FAT_count * fatsize) + fs->data.size;
+    fs->sec_count = (fs->b.info.drive_size == 0) ? fs->b.info.large_sectors : fs->b.info.drive_size;
+    
+    if (fs->sec_count <= fs->data.lba) {
+        ret = SIGN(EIFS);
         goto fail;
     }
     
-    ret = read_fat();
-    if (ret < 0)
-        goto fail;
+    /* calculate data info */
+    fs->data_size = fs->sec_count - fs->data.lba;
+    fs->data_clusters = u64_div(fs->data_size, fs->b.info.cluster_size);
+
+    /* detect FAT1X */
+    if (!is_fat32) {
+        if (fs->data_clusters < 4085)
+            fs->type = FAT12_FS_IDENT;
+        else if (fs->data_clusters < 65525)
+            fs->type = FAT16_FS_IDENT;
+        else {
+            ret = SIGN(EIFS);
+            goto fail;
+        }
+    }
     
     ret = read_root(0);
-    if (ret < 0)
-        goto fail;
-    
-    /* get data info */
-    fs->data.size = (fs->b.info.dir_entries * 32 + fs->b.info.sector_size - 1)  / fs->b.info.sector_size;
-    fs->data.lba = fs->b.info.reserved_sectors + fs->b.info.FAT_count * fs->b.info.FAT_size + fs->data.size;
-    return 0;
 fail:
     return ret;
 }
@@ -237,8 +364,7 @@ int fat_open(_CONST char *path)
         char *fatname = fat_path_to_dos(tok);
         found = false;
 
-        /* check if current dir is root dir TODO: this not work in FAT32 */
-        if (cur.root) {
+        if (cur.root && fs->type != FAT32_FS_IDENT) {
             u32t size = sizeof(struct fat_entry) * fs->b.info.dir_entries;
             u32t total_sectors = (size + fs->b.info.sector_size - 1) / fs->b.info.sector_size;
             
@@ -265,12 +391,17 @@ int fat_open(_CONST char *path)
             }     
         }
         else {
-            u16t cluster = cur.first_cluster;
-            while (cluster < FAT12_EOF) {
+            /* obtain end of chain */
+            u32t eof = (fs->type == FAT32_FS_IDENT) ? FAT32_EOF : (fs->type == FAT16_FS_IDENT) ?
+                       FAT16_EOF : FAT12_EOF;
+                       
+            u32t cluster = cur.first_cluster;
+            
+            while (cluster < eof) {
                 u32t lba = fat_to_lba(cluster);
                 
                 for (u32t s = 0; s < fs->b.info.cluster_size; s++) {
-                    ret = devread(fs_dev, lba + s, 1, cur.buffer);
+                    ret = PART_READ(fs_dev, lba + s, 1, cur.buffer);
                     if (ret < 0)
                         goto out;
 
@@ -302,6 +433,8 @@ end_subdir_scan:
         }
 
         tok = strtok(NULL, "/");
+        u32t cluster = (fs->type == FAT32_FS_IDENT) ? entry.cluster_lo | (entry.cluster_hi << 16) : entry.cluster_lo;
+        
         if (tok) {
             
             /* check if entry is 'file' */
@@ -311,21 +444,22 @@ end_subdir_scan:
             }
             
             /* reload internal file descriptor */
-            cur.first_cluster = entry.cluster_lo;
-            cur.lba = fat_to_lba(entry.cluster_lo);
+            cur.first_cluster = cluster;
+            cur.current_cluster = cluster;
+            cur.lba = fat_to_lba(cluster);
             cur.dir = true;
             cur.root = false;
         }
         else
-        {
+        {   
             /* push FAT info */
             fs->file.opened = true;
             fs->file.dir = false;
             fs->file.root = false;
-            fs->file.first_cluster = entry.cluster_lo;
-            fs->file.current_cluster = entry.cluster_lo;
+            fs->file.first_cluster = cluster;
+            fs->file.current_cluster = cluster;
             fs->file.current_sector = 0;
-            fs->file.lba = fat_to_lba(entry.cluster_lo);
+            fs->file.lba = fat_to_lba(cluster);
             fs->file.pos = 0;
             fs->file.entry = entry;
             ret = 0;
@@ -356,12 +490,16 @@ i32t fat_read(void *buff, u32t len)
     if (fs->file.pos + len > fs->file.entry.size)
         len = fs->file.entry.size - fs->file.pos; 
 
+    /* obtain end of chain */
+    u32t eof = (fs->type == FAT32_FS_IDENT) ? FAT32_EOF : (fs->type == FAT16_FS_IDENT) ?
+               FAT16_EOF : FAT12_EOF;
+                       
     while (len > 0) {
         u32t sector_offset = u64_mod(u64_div(fs->file.pos, fs->b.info.sector_size), fs->b.info.cluster_size);
         u32t offset = u64_mod(fs->file.pos, fs->b.info.sector_size);
         u32t lba = fat_to_lba(fil->current_cluster) + sector_offset;
 
-        if (devread(fs_dev, lba, 1, fil->buffer) < 0)
+        if (PART_READ(fs_dev, lba, 1, fil->buffer) < 0)
             break;
 
         u32t take = min(len, fs->b.info.sector_size - offset);
@@ -374,7 +512,7 @@ i32t fat_read(void *buff, u32t len)
 
         if (!u64_mod(u64_div(fs->file.pos, fs->b.info.sector_size), fs->b.info.cluster_size)) {
             u16t next = fat_next_cluster(fil->current_cluster);
-            if (next >= FAT12_EOF || next == 0x000)
+            if (next >= eof || next == 0x000)
                 break; /* read finished */
             fil->current_cluster = next;
         }
@@ -386,6 +524,7 @@ i32t fat_read(void *buff, u32t len)
 
 int fat_close()
 {
+    fs->file.pos = 0;
     fs->file.opened = false;
     return 0;
 }

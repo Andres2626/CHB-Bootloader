@@ -38,12 +38,33 @@ struct device_edd_packet {
     u64t lba;
 };
 
+struct mbr_partition_entry {
+    u8t flags;
+    char begin[3];
+    u8t type;
+    char end[3];
+    u32t lba;
+    u32t sectors;
+} __attribute__ ((packed));
+
+/* The master boot record structure */
+struct mbr_table {
+    u32t signature;
+    u16t reserved;
+    struct mbr_partition_entry entry[4];
+    u16t magic;
+} __attribute__ ((packed));
+
 struct device {
    u8t number; /* reported by BIOS */
    int state; /* initialized */
+   bool hdd;
    bool ext; /* INT13,4X support */
    struct device_geometry geom;
+   struct mbr_table part;
 };
+
+#ifndef CHB_UTIL
 
 /* int13_handler functions */
 PUBLIC int _ASM disk_reset_controller(u8t drive);
@@ -58,5 +79,7 @@ PUBLIC int devread(struct device *dev, u64t sector, u16t count, void *buff);
 
 /* initialize disk system */
 PUBLIC int devinit(struct device* dev);
+
+#endif
 
 #endif /* !_DISK_H_ */

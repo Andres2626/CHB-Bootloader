@@ -19,12 +19,22 @@
  * ***_FS_IDENT: This is the number which CHB detects to know that it is working 
  * with a specific FS 
  */
+#define EXFAT_FS_IDENT 0 /* not implemented */
 #define FAT12_FS_IDENT 0x1
-#define FAT12_FS_LABEL "FAT12"
+#define FAT16_FS_IDENT 0x2
+#define FAT32_FS_IDENT 0x3
+#define FAT_FS_LABEL "FAT"
 
 /* FAT12 common definitions */
 #define FAT12_BPB_SIZE          (sizeof(struct fat_bootsec))
 #define FAT12_EOF               0xFF8
+
+/* FAT16 common definitions */
+#define FAT16_EOF 0xFFF8
+
+/* FAT32 common definitions */
+#define FAT32_EOF 0x0FFFFFF8
+#define FAT32_RESERVED_MBR_SIZE 2048
 
 /* FAT common definitions */
 #define FAT_SECSIZE              512
@@ -48,7 +58,7 @@ struct fat_boot_sector {
    u8t cluster_size;
    u16t reserved_sectors;
    u8t FAT_count;
-   u16t dir_entries;
+   u16t dir_entries; /* for FAT12/16 */
    u16t drive_size;
    u8t desc_type;
    u16t FAT_size;
@@ -56,7 +66,15 @@ struct fat_boot_sector {
    u16t drive_heads;
    u32t hidden_sectors;
    u32t large_sectors;
-
+   
+   u32t fat32_size;
+   u16t ext_flags;
+   u16t version;
+   u32t root_cluster;
+   u16t FSInfo;
+   u16t backup_boot;
+   u8t  reserved2[12];
+   
    /* EBR */
    u8t drive_number;
    u8t reserved;
