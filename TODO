@@ -24,4 +24,5 @@ or
 - Add support for windows (generate documentation)
 - Change style of html and pdflaTex (like RBIL)
 - More support for documentation types
-- Organize all '.rst' documents.
+- Improve MBR detect for FATXX filesystems.
+- Create tool for read info from disk/floppy images.
