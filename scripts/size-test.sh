@@ -1,4 +1,4 @@
-# !/bin/bash
+#!/bin/bash
 
 # size-test.sh -- write size of file into .h file
 #

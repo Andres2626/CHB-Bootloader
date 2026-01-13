@@ -9,7 +9,7 @@
 
 #define ASM_FILE
 
-#include <arch/x86/CPU.H>
+#include <arch/x86/CPU.h>
 
 /* switch CPU to real mode and protected mode */
 .macro enter_realmode

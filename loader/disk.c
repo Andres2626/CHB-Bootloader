@@ -89,6 +89,7 @@ out:
 int devinit(struct device *dev) 
 {
     struct device_geometry g;
+    u16t cyl, sec, head;
     
     /* check BIOS HDD bit and extensions */
     dev->hdd = (dev->number & 0x80) != 0;
@@ -108,7 +109,6 @@ int devinit(struct device *dev)
     goto out;
     
 chs_mode:
-    u16t cyl, sec, head;
     
     /* get CHS parameters */
     if (!disk_get_parameters(dev->number, 0, &cyl, &sec, &head))

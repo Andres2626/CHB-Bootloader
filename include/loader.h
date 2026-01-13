@@ -11,8 +11,6 @@
 #define _LOADER_H_ 1
 
 #include <types.h>
-#include <sys/disk.h>
-#include <sys/mm.h>
 
 /* magic number for kernel */
 #define MSYS_KERN_MAGIC 0x3F8A857B
@@ -43,6 +41,11 @@ struct loader_hdr {
     /* reserved: not implemented yet! */
 } __attribute__(( packed ));
 
+#ifndef CHB_UTIL
+
+#include <sys/disk.h>
+#include <sys/mm.h>
+
 struct msys_kern_hdr {
     u32t magic;
 	struct device disk; /* disk properties */
@@ -50,4 +53,6 @@ struct msys_kern_hdr {
 	u8t vid_mode; /* video BIOS mode */
 };
 
-#endif /* !_CONST_H_ */
+#endif
+
+#endif /* !_LOADER_H_ */
