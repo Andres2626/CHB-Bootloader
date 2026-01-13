@@ -9,7 +9,7 @@ STAGE2_INCS	+= -I$(TOP_INC) -I$(THIS_INC) -I$(CHB_INC)
 SIZE		:= $(TOPDIR)/scripts/size-test.sh 
 OUT			:= $(TOPDIR)/$(OUT)
 OUTDIR  	:= $(OUT)/loader
-PROG 		:= loader.IMG
+PROG 		:= loader.img
 PROGRAMS    := $(addprefix $(OUT)/, $(PROG))
 SIZE_FILE	:= $(OUT)/sizes.h
 Q			:= @
@@ -40,12 +40,12 @@ all_loader: $(OUTDIR) $(SIZE) $(SIZE_FILE)
 $(SIZE):
 	$(error $(SIZE) script not found)
 
-$(SIZE_FILE): $(OUT)/loader.IMG
+$(SIZE_FILE): $(OUT)/loader.img
 	@echo SIZE $< 
 	$(Q)$(SIZE) $@ $< 1
 
 # binary file
-$(OUT)/loader.IMG: $(OUTDIR)/loader.pre
+$(OUT)/loader.img: $(OUTDIR)/loader.pre
 	@echo OCPY $@
 	$(Q)$(TARGET_OBJCOPY) -O binary $< $@
 

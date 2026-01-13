@@ -1,5 +1,12 @@
 2026-01-13  Andres26  andrescamorao9@gmail.com
 
+2026-01-13 Final 0.08 Patch
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2026-01-13  Andres26  andrescamorao9@gmail.com
+
 2026-01-13 Fix FATFS bug.
     
     * Delete debug for(;;);

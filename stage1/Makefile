@@ -6,7 +6,7 @@ THIS_INC	:= ./
 STAGE1_LOC	:= 0x7C00
 OUT			:= $(TOPDIR)/$(OUT)
 OUTDIR  	:= $(OUT)/stage1
-PROG 		:= stage1.IMG
+PROG 		:= stage1.img
 PROGRAMS    := $(addprefix $(OUT)/, $(PROG))
 SFILES 		:= stage1.S
 OFILES 		:= $(patsubst %.S, $(OUTDIR)/%.o, $(SFILES))
@@ -18,7 +18,7 @@ Q		:= @
 
 all_stage1: $(OUTDIR) $(PROGRAMS)
 
-$(OUT)/%.IMG: $(OUTDIR)/%.pre
+$(OUT)/%.img: $(OUTDIR)/%.pre
 	@echo OCPY $@
 	$(Q)$(TARGET_OBJCOPY) -O binary $< $@
 
