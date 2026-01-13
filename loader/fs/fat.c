@@ -232,27 +232,24 @@ int fat_mount(struct device *disk)
         goto fail;
     }
     
+    if (!disk->hdd)
+        goto no_part;
+    
     /* check first partition with 0xB or 0xC type TODO: Improve this! */
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 4; i++) {        
         struct mbr_partition_entry *entry = &disk->part.entry[i];
         
         /* check type of partition */
         if ((entry->type == 0x0B || entry->type == 0x0C) && 
-            (entry->flags & 0x80) != 0) {
-            part_index = entry->lba;
+            (entry->flags & 0x80) != 0) { 
             
-            /* 
-             * QEMU BUG: Detect if drive is an HDD if FAT32 is detected
-             * avoid triple fault.
-             */
-            if ((disk->number & 0x80) != 0) {
-                ret = SIGN(EINVAL);
-                goto fail;
-            }
+            part_index = entry->lba;
             
             break; /* FAT32 partition found */
         }
     }
+    
+no_part:
     
     /* set localizacion of FAT */
     fs_tab = (u8t*)(FS_DRIVER_DATA + sizeof(struct fat_fs));
@@ -273,8 +270,6 @@ int fat_mount(struct device *disk)
         ret = SIGN(EIFS);
         goto fail;
     }
-    
-    for (;;);
     
     /* check if drive is FAT32 */
     u32t fatsize;

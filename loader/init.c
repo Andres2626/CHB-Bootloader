@@ -107,7 +107,7 @@ PRIVATE void init_fs(struct device *disk)
     code = curfs.mount(disk);
     if (code < 0) {
         error(code);
-        panic("FS: unable to mount filesystem");
+        panic("FS: unable to mount filesystem\n");
     }
     
     printf("filesystem info: name: %s, number: 0x%x\n", curfs.name, disk->number);
