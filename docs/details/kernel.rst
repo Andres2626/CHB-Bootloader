@@ -1,3 +1,6 @@
+
+.. _kernel-info:
+
 ======
 Kernel
 ======

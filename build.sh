@@ -214,7 +214,7 @@ if ! command -v $HOST_NM 2>&1 >/dev/null; then
 fi
 echo "YES"
 
-DEFAULTFLAGS='-ffunction-sections -fdata-sections -Wall -Werror -Wextra -fno-builtin -ffunction-sections -fdata-sections -fno-stack-protector -fomit-frame-pointer -fno-exceptions -ffreestanding -fno-exceptions -mno-red-zone -nodefaultlibs -nostdlib'
+DEFAULTFLAGS='-m32 -ffunction-sections -fdata-sections -Wall -Werror -Wextra -fno-builtin -ffunction-sections -fdata-sections -fno-stack-protector -fomit-frame-pointer -fno-exceptions -ffreestanding -fno-exceptions -mno-red-zone -nodefaultlibs -nostdlib'
 DEFAULTLDFLAGS='-melf_i386 --gc-sections'
 EMPTY=
 case $TARGET in

@@ -9,6 +9,7 @@
 
 #include <sys/disk.h>
 
+#include "lib/libc/string.h"
 #include "lib/libc/errno.h"
 #include "lib/libc/stdio.h"
 
@@ -90,7 +91,8 @@ int devinit(struct device *dev)
     struct device_geometry g;
     
     /* check BIOS HDD bit and extensions */
-    bool chk = (dev->number & 0x80) && disk_get_extensions(dev->number);
+    dev->hdd = (dev->number & 0x80) != 0;
+    bool chk = dev->hdd && disk_get_extensions(dev->number);
     if (!chk)
         goto chs_mode;
     
@@ -126,5 +128,29 @@ out:
     dev->ext = chk;
     dev->geom = g;
     dev->state = DRIVE_OK;
+    
+    /* read MBR */
+    char sector[512];
+    if (dev->hdd) {
+        if (devread(dev, 0, 1, sector) < 0) {
+            printf("error reading MBR\n");
+            return SIGN(EIO);
+        }
+        
+        /* get partition */
+        memcpy(&dev->part, sector + 0x1b8, sizeof(struct mbr_table));
+
+#if 0        
+        printf("sig: 0x%lx, reserved: 0x%x, magic: 0x%lx\n", dev->part.signature, dev->part.reserved, 
+        dev->part.magic);
+        for (int i = 0; i < 4; i++) {
+            struct mbr_partition_entry cur = dev->part.entry[i];
+            printf("%i: flag: %i, CHS: %i, %i, %i, type: %i, ECHS: %i, %i, %i, lba: 0x%lx, sec: 0x%lx\n", 
+            i, cur.flags, cur.begin[0], cur.begin[1], cur.begin[2], cur.type, cur.end[0], cur.end[1], 
+            cur.end[2], cur.lba, cur.sectors);
+        }
+#endif
+    }
+    
     return 1;
 }

@@ -1,3 +1,64 @@
+2026-01-12  Andres26  andrescamorao9@gmail.com
+
+2026-01-12 0.08 Patch
+    
+    * Support for FAT32 partitions.
+    * Delete 'mkfs12', 'install12' and 'fatinfo'.
+    * Create 'install' program.
+    * Support for FAT16/32 in FS driver.
+    * Improve build script.
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2026-01-12  Andres26  andrescamorao9@gmail.com
+
+2026-01-12 Update TODO list
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2026-01-12  Andres26  andrescamorao9@gmail.com
+
+2026-01-12 0.08 Patch
+    
+    * Change 'docs/' structure.
+    * Document 'install1' program.
+    * Delete 'mkfs12', 'install12' and 'fatinfo' programs from documentation.
+      TODO: Create tool for read info from disk/floppy images.
+    * Update installing process.
+    * Update technical aspects.
+      - Undocumented aspects
+      - Outdated documentation.
+    * Update project philosophy.
+    * Create 'overview' directory.
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2026-01-10  Andres26  andrescamorao9@gmail.com
+
+2026-01-10 Final 0.07-prealpha
+    
+    * Fix documentation bug.
+    * Update to 0.07-prealpha
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2026-01-09  Andres26  andrescamorao9@gmail.com
+    2025-9-01 Final patch 0.07-prealpha
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
+2026-01-09  Andres26  andrescamorao9@gmail.com
+
+2026-01-09 Final patch 0.07-prealpha
+    
+    Signed-off-by: Andres26 <andrescamorao9@gmail.com>
+    
+
 2026-01-09  Andres26  andrescamorao9@gmail.com
 
 2025-01-09 Patch 0.07-prealpha
