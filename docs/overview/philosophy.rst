@@ -7,5 +7,5 @@ ones (such as GRUB or LILO). Its main philosophy is simplicity and
 minimalism. CHB provides a powerful and lightweight alternative
 for loading and experimenting with kernels.
 
-It is not intended to be a mini-OS like GRUB2, nor a chain-loading
+It is not intended to be a mini-OS like GRUB2, or a chain-loading
 mechanism for a specific kernel.

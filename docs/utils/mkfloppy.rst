@@ -10,15 +10,14 @@ Usage
 
 .. code-block:: bash 
 
-    ./mkfloppy <*arg1*> <*arg2*>
+    ./mkfloppy <sectors> <output>
 
 Arguments
 ---------
 
-*arg1:* Number of total sectors in floppy image (`see supported
-formats <#supported-formats>`__)
+*sectors:* Number of total sectors in floppy image. See :ref:`supported-floppy-formats`
 
-*arg2:* Output file
+*output:* Output file
 
 Description
 -----------
@@ -27,37 +26,24 @@ Description
 floppy image depends of reported with INT13,8 in IBM/PC compatible
 machines.
 
+See :ref:`supported-floppy-formats` for more information.
+
 The default sector size is: **512 bytes.**
-
-Supported formats
------------------
-
-The following is a list of supported floppy formats (according INT13,8):
-
-- **360 KB –** 720 sectors.
-
-- **720 KB –** 1440 sectors.
-
-- **1.44MB –** 2880 sectors
-
-- **1.88MB –** 5760 sectors
 
 Examples
 --------
 
-Create 1.44MB floppy image:
-
 .. code-block:: bash
-
+    
+    # Create 1.44MB floppy image:
     ./mkfloppy 2880 myfloppy.img
 
 Error handling:
 ---------------
 
-If the sector number is not compatible with `supported
-formats <#supported-formats>`__, the program prints list of formats and
-exit. The output file is **obligatory** otherwise the program print
-error message and exit.
+If the sector number is not compatible with :ref:`supported-floppy-formats`, 
+the program prints list of formats and exit. The output file is **obligatory** 
+otherwise the program print error message and exit.
 
 License
 -------

@@ -24,7 +24,7 @@ Copyright (C) andres26 2021-2025
     :caption: Contents
     :maxdepth: 2
     
-    
+    overview/index
     getting-started/index
     using/index
     details/index
@@ -33,3 +33,4 @@ Copyright (C) andres26 2021-2025
     appendix/minimal-kernel-example
     appendix/clib
     appendix/license
+    appendix/supported-floppy-formats

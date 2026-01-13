@@ -6,7 +6,5 @@ UTILITIES
    :caption: Contents
    :maxdepth: 1
 
-   fatinfo
-   install12
+   install
    mkfloppy
-   mkfs12

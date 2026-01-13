@@ -72,14 +72,14 @@ Before building CHB from source, please verify that the following tools/dependen
 are installed and up to date on your host.
 
 ================   ===============  ============================
-Program name       Minimum version  Command to check the version
+Program name       Tested with      Command to check the version
 ================   ===============  ============================
 GNU GCC            13.4.0           gcc --version
 GNU Binutils       2.45.1           ld --version
 GNU Make           4.4.1            make --version
 GNU Coreutils      9.0              dd --version
 bash               5.2.21           bash --version 
-python             13.12.2          python --version
+python             3.12.2           python --version
 Sphinx\ [#n1]_     8.2.3            sphinx-build --version
 mkfs.fat           4.2              mkfs.fat --version
 GNU mtools         4.0.35           mtools --version
@@ -95,10 +95,15 @@ git\ [#n5]_        2.51.0           git --version
 .. [#n4] 'bochs' is only used for running CHB (optional).
 .. [#n5] 'git' is only used for obtain CHB (optional).
 
-**NOTE**! It is recommended that the prefix be defined for the cross
-compiler because on certain types of hosts (*e.g. cygwin, msys2 or some
-linux environment on windows*) cross compilation is not allowed for ELF
-executables which is necessary to compile CHB correctly.
+**NOTES** 
+
+- It is recommended that the prefix be defined for the cross
+  compiler because on certain types of hosts (*e.g. cygwin, msys2 or some
+  linux environment on windows*) cross compilation is not allowed for ELF
+  executables which is necessary to compile CHB correctly.
+
+- Older version are not tested. (I encourage anyone to try it with previous 
+  versions)
 
 Obtaining CHB
 -------------
