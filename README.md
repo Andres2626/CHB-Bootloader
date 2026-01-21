@@ -77,21 +77,21 @@ For build CHB correctly, use:
 ### Getting started with CHB:
 
 * Building Guide <[docs/getting-started/building.rst](docs/getting-started/building.rst)>
-* CHB output files <[docs/getting-started/build-image.rst](docs/getting-started/build-image.rst)>
-* Installing Guide <[docs/getting-started/installing.rst](docs/getting-started/build-image.rst)>
-* Debugging <[docs/getting-started/debugging.rst](docs/getting-started/build-image.rst)>
-* Error handling <[docs/getting-started/error-handling.rst](docs/getting-started/build-image.rst)>
-* Contributing to CHB project <[docs/getting-started/contributing.rst](docs/getting-started/build-image.rst)>
+* CHB output files <[docs/getting-started/build-images.rst](docs/getting-started/build-images.rst)>
+* Installing Guide <[docs/getting-started/installing.rst](docs/getting-started/installing.rst)>
+* Debugging <[docs/getting-started/debugging.rst](docs/getting-started/debugging.rst)>
+* Error handling <[docs/getting-started/error-handling.rst](docs/getting-started/error-handling.rst)>
+* Contributing to CHB project <[docs/getting-started/contributing.rst](docs/getting-started/contributing.rst)>
 
 ### CHB Details:
 
 * Boot process <[docs/details/boot-process.rst](docs/details/boot-process.rst)>
-* Kernel <[docs/details/kernel.rst](docs/details/boot-process.rst)>
-* Memory Map <[docs/details/memory-map.rst](docs/details/boot-process.rst)>
+* Kernel <[docs/details/kernel.rst](docs/details/kernel.rst)>
+* Memory Map <[docs/details/memory-map.rst](docs/details/memory-map.rst)>
 
 ### Developer notes:
 
-* Have Fun! <[docs/dev-notes/have-fun.rst](docs/dev-notes/contact.rst)>
+* Have Fun! <[docs/dev-notes/have-fun.rst](docs/dev-notes/have-fun.rst)>
 * Contact <[docs/dev-notes/contact.rst](docs/dev-notes/contact.rst)>
 
 ### CHB Programs:
