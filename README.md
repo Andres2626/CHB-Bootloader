@@ -1,15 +1,15 @@
 # CHB README FILE
 
-**Version: 0.1.0**
+**Version: Release 0.1.0**
 
 ## 1. Introduction 
 
-CHB (Computers Help Bootloader) is a two-stage bootloader targeting the x86 architecture, primarily 
+CHB (*Computers Help Bootloader*) is a two-stage bootloader targeting the x86 architecture, primarily 
 intended for kernel bootstrapping and low-level debugging. The current implementation is minimalistic 
 and features a FAT file system parser, addressing a limitation of the previous versions that 
 lacked support for loading kernels into dynamic sectors
 
-Testing has been limited to x86 virtualized environments such as QEMU and Bochs, though it is 
+Testing has been limited to x86 virtualized environments such as QEMU or Bochs, though it is 
 expected to function correctly on any compliant x86 hypervisor or emulator.
 
 ## 2. Copyright notice
@@ -43,7 +43,7 @@ To build all the documentation, it is necessary to run:
 
 For example:
 
-    Generate HTML documentation:
+Generate HTML documentation:
 
 ```bash
     ./build.sh --docs=html
@@ -68,44 +68,44 @@ For build CHB correctly, use:
     
 ## 5. Documentation Index
 
-Overview:
+### Overview:
 
-* Introduction <docs/index.rst>
-* Philosophy <docs/overview/philosophy.rst>
-* Features <docs/overview/technical-aspects.rst>
+* Introduction <./docs/index.rst>
+* Philosophy <./docs/overview/philosophy.rst>
+* Features <./docs/overview/technical-aspects.rst>
 
-Getting started with CHB:
+### Getting started with CHB:
 
-* Building Guide <docs/getting-started/docs/building.rst>
-* CHB output files <docs/getting-started/docs/build-image.rst>
-* Installing Guide <docs/getting-started/docs/installing.rst>
-* Debugging <docs/getting-started/docs/debugging.rst>
-* Error handling <docs/getting-started/docs/error-handling.rst>
-* Contributing to CHB project <docs/getting-started/docs/contributing.rst>
+* Building Guide <./docs/getting-started/docs/building.rst>
+* CHB output files <./docs/getting-started/docs/build-image.rst>
+* Installing Guide <./docs/getting-started/docs/installing.rst>
+* Debugging <./docs/getting-started/docs/debugging.rst>
+* Error handling <./docs/getting-started/docs/error-handling.rst>
+* Contributing to CHB project <./docs/getting-started/docs/contributing.rst>
 
-CHB Details:
+### CHB Details:
 
-* Boot process <docs/details/boot-process.rst>
-* Kernel <docs/details/kernel.rst>
-* Memory Map <docs/details/memory-map.rst>
+* Boot process <./docs/details/boot-process.rst>
+* Kernel <./docs/details/kernel.rst>
+* Memory Map <./docs/details/memory-map.rst>
 
-Developer notes:
+### Developer notes:
 
-* Have Fun! <docs/dev-notes/have-fun.rst>
-* Contact <docs/dev-notes/contact.rst>
+* Have Fun! <./docs/dev-notes/have-fun.rst>
+* Contact <./docs/dev-notes/contact.rst>
 
-CHB Programs:
+### CHB Programs:
 
-* Utilities and Tools <docs/utils/index.rst>
-* install <docs/utils/install.rst>
-* mkfloppy <docs/utils/mkfloppy.rst>
+* Utilities and Tools <./docs/utils/index.rst>
+* install <./docs/utils/install.rst>
+* mkfloppy <./docs/utils/mkfloppy.rst>
 
-Miscellaneous:
+### Miscellaneous:
 
-* Kernel example <docs/appendix/minimal-kernel-example.rst>
-* CLIB Implemented functions <docs/appendix/clib.rst>
-* LICENSE <docs/appendix/license.rst>
-* Supported floppy sizes <docs/appendix/supported-floppy-formats.rst>
+* Kernel example <./docs/appendix/minimal-kernel-example.rst>
+* CLIB Implemented functions <./docs/appendix/clib.rst>
+* LICENSE <./docs/appendix/license.rst>
+* Supported floppy sizes <./docs/appendix/supported-floppy-formats.rst>
 
 ## 6. Have fun!
 
