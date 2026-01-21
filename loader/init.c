@@ -103,7 +103,6 @@ PRIVATE void init_fs(struct device *disk)
     int code = 0;
     printf("initializing filesystem\n");
     
-    /* mount fs in memory */
     code = curfs.mount(disk);
     if (code < 0) {
         error(code);
@@ -116,7 +115,6 @@ PRIVATE void init_fs(struct device *disk)
 
 PRIVATE void load_kernel(struct msys_kern_hdr *kern, const char *file) 
 {
-    /* load the kernel in the memory */
     printf("loading kernel\n");
     
     int code = 0;
@@ -125,8 +123,7 @@ PRIVATE void load_kernel(struct msys_kern_hdr *kern, const char *file)
         error(SIGN(EKERN));
         panic("LOADER: unable to locate kernel in FS\n");
     }
-    
-    /* load kernel in memory */
+
     i32t read = curfs.read(kernel_load, KERN_SIZE);
     if (read < 0) {
         error(read);
@@ -145,7 +142,6 @@ PRIVATE void load_kernel(struct msys_kern_hdr *kern, const char *file)
         panic("LOADER: invalid kernel localization\n");
     }
     
-    /* bootstrap kernel */
     printf("\nBooting kernel at %p.\n", entry);
     
     kern_jmp kernel_start = (kern_jmp)entry;
@@ -162,10 +158,8 @@ void init_loader(u32t header)
     disk.number = hdr->drive_number;
     disk.state = 0;
 	
-    /* initialize video system */
     video_init(&video);
 
-    /* print welcome message */
     printf("Loading CHB. Please Wait...\n");
 	
     if (hdr->magic != CHB_MAGIC)

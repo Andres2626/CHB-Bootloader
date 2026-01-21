@@ -11,6 +11,10 @@ Contents of main repository
 
     All CHB documentation.
 
+    **'examples/'**
+
+    CHB usage examples.
+
     **'include/'**
 
     Here are all the files that CHB includes in its source code.

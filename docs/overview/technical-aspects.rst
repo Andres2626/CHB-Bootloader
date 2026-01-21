@@ -35,7 +35,7 @@ Technical aspects and general characteristics
     
 **Protected mode**
 
-    CHB changes to protected mode before call kernel,At the moment CHB doesn't 
+    CHB changes to protected mode before call kernel, At the moment CHB doesn't 
     support long mode, if you will load kernel using CHB, you must compile it 
     with '-m32' compiler option.
 

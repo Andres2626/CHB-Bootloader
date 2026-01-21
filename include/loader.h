@@ -15,7 +15,7 @@
 /* magic number for kernel */
 #define MSYS_KERN_MAGIC 0x3F8A857B
 
-/* size of header for 0.06 - 0.09 versions */
+/* size of header for 0.06 - 0.1.0 versions */
 #define CHB_HDR_SIZE_V06 0x5C 
 
 /* 

@@ -51,7 +51,7 @@ after the MBR.
 **'force_lba'**
 
 Force the disk into LBA mode if the BIOS did not correctly report the supported 
-mode. default=1
+mode. default=0
 
 **'boot_drive'**
 
@@ -72,7 +72,7 @@ Save number of cylinder in the drive, reported by INT13,8.
 Philosophy
 ~~~~~~~~~~
 
-#. Jump afther BPB (bios parameter block)
+#. Jump afther BPB (Bios Parameter Block)
 #. Long jump 07c0:0 instead of 0:7c00.
 #. Setup stack and data registers.
 #. Test if BIOS support LBA or CHS mode for boot device.
@@ -100,7 +100,7 @@ bytes of the file for information that can be stored in future versions.
 Header size in each version
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    **'0x5C'**: for version 0.06
+    **'0x5C'**: for version 0.06 to 0.1
 
 Header
 ~~~~~~
@@ -156,9 +156,9 @@ Philosophy
 #. Call to C 'loader' function.
 #. Initialize video system.
 #. Check magic number and size of header.
-#. Obtain memory info
-#. Start the disk where CHB was booted 
-#. Push FAT12 driver in memory
+#. Obtain memory info.
+#. Start the disk where CHB was booted.
+#. Push FAT12 driver in memory.
 #. Load kernel in FS (according **'first_boot'** definition)
 #. Pass obtained info to kernel.
-#. Execute kernel
+#. Execute kernel.

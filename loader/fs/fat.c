@@ -67,7 +67,7 @@ PRIVATE struct device *fs_dev;
 PRIVATE struct fat_fs *fs;
 
 /* file allocation table */
-PRIVATE u8t *fs_tab; /* The file allocation table */
+PRIVATE u8t *fs_tab;
 
 /* DOS name buffer */
 PRIVATE char fatname[12];

@@ -100,7 +100,6 @@ loader_start:
 	cmp $0, %al
 	je a20_error
 
-	/* enter to protected mode */
 	enter_protmode
 
 	/* prepare C enviroment -- clean bss section */

@@ -143,8 +143,8 @@ Reported BIOS drive number.
 
 **'state'**
 
-    0 -- Disk error
-    1 -- The disk started successfully (OK)
+    0 -- Disk init error.
+    1 -- The disk started successfully.
 
 **'ext'**
 

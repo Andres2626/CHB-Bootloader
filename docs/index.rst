@@ -4,7 +4,7 @@ CHB DOCUMENTATION
 
 CHB (Computers Help Bootloader) is a two-stage bootloader targeting the x86 architecture, primarily 
 intended for kernel bootstrapping and low-level debugging. The current implementation is minimalistic 
-and features a FAT12 file system parser, addressing a limitation of the previous version that 
+and features a FAT file system parser, addressing a limitation of the previous versions that 
 lacked support for loading kernels into dynamic sectors
 
 Testing has been limited to x86 virtualized environments such as QEMU and Bochs, though it is 

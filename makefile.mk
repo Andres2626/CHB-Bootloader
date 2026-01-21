@@ -1,5 +1,5 @@
 
-SUBDIRS += lib/libc loader stage1 util
+SUBDIRS += lib/libc loader stage1 util examples
 export MAKKEC = $(MAKE) -C 
 export OUT = build
 export SRC = src 

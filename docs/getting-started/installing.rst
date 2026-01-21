@@ -5,7 +5,7 @@
 Installing CHB
 ==============
 
-At the moment CHB doesn'nt support CDFS. TODO: implement ISO9960 support.
+At the moment CHB doesn't support CDFS. TODO: implement ISO9960 support.
 
 .. _supported-filesystems:
 

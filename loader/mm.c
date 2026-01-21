@@ -12,7 +12,7 @@ int memory_init(struct memory_info *info)
 	int count = 0;
 	u32t continuation = 0;
 	
-	/* get upper and lower memory */
+	/* set memory info INT12, INT15,88 */
 	info->lo = get_lower_memory();
 	info->hi = get_upper_memory();
 	

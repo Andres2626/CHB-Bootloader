@@ -1,6 +1,6 @@
 project = 'CHB Notes and Manual'
 author = 'Andres26'
-release = '0.08-prealpha'
+release = '0.1.0'
 
 extensions = [] 
 templates_path = ['_templates']
@@ -17,7 +17,7 @@ latex_documents = [
         'index',
         'CHB.tex',
         'CHB Documentation and manual',
-        'andres26',
+        'Andres26',
         'manual',
     ),
 ]
