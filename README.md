@@ -70,42 +70,48 @@ For build CHB correctly, use:
 
 ### Overview:
 
-* Introduction <./docs/index.rst>
-* Philosophy <./docs/overview/philosophy.rst>
-* Features <./docs/overview/technical-aspects.rst>
+* Introduction <[docs/index.rst](docs/index.rst)>
+* Philosophy <[docs/overview/philosophy.rst](docs/overview/philosophy.rst)>
+* Features <[docs/overview/technical-aspects.rst](docs/overview/technical-aspects.rst)>
 
 ### Getting started with CHB:
 
-* Building Guide <./docs/getting-started/docs/building.rst>
-* CHB output files <./docs/getting-started/docs/build-image.rst>
-* Installing Guide <./docs/getting-started/docs/installing.rst>
-* Debugging <./docs/getting-started/docs/debugging.rst>
-* Error handling <./docs/getting-started/docs/error-handling.rst>
-* Contributing to CHB project <./docs/getting-started/docs/contributing.rst>
+* Building Guide <[docs/getting-started/docs/building.rst](docs/getting-started/docs/building.rst)>
+* CHB output files <[docs/getting-started/docs/build-image.rst](docs/getting-started/docs/build-image.rst)>
+* Installing Guide <[docs/getting-started/docs/installing.rst](docs/getting-started/docs/build-image.rst)>
+* Debugging <[docs/getting-started/docs/debugging.rst](docs/getting-started/docs/build-image.rst)>
+* Error handling <[docs/getting-started/docs/error-handling.rst](docs/getting-started/docs/build-image.rst)>
+* Contributing to CHB project <[docs/getting-started/docs/contributing.rst](docs/getting-started/docs/build-image.rst)>
 
 ### CHB Details:
 
-* Boot process <./docs/details/boot-process.rst>
-* Kernel <./docs/details/kernel.rst>
-* Memory Map <./docs/details/memory-map.rst>
+* Boot process <[docs/details/boot-process.rst](docs/details/boot-process.rst)>
+* Kernel <[docs/details/kernel.rst](docs/details/boot-process.rst)>
+* Memory Map <[docs/details/memory-map.rst](docs/details/boot-process.rst)>
 
 ### Developer notes:
 
-* Have Fun! <./docs/dev-notes/have-fun.rst>
-* Contact <./docs/dev-notes/contact.rst>
+* Have Fun! <[docs/dev-notes/have-fun.rst](docs/dev-notes/contact.rst)>
+* Contact <[docs/dev-notes/contact.rst](docs/dev-notes/contact.rst)>
 
 ### CHB Programs:
 
-* Utilities and Tools <./docs/utils/index.rst>
-* install <./docs/utils/install.rst>
-* mkfloppy <./docs/utils/mkfloppy.rst>
+* Utilities and Tools <[docs/utils/index.rst](docs/utils/index.rst)>
+* install <[docs/utils/install.rst](docs/utils/install.rst)>
+* mkfloppy <[docs/utils/mkfloppy.rst](docs/utils/mkfloppy.rst)>
 
 ### Miscellaneous:
 
-* Kernel example <./docs/appendix/minimal-kernel-example.rst>
-* CLIB Implemented functions <./docs/appendix/clib.rst>
-* LICENSE <./docs/appendix/license.rst>
-* Supported floppy sizes <./docs/appendix/supported-floppy-formats.rst>
+* Kernel example <[docs/appendix/minimal-kernel-example.rst](docs/appendix/minimal-kernel-example.rst)>
+* CLIB Implemented functions <[docs/appendix/clib.rst](docs/appendix/clib.rst)>
+* LICENSE <[docs/appendix/license.rst](docs/appendix/license.rst)>
+* Supported floppy sizes <[docs/appendix/supported-floppy-formats.rst](docs/appendix/supported-floppy-formats.rst)>
+
+## 6. CHB Test image
+
+![test](./docs/test.png)
+
+NOTE: The 'hi' at the top is part of the example kernel, which symbolizes that the kernel was loaded correctly.
 
 ## 6. Have fun!
 
@@ -126,5 +132,3 @@ andrescamorao9@gmail.com
 For bug tracking, please write to:
 
 https://github.com/Andres2626/CHB-Bootloader/issues
-
-

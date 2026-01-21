@@ -46,9 +46,9 @@ $(OUTDIR)/%.o: %.c
 clean_examples:
 	rm -rf $(OFILES)
 	rm -rf $(SIZE_FILE)
-	rm -rf $(PROGRAMS)
-	rm -rf $(OUTDIR)/loader.pre
-	rmdir $(OUTDIR)
+	rm -rf $(PROG)
+	rm -rf $(OUT)/kernel/1-simple-kernel.elf
+	rm -rf $(OUTDIR)
 
 $(OUTDIR):
 	$(Q)mkdir -p $@
