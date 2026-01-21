@@ -1,7 +1,8 @@
-                                        CHB README FILE
-                                       **Version: 0.1.0**
+# CHB README FILE
 
-                                      0.	Introduction 
+**Version: 0.1.0**
+
+## 1. Introduction 
 
 CHB (Computers Help Bootloader) is a two-stage bootloader targeting the x86 architecture, primarily 
 intended for kernel bootstrapping and low-level debugging. The current implementation is minimalistic 
@@ -11,15 +12,15 @@ lacked support for loading kernels into dynamic sectors
 Testing has been limited to x86 virtualized environments such as QEMU and Bochs, though it is 
 expected to function correctly on any compliant x86 hypervisor or emulator.
 
-                                     1.	Copyright notice
+## 2. Copyright notice
                                      
-Copyright (C) andres26 2021-2025
+Copyright (C) Andres26 2021-2025
 
 **ALL** code may be used or redistributed under the terms of the MIT License.
 
-See './COPYING' file for more info.
+See [COPYING](./COPYING) for more information.
 
-                                  2.   Documentation notice
+## 3. Documentation notice
 
 From now on, Sphinx will be used to build the CHB project documentation. Much of it has been 
 rewritten, and new sections have been added. All documentation is now located in the 'docs/' 
@@ -29,42 +30,48 @@ Sphinx supports a wide range of formats for rendering documentation. CHB current
 following formats:
 
 - html      -- Generate HTML pages
-- latex     -- Generate .tex file
-- pdflatex  -- Convert .tex to pdf
+- latex     -- Generate '.tex' file
+- pdflatex  -- Convert '.tex' to pdf
 - htmlhelp  -- Generate windows CHM format 
 - text      -- Generate text file
 
 To build all the documentation, it is necessary to run:
 
+```bash
     ./build.sh --docs=<supported-documentation-format>
-    
+```
+
 For example:
 
     Generate HTML documentation:
-    
-    ./build.sh --docs=html
 
+```bash
+    ./build.sh --docs=html
+```   
+    
 For more information, please see:
 
-    docs/building.rst and ./build --help
+    docs/building.rst and `./build --help`
     
-                                3. Building Warning
+## 4. Building Warning
 
-Please note that there are 2 possible files that build CHB from source:
-using Makefile or build.sh script. Building CHB directly with the
+Please note that there are 2 possible files that build CHB from source.
+Using 'makefile.mk' or 'build.sh' script. Building CHB directly with the
 makefile is not recommended because the build script defines a series of
 variables necessary to build CHB with cross-compilation.
 
-To construct CHB correctly, refer to:                             
+For build CHB correctly, use:                             
 
+```bash
     ./build.sh --help
+```
     
-                              4. Documentation Index
+## 5. Documentation Index
 
-Overwiew:
+Overview:
 
 * Introduction <docs/index.rst>
-* Phylosophy <docs/overview/phylosophy.rst>
+* Philosophy <docs/overview/philosophy.rst>
 * Features <docs/overview/technical-aspects.rst>
 
 Getting started with CHB:
@@ -100,7 +107,16 @@ Miscellaneous:
 * LICENSE <docs/appendix/license.rst>
 * Supported floppy sizes <docs/appendix/supported-floppy-formats.rst>
 
-                                   5. Contact
+## 6. Have fun!
+
+That's it! Once CHB is installed on the formatted image, you can start
+experimenting with your kernels. For now, CHB is a small bootloader, but
+there are plans to add new features in the future.
+
+At the moment, CHB doesn't support keyboard input that allows for further 
+extensions to its functionality.
+
+## 7. Contact
 
 Any questions, doubts or clarifications, with subject 'CHB CONTACT' mail
 to:
@@ -110,3 +126,5 @@ andrescamorao9@gmail.com
 For bug tracking, please write to:
 
 https://github.com/Andres2626/CHB-Bootloader/issues
+
+
