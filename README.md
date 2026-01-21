@@ -76,12 +76,12 @@ For build CHB correctly, use:
 
 ### Getting started with CHB:
 
-* Building Guide <[docs/getting-started/docs/building.rst](docs/getting-started/docs/building.rst)>
-* CHB output files <[docs/getting-started/docs/build-image.rst](docs/getting-started/docs/build-image.rst)>
-* Installing Guide <[docs/getting-started/docs/installing.rst](docs/getting-started/docs/build-image.rst)>
-* Debugging <[docs/getting-started/docs/debugging.rst](docs/getting-started/docs/build-image.rst)>
-* Error handling <[docs/getting-started/docs/error-handling.rst](docs/getting-started/docs/build-image.rst)>
-* Contributing to CHB project <[docs/getting-started/docs/contributing.rst](docs/getting-started/docs/build-image.rst)>
+* Building Guide <[docs/getting-started/building.rst](docs/getting-started/building.rst)>
+* CHB output files <[docs/getting-started/build-image.rst](docs/getting-started/build-image.rst)>
+* Installing Guide <[docs/getting-started/installing.rst](docs/getting-started/build-image.rst)>
+* Debugging <[docs/getting-started/debugging.rst](docs/getting-started/build-image.rst)>
+* Error handling <[docs/getting-started/error-handling.rst](docs/getting-started/build-image.rst)>
+* Contributing to CHB project <[docs/getting-started/contributing.rst](docs/getting-started/build-image.rst)>
 
 ### CHB Details:
 
